@@ -1,133 +1,157 @@
 @import "tailwindcss";
 
-/**
- * Black on white, compact.
- *
- * One ink colour, one paper colour and a single grey for anything secondary.
- * There is no accent: a starter theme that picks one is a starter theme every
- * site then has to undo. Rules are hairlines, spacing is tight, and the type
- * scale is small enough that a dense page still reads as one.
+/* The Punya.ngo design system, verbatim. No token value is overridden here. */
+@import "../styles/colors.css";
+@import "../styles/typography.css";
+@import "../styles/spacing.css";
+
+/*
+ * Navy for trust, gold for action, cream for warmth, on white. Serif headings,
+ * humanist sans body, Devanagari for the devotional accents. Solid surfaces
+ * only - the system asks for no gradients outside a photo fade, and no blur.
  */
-@theme {
-  --color-ink: #000000;
-  --color-paper: #ffffff;
-  --color-muted: #6b6b6b;
-  --color-line: #e5e5e5;
-
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
-    sans-serif;
-
-  --text-xs: 0.75rem;
-  --text-sm: 0.8125rem;
-  --text-base: 0.9375rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  @theme {
-    --color-ink: #ffffff;
-    --color-paper: #000000;
-    --color-muted: #9a9a9a;
-    --color-line: #232323;
-  }
-}
-
-html {
-  color-scheme: light dark;
-}
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
+  background: var(--surface-page);
+  color: var(--text-body);
   font-family: var(--font-sans);
-  font-size: var(--text-base);
-  line-height: 1.6;
+  font-size: var(--text-body);
+  line-height: var(--lh-body);
   -webkit-font-smoothing: antialiased;
 }
 
-/* The one shared measure. Compact by default; wide enough to read. */
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  color: var(--text-heading);
+  font-weight: var(--weight-heading);
+  line-height: var(--lh-heading);
+  margin: 0;
+}
+
+a { color: var(--link); text-decoration: none; transition: color var(--transition-fast); }
+a:hover { color: var(--link-hover); }
+
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-sm);
+}
+
 .shell {
   margin-inline: auto;
   width: 100%;
-  max-width: 56rem;
-  padding-inline: 1.25rem;
+  max-width: var(--content-max);
+  padding-inline: var(--space-5);
 }
 
-.section {
-  padding-block: 2.5rem;
+/* ~96px of vertical rhythm, as the system specifies. */
+.section { padding-block: var(--space-9); }
+.section-cream { background: var(--surface-section); }
+.section-warm { background: var(--surface-warm); }
+
+/** A Hindi accent line. Devotional, never carrying the functional content. */
+.devanagari {
+  font-family: var(--font-devanagari);
+  letter-spacing: 0;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/**
+ * A section header: centred serif heading between short gold dashes.
+ * — ◆ Heading ◆ —
+ */
+.ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  color: var(--gold-400);
+}
+.ornament::before,
+.ornament::after {
+  content: "";
+  height: 1px;
+  width: 44px;
+  background: var(--gold-300);
 }
 
-a:hover {
-  text-decoration: underline;
-  text-underline-offset: 2px;
+/* ── Buttons ───────────────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 44px;
+  padding-inline: var(--space-5);
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: var(--text-body);
+  transition: background var(--transition-fast), color var(--transition-fast),
+    box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+.btn:active { transform: scale(.98); }
+
+.btn-gold { background: var(--btn-gold); color: var(--white); }
+.btn-gold:hover { background: var(--btn-gold-hover); color: var(--white); }
+
+.btn-navy { background: var(--btn-navy); color: var(--white); }
+.btn-navy:hover { background: var(--btn-navy-hover); color: var(--white); }
+
+.btn-outline {
+  border: 1.5px solid var(--navy-700);
+  color: var(--navy-700);
+  background: var(--white);
+}
+.btn-outline:hover { background: var(--cream-200); color: var(--navy-800); }
+
+/* ── Cards ─────────────────────────────────────────────────────────────── */
+
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
+  transition: box-shadow var(--transition-med), transform var(--transition-med);
+}
+.card:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); }
+
+/** The cream circle a brand icon sits in. */
+.icon-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-circle);
+  height: var(--icon-circle);
+  border-radius: var(--radius-pill);
+  background: var(--surface-warm);
+  color: var(--navy-700);
 }
 
 /* ── Prose ─────────────────────────────────────────────────────────────── */
 
-.prose > * + * {
-  margin-top: 0.9rem;
-}
+.prose { max-width: 72ch; }
+.prose.prose-wide { max-width: none; }
+.prose > * + * { margin-top: var(--space-4); }
 
-.prose h1,
-.prose h2,
-.prose h3,
-.prose h4 {
-  font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: -0.01em;
-  margin-top: 2rem;
-}
+.prose h2 { font-size: var(--text-h2); margin-top: var(--space-8); }
+.prose h3 { font-size: var(--text-h3); margin-top: var(--space-6); }
+.prose h4 { font-size: var(--text-h4); margin-top: var(--space-5); }
 
-.prose h1 { font-size: 1.6rem; }
-.prose h2 { font-size: 1.25rem; }
-.prose h3 { font-size: 1.05rem; }
-.prose h4 { font-size: 0.95rem; }
-
-.prose a {
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.prose ul,
-.prose ol {
-  padding-left: 1.15rem;
-}
-
+.prose a { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
+.prose ul, .prose ol { padding-left: var(--space-5); }
 .prose ul { list-style: disc; }
 .prose ol { list-style: decimal; }
-.prose li + li { margin-top: 0.3rem; }
+.prose li + li { margin-top: var(--space-1); }
+.prose strong { color: var(--text-strong); font-weight: 600; }
 
-.prose img {
-  max-width: 100%;
-  height: auto;
-  border: 1px solid var(--color-line);
-}
+.prose img { max-width: 100%; height: auto; border-radius: var(--radius-md); }
 
 .prose blockquote {
-  border-left: 2px solid var(--color-ink);
-  padding-left: 0.9rem;
-  color: var(--color-muted);
-}
-
-.prose code {
-  font-size: 0.85em;
-  border: 1px solid var(--color-line);
-  padding: 0.1em 0.3em;
-}
-
-.prose pre {
-  border: 1px solid var(--color-line);
-  padding: 0.9rem;
-  overflow-x: auto;
-}
-
-.prose pre code {
-  border: 0;
-  padding: 0;
+  border-left: 3px solid var(--gold-400);
+  padding-left: var(--space-4);
+  color: var(--ink-600);
+  font-style: italic;
 }
 
 .prose table {
@@ -137,72 +161,136 @@ a:hover {
   display: block;
   overflow-x: auto;
 }
-
-.prose th,
-.prose td {
-  border: 1px solid var(--color-line);
-  padding: 0.4rem 0.6rem;
+.prose th, .prose td {
+  border: 1px solid var(--border-cool);
+  padding: var(--space-2) var(--space-3);
   text-align: left;
 }
+.prose th { background: var(--surface-warm); color: var(--text-heading); font-weight: 600; }
+.prose hr { border: 0; border-top: 1px solid var(--border-warm); margin-block: var(--space-7); }
 
-.prose hr {
-  border: 0;
-  border-top: 1px solid var(--color-line);
-  margin-block: 1.75rem;
-}
-
-/* ── Blocks ────────────────────────────────────────────────────────────── */
+/* ── Authored blocks ───────────────────────────────────────────────────── */
 
 /*
- * Every `:::` block, known or not, renders as a bordered section. Consecutive
- * ones sit side by side on a wide screen using the width the author asked for,
- * in twelfths, and stack on a phone where twelfths mean nothing.
+ * `:::stat`, `:::card` and the rest, written inside a CMS body. A run of them
+ * lays out as a twelve-column grid at the width the author asked for, and
+ * stacks on a phone.
  */
-.tc-block {
-  border: 1px solid var(--color-line);
-  padding: 1rem 1.1rem;
-  margin-top: 0.9rem;
+.blocks {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-5);
+  align-items: start;
+  margin-top: var(--space-6);
+}
+.blocks > * { grid-column: span 12; }
+
+@media (min-width: 48rem) {
+  .blocks > [data-span="3"] { grid-column: span 3; }
+  .blocks > [data-span="4"] { grid-column: span 4; }
+  .blocks > [data-span="6"] { grid-column: span 6; }
+  .blocks > [data-span="8"] { grid-column: span 8; }
+  .blocks > [data-span="9"] { grid-column: span 9; }
 }
 
-.tc-block > :first-child { margin-top: 0; }
-.tc-block > * + * { margin-top: 0.6rem; }
+.block { border-radius: var(--radius-md); }
+.block > :first-child { margin-top: 0; }
+.block > * + * { margin-top: var(--space-2); }
+.block p { color: var(--ink-600); font-size: var(--text-sm); }
 
-.tc-block--stat {
+.block-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-warm);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
+  transition: box-shadow var(--transition-med), transform var(--transition-med);
+}
+.block-card:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); }
+.block-card h2, .block-card h3 { font-size: var(--text-h4); margin-top: 0; }
+
+/*
+ * The stat band: one deep-navy panel, gold heading, light-blue label. A run of
+ * stats reads as a single band rather than as separate cards, so the gap
+ * closes and the dividers are hairlines inside it.
+ */
+.blocks:has(> .block-stat) { gap: 0; }
+
+.block-stat {
+  background: var(--surface-dark);
+  padding: var(--space-6) var(--space-5);
   text-align: center;
+  border-radius: 0;
+  border-left: 1px solid var(--divider-on-dark);
 }
+.block-stat:first-child { border-left: 0; border-radius: var(--radius-lg) 0 0 var(--radius-lg); }
+.block-stat:last-child { border-radius: 0 var(--radius-lg) var(--radius-lg) 0; }
 
-.tc-block--stat h2,
-.tc-block--stat h3 {
+.block-stat h2, .block-stat h3 {
+  font-family: var(--font-serif);
+  font-size: var(--stat-number);
+  color: var(--white);
   margin-top: 0;
-  font-size: 1.5rem;
+}
+.block-stat p { color: var(--text-on-dark-soft); font-size: var(--text-sm); }
+
+@media (max-width: 47.99rem) {
+  .block-stat, .block-stat:first-child, .block-stat:last-child {
+    border-radius: 0;
+    border-left: 0;
+    border-top: 1px solid var(--divider-on-dark);
+  }
+  .block-stat:first-child { border-top: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+  .block-stat:last-child { border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
 }
 
-.tc-block--quote {
-  border-left-width: 2px;
-  border-left-color: var(--color-ink);
+.block-step {
+  background: var(--surface-card);
+  border: 1px solid var(--border-warm);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
+}
+.block-step h2, .block-step h3 { font-size: var(--text-h4); margin-top: 0; }
+
+.block-note {
+  background: var(--surface-warm);
+  border: 1px solid var(--border-warm);
+  padding: var(--space-5);
+}
+
+.block-quote {
+  background: var(--surface-card);
+  border: 1px solid var(--border-warm);
+  border-left: 3px solid var(--gold-400);
+  padding: var(--space-5);
   font-style: italic;
 }
 
-.tc-block--note {
-  background: color-mix(in srgb, var(--color-ink) 4%, transparent);
+/** The closing ask. Cream rather than navy: an invitation, not a statement. */
+.block-cta {
+  background: var(--surface-warm);
+  border: 1px solid var(--border-warm);
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
 }
+.block-cta h2, .block-cta h3 { font-size: var(--text-h2); margin-top: 0; }
+.block-cta p { color: var(--ink-600); font-size: var(--text-body-lg); }
+.block-cta a {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding-inline: var(--space-5);
+  margin-top: var(--space-3);
+  background: var(--btn-gold);
+  color: var(--white);
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  text-decoration: none;
+}
+.block-cta a:hover { background: var(--btn-gold-hover); color: var(--white); }
 
-@media (min-width: 48rem) {
-  .prose {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    gap: 0 1rem;
-  }
-
-  /* Prose spans the full measure; only blocks take a narrower column. */
-  .prose > *:not(.tc-block) {
-    grid-column: 1 / -1;
-  }
-
-  .tc-block { grid-column: span 12; }
-  .tc-block[data-span="3"] { grid-column: span 3; }
-  .tc-block[data-span="4"] { grid-column: span 4; }
-  .tc-block[data-span="6"] { grid-column: span 6; }
-  .tc-block[data-span="8"] { grid-column: span 8; }
-  .tc-block[data-span="9"] { grid-column: span 9; }
+/* A kind this file has not styled still reads as a card rather than as text. */
+.block-default {
+  background: var(--surface-card);
+  border: 1px solid var(--border-warm);
+  padding: var(--space-5);
 }

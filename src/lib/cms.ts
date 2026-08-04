@@ -203,3 +203,85 @@ export function itemImage(item: CmsItem | null): string {
   }
   return item?.seo?.ogImage ?? "";
 }
+
+/* ── Forms ──────────────────────────────────────────────────────────────── */
+
+export type CmsFormField = {
+  key: string;
+  label: string;
+  type: string;
+  required?: boolean;
+  placeholder?: string;
+  options?: string[];
+  help?: string;
+};
+
+export type CmsForm = {
+  key: string;
+  name: string;
+  description: string | null;
+  fields: CmsFormField[];
+  submitLabel?: string;
+  successMessage?: string;
+};
+
+export async function getForm(key: string): Promise<CmsForm | null> {
+  /*
+   * A fence written as `:::form` with no key asks for /forms/, which redirects
+   * to the list endpoint and answers with an array. That is truthy, so without
+   * this the array reached the form component as a definition and rendering it
+   * threw. A form is only a form when it carries fields.
+   */
+  if (!key.trim()) return null;
+
+  const body = await cms<{ data: CmsForm }>(`/forms/${encodeURIComponent(key)}`, 60);
+  const form = body?.data;
+  return form && Array.isArray(form.fields) ? form : null;
+}
+
+export type SubmitResult = {
+  ok: boolean;
+  message?: string;
+  fieldErrors?: Record<string, string>;
+  error?: string;
+};
+
+/**
+ * Send a filled form back to the CMS, where it becomes a lead.
+ *
+ * The key is server-only, so this runs as a server action rather than from the
+ * browser. A 422 comes back with the fields to highlight; anything else is
+ * reported as one message rather than leaking the CMS's own wording.
+ */
+export async function submitForm(
+  key: string,
+  data: Record<string, unknown>,
+  sourceUrl?: string,
+): Promise<SubmitResult> {
+  if (!configured) return { ok: false, error: "This form is not connected yet." };
+
+  try {
+    const response = await fetch(`${BASE}/api/v1/content/forms/${encodeURIComponent(key)}`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ data, sourceUrl }),
+      cache: "no-store",
+    });
+
+    const body = (await response.json().catch(() => ({}))) as {
+      data?: { message?: string };
+      fieldErrors?: Record<string, string>;
+      error?: { message?: string };
+    };
+
+    if (response.status === 422) {
+      return { ok: false, fieldErrors: body.fieldErrors, error: "Please check the fields marked." };
+    }
+    if (!response.ok) return { ok: false, error: "That did not go through. Try again in a moment." };
+
+    return { ok: true, message: body.data?.message };
+  } catch (error) {
+    console.error("[cms] form submit failed", error);
+    return { ok: false, error: "We could not reach the server. Try again in a moment." };
+  }
+}
