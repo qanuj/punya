@@ -1,0 +1,208 @@
+@import "tailwindcss";
+
+/**
+ * Black on white, compact.
+ *
+ * One ink colour, one paper colour and a single grey for anything secondary.
+ * There is no accent: a starter theme that picks one is a starter theme every
+ * site then has to undo. Rules are hairlines, spacing is tight, and the type
+ * scale is small enough that a dense page still reads as one.
+ */
+@theme {
+  --color-ink: #000000;
+  --color-paper: #ffffff;
+  --color-muted: #6b6b6b;
+  --color-line: #e5e5e5;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-ink: #ffffff;
+    --color-paper: #000000;
+    --color-muted: #9a9a9a;
+    --color-line: #232323;
+  }
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The one shared measure. Compact by default; wide enough to read. */
+.shell {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 56rem;
+  padding-inline: 1.25rem;
+}
+
+.section {
+  padding-block: 2.5rem;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── Prose ─────────────────────────────────────────────────────────────── */
+
+.prose > * + * {
+  margin-top: 0.9rem;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  margin-top: 2rem;
+}
+
+.prose h1 { font-size: 1.6rem; }
+.prose h2 { font-size: 1.25rem; }
+.prose h3 { font-size: 1.05rem; }
+.prose h4 { font-size: 0.95rem; }
+
+.prose a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.15rem;
+}
+
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+.prose li + li { margin-top: 0.3rem; }
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--color-line);
+}
+
+.prose blockquote {
+  border-left: 2px solid var(--color-ink);
+  padding-left: 0.9rem;
+  color: var(--color-muted);
+}
+
+.prose code {
+  font-size: 0.85em;
+  border: 1px solid var(--color-line);
+  padding: 0.1em 0.3em;
+}
+
+.prose pre {
+  border: 1px solid var(--color-line);
+  padding: 0.9rem;
+  overflow-x: auto;
+}
+
+.prose pre code {
+  border: 0;
+  padding: 0;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  display: block;
+  overflow-x: auto;
+}
+
+.prose th,
+.prose td {
+  border: 1px solid var(--color-line);
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+}
+
+.prose hr {
+  border: 0;
+  border-top: 1px solid var(--color-line);
+  margin-block: 1.75rem;
+}
+
+/* ── Blocks ────────────────────────────────────────────────────────────── */
+
+/*
+ * Every `:::` block, known or not, renders as a bordered section. Consecutive
+ * ones sit side by side on a wide screen using the width the author asked for,
+ * in twelfths, and stack on a phone where twelfths mean nothing.
+ */
+.tc-block {
+  border: 1px solid var(--color-line);
+  padding: 1rem 1.1rem;
+  margin-top: 0.9rem;
+}
+
+.tc-block > :first-child { margin-top: 0; }
+.tc-block > * + * { margin-top: 0.6rem; }
+
+.tc-block--stat {
+  text-align: center;
+}
+
+.tc-block--stat h2,
+.tc-block--stat h3 {
+  margin-top: 0;
+  font-size: 1.5rem;
+}
+
+.tc-block--quote {
+  border-left-width: 2px;
+  border-left-color: var(--color-ink);
+  font-style: italic;
+}
+
+.tc-block--note {
+  background: color-mix(in srgb, var(--color-ink) 4%, transparent);
+}
+
+@media (min-width: 48rem) {
+  .prose {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 0 1rem;
+  }
+
+  /* Prose spans the full measure; only blocks take a narrower column. */
+  .prose > *:not(.tc-block) {
+    grid-column: 1 / -1;
+  }
+
+  .tc-block { grid-column: span 12; }
+  .tc-block[data-span="3"] { grid-column: span 3; }
+  .tc-block[data-span="4"] { grid-column: span 4; }
+  .tc-block[data-span="6"] { grid-column: span 6; }
+  .tc-block[data-span="8"] { grid-column: span 8; }
+  .tc-block[data-span="9"] { grid-column: span 9; }
+}
