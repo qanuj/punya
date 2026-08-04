@@ -11,7 +11,8 @@ import {
   type CmsItem,
   type CmsType,
 } from "@/lib/cms";
-import { excerpt, renderMarkdown } from "@/lib/markdown";
+import { excerpt } from "@/lib/markdown";
+import { Body, Faqs } from "@/components/body";
 import { itemPath, resolveRoute, type Route } from "@/lib/routing";
 
 /**
@@ -96,36 +97,42 @@ export default async function Page({ params }: Params) {
 function ItemPage({ item }: { item: CmsItem }) {
   const summary = itemSummary(item);
   const body = itemBody(item);
-  const html = body ? renderMarkdown(body) : "";
   const faqs = item.faqs ?? [];
 
   return (
-    <article className="section">
-      <div className="shell">
-        <h1 className="text-2xl font-semibold tracking-tight">{item.title}</h1>
-        {summary && <p className="mt-2 max-w-prose text-muted">{summary}</p>}
+    <article>
+      {/* Cream hero: warmth before the ask, as the brand leads with. */}
+      <header className="section-warm" style={{ paddingBlock: "var(--space-8)" }}>
+        <div className="shell">
+          <h1 className="max-w-3xl" style={{ fontSize: "var(--text-h1)", lineHeight: "var(--lh-tight)" }}>
+            {item.title}
+          </h1>
+          {summary && (
+            <p
+              className="mt-4 max-w-2xl"
+              style={{ color: "var(--ink-600)", fontSize: "var(--text-body-lg)" }}
+            >
+              {summary}
+            </p>
+          )}
+        </div>
+      </header>
 
-        {html && (
-          <div className="prose mt-6" dangerouslySetInnerHTML={{ __html: html }} />
-        )}
+      {body && (
+        <div className="section">
+          <div className="shell">
+            <Body markdown={body} />
+          </div>
+        </div>
+      )}
 
-        {faqs.length > 0 && (
-          <section className="mt-10 border-t border-line pt-6">
-            <h2 className="text-lg font-semibold tracking-tight">Questions</h2>
-            <div className="mt-3 divide-y divide-line border-y border-line">
-              {faqs.map((faq, index) => (
-                <details key={`${faq.question}-${index}`} className="py-2.5">
-                  <summary className="cursor-pointer font-medium">{faq.question}</summary>
-                  <div
-                    className="prose mt-2 text-sm"
-                    dangerouslySetInnerHTML={{ __html: renderMarkdown(faq.answer) }}
-                  />
-                </details>
-              ))}
-            </div>
-          </section>
-        )}
-      </div>
+      {faqs.length > 0 && (
+        <div className="section section-cream">
+          <div className="shell">
+            <Faqs faqs={faqs} />
+          </div>
+        </div>
+      )}
     </article>
   );
 }

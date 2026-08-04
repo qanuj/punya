@@ -1,5 +1,20 @@
 import type { Metadata } from "next";
+import { Playfair_Display, Source_Sans_3, Tiro_Devanagari_Hindi } from "next/font/google";
 import "./globals.css";
+
+/*
+ * The three families the system names. Loaded through next/font so they are
+ * self-hosted and swapped without a layout shift, rather than fetched from a
+ * third party on first paint.
+ */
+const serif = Playfair_Display({ subsets: ["latin"], variable: "--font-serif-loaded", display: "swap" });
+const sans = Source_Sans_3({ subsets: ["latin"], variable: "--font-sans-loaded", display: "swap" });
+const devanagari = Tiro_Devanagari_Hindi({
+  subsets: ["devanagari", "latin"],
+  weight: "400",
+  variable: "--font-devanagari-loaded",
+  display: "swap",
+});
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { getSite } from "@/lib/cms";
 
@@ -22,7 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${serif.variable} ${sans.variable} ${devanagari.variable}`}>
       <body>
         <SiteHeader />
         <main>{children}</main>
