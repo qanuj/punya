@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { footerBadges, getSite } from "@/lib/cms";
 import { navLinks } from "@/lib/routing";
+import { BadgeLink } from "@/components/badge-link";
 
 /**
  * The header and footer.
@@ -194,16 +195,9 @@ export async function SiteFooter() {
               return (
                 <li key={badge.id} className="flex items-center">
                   {badge.url ? (
-                    <a
-                      href={badge.url}
-                      target="_blank"
-                      /* Someone else's register is not a page this site vouches
-                         for, so the link passes no signal. */
-                      rel="noopener noreferrer nofollow"
-                      title={badge.name}
-                    >
+                    <BadgeLink href={badge.url} siteUrl={site.siteUrl} title={badge.name}>
                       {mark}
-                    </a>
+                    </BadgeLink>
                   ) : (
                     mark
                   )}
