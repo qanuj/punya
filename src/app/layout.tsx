@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Source_Sans_3, Tiro_Devanagari_Hindi } from "next/font/google";
 import { Analytics, AnalyticsNoScript, verificationMetadata } from "@tintorch/web";
+import { siteName } from "@/lib/site-name";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { getSite } from "@/lib/cms";
 import "./globals.css";
@@ -47,6 +48,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className={`${serif.variable} ${sans.variable} ${devanagari.variable}`}>
       <body>
+        {/*
+         * Feed autodiscovery: pasting the site address into a reader finds the
+         * feed rather than needing the URL typed out.
+         *
+         * A tag rather than `alternates.types` in the metadata, because a page
+         * that sets its own canonical replaces the whole `alternates` object -
+         * so a copy there never reaches the head. React hoists this into it
+         * from anywhere in the tree.
+         */}
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title={`${await siteName()} - Blog`}
+          href="/feed.xml"
+        />
+
         {/* Belongs immediately after <body>, and renders nothing unless a tag
             manager is configured. */}
         <AnalyticsNoScript config={site.config.analytics} />
