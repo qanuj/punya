@@ -204,6 +204,61 @@ export function itemImage(item: CmsItem | null): string {
   return item?.seo?.ogImage ?? "";
 }
 
+/* ── Badges ─────────────────────────────────────────────────────────────── */
+
+/**
+ * Registrations, certifications and awards for the footer.
+ *
+ * Artwork and a link, never the provider's embed snippet. Those are script tags
+ * that fetch an image anyway, and mounting one would let a third party run code
+ * on every page of a site that takes donations - and take the footer down
+ * whenever their CDN has a bad day. The CMS reads the snippet into these fields
+ * instead.
+ *
+ * A lapsed registration drops out on its own. For a trust asking the public for
+ * money, a certification shown past its date is a claim it can no longer make.
+ */
+export type SiteBadge = {
+  id: string;
+  name: string;
+  image: string;
+  url: string;
+  issuer: string;
+};
+
+export async function footerBadges(): Promise<SiteBadge[]> {
+  const items = await listAllItems("badge", {
+    fields: "name,image,url,issuer,showInFooter,sequence,expiresOn",
+    revalidate: 3600,
+  });
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  // Mapped before sorting, so the tie-break reads a name that is certainly
+  // there: a narrowed response carries `fields`, `id` and `slug` and no title.
+  return items
+    .filter((item) => item.fields?.showInFooter === true && field(item, "image"))
+    .filter((item) => {
+      const expires = field(item, "expiresOn");
+      return !expires || expires >= today;
+    })
+    .map((item) => ({
+      id: item.id,
+      name: field(item, "name") || item.title || item.slug,
+      image: field(item, "image"),
+      url: field(item, "url"),
+      issuer: field(item, "issuer"),
+      order: badgeOrder(item),
+    }))
+    .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name))
+    .map(({ order: _order, ...badge }) => badge);
+}
+
+function badgeOrder(item: CmsItem): number {
+  const value = Number(item.fields?.sequence);
+  return Number.isFinite(value) ? value : Number.MAX_SAFE_INTEGER;
+}
+
 /* ── Forms ──────────────────────────────────────────────────────────────── */
 
 export type CmsFormField = {

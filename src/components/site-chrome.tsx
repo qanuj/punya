@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getSite } from "@/lib/cms";
+import { footerBadges, getSite } from "@/lib/cms";
 import { navLinks } from "@/lib/routing";
 
 /**
@@ -95,7 +95,7 @@ export async function SiteHeader() {
 }
 
 export async function SiteFooter() {
-  const site = await getSite();
+  const [site, badges] = await Promise.all([getSite(), footerBadges()]);
   const { contact = {}, socialLinks = [] } = site.config;
   const year = new Date().getFullYear();
 
@@ -162,6 +162,56 @@ export async function SiteFooter() {
             )}
           </div>
         </div>
+
+        {badges.length > 0 && (
+          /*
+           * Registrations and certifications, above the legal line: on a page
+           * that asks for a donation, the proof belongs next to the ask.
+           *
+           * Drawn as supplied, with no plate behind them - these are other
+           * people's marks, and boxing in artwork that already carries its own
+           * background is not this footer's call to make.
+           */
+          <ul
+            className="mt-10 flex flex-wrap items-center gap-6 pt-8"
+            style={{ borderTop: "1px solid var(--divider-on-dark)" }}
+          >
+            {badges.map((badge) => {
+              const mark = (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={badge.image}
+                  alt={
+                    badge.issuer && badge.issuer !== badge.name
+                      ? `${badge.name} - ${badge.issuer}`
+                      : badge.name
+                  }
+                  loading="lazy"
+                  className="h-14 w-auto max-w-[11rem] object-contain"
+                />
+              );
+
+              return (
+                <li key={badge.id} className="flex items-center">
+                  {badge.url ? (
+                    <a
+                      href={badge.url}
+                      target="_blank"
+                      /* Someone else's register is not a page this site vouches
+                         for, so the link passes no signal. */
+                      rel="noopener noreferrer nofollow"
+                      title={badge.name}
+                    >
+                      {mark}
+                    </a>
+                  ) : (
+                    mark
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
 
         <div
           className="mt-10 flex flex-wrap items-center justify-between gap-3 pt-6"
