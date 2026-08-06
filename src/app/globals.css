@@ -496,6 +496,33 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
 
 .faqs { display: flex; flex-direction: column; gap: var(--space-8); }
 
+/*
+ * The section's own head.
+ *
+ * The author ends the body with "Frequently Asked Questions" and writes the
+ * questions into the CMS, so the words belong to this section rather than to
+ * the reading above it. Beside them, the way out for the question that is not
+ * on the list - a trust asking strangers for money should be easy to ask.
+ */
+.faq-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border-warm);
+}
+.faq-heading {
+  font-family: var(--font-serif);
+  font-weight: var(--weight-heading);
+  font-size: var(--text-h2);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+}
+.faq-count { margin-top: var(--space-2); color: var(--ink-500); font-size: var(--text-sm); }
+
 .faq-title {
   margin-bottom: var(--space-5);
   font-family: var(--font-serif);

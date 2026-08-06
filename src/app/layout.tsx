@@ -30,10 +30,27 @@ export async function generateMetadata(): Promise<Metadata> {
   const tagline = site.config.branding?.tagline?.trim();
   const base = site.siteUrl || process.env.NEXT_PUBLIC_SITE_URL;
 
+  /*
+   * The short name a phone puts under the icon.
+   *
+   * Saved to a home screen, the legal name wraps to two lines and gets
+   * truncated; the brand's own short name is what belongs under an icon. Read
+   * from the workspace so a fork shows its own, with the mark's name as the
+   * fallback because that is what the artwork says.
+   */
+  const shortName = site.config.branding?.shortName?.trim() || "Punya";
+
   return {
     title: { default: name || "TinTorch site", template: name ? `%s · ${name}` : "%s" },
     description: tagline || undefined,
     ...(base ? { metadataBase: new URL(base) } : {}),
+    /*
+     * The icons themselves are files: `src/app/favicon.ico`, `icon0.svg`,
+     * `icon1.png` and `apple-icon.png` are picked up by the router without
+     * being listed here, and `src/app/manifest.json` serves at /manifest.json.
+     */
+    appleWebApp: { capable: true, title: shortName, statusBarStyle: "default" },
+    applicationName: shortName,
     /*
      * Ownership proofs from the workspace, so verifying a new property with
      * Search Console, Bing or DMCA is a save rather than a deploy.

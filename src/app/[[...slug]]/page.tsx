@@ -223,100 +223,27 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
       )}
 
       {faqs.length > 0 && (
-        <div data-impeccable-variants="5231fab7" data-impeccable-variant-count="3" style={{ display: "contents" }}>
-          {/* impeccable-variants-start 5231fab7 */}
-          {/* Original */}
-          <div data-impeccable-variant="original">
-            <div className="section section-cream">
-              <div className="shell">
-                <Faqs faqs={faqs} />
+        <div className="section section-cream">
+          <div className="shell">
+            <div className="faq-head">
+              <div>
+                <h2 id={headingId(faqHeading || "Frequently asked questions")} className="faq-heading">
+                  {faqHeading || "Frequently asked questions"}
+                </h2>
+                <p className="faq-count">
+                  {faqs.length} {faqs.length === 1 ? "question" : "questions"}, answered
+                </p>
               </div>
+
+              <Link href="/contact" className="btn btn-outline shrink-0">
+                Ask something else
+              </Link>
             </div>
+
+            <Faqs faqs={faqs} showGroupTitles={false} />
           </div>
-          {/* Variants: insert below this line */}
-          <style data-impeccable-css="5231fab7">{`
-            @scope ([data-impeccable-variant="2"]) {
-              :scope .f2-head { margin-bottom: var(--space-6); }
-              :scope .f2-title { font-family: var(--font-serif); font-weight: var(--weight-heading); font-size: var(--text-h2); line-height: var(--lh-heading); color: var(--text-heading); }
-              :scope .f2-count { margin-top: var(--space-2); color: var(--ink-500); font-size: var(--text-sm); }
-              :scope[data-p-count="0"] .f2-count { display: none; }
-            }
-
-            @scope ([data-impeccable-variant="3"]) {
-              :scope .f3-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-6); padding-bottom: var(--space-4); border-bottom: 1px solid var(--border-warm); }
-              :scope .f3-title { font-family: var(--font-serif); font-weight: var(--weight-heading); font-size: var(--text-h2); line-height: var(--lh-heading); color: var(--text-heading); }
-              :scope .f3-count { margin-top: var(--space-2); color: var(--ink-500); font-size: var(--text-sm); }
-              :scope[data-p-ask="0"] .f3-ask { display: none; }
-            }
-          `}</style>
-
-          {/* Variant 1 — the author's heading is the only one; the section adds none. */}
-          <div data-impeccable-variant="1">
-            <div className="section section-cream">
-              <div className="shell">
-                {faqHeading && (
-                  <h2 id={headingId(faqHeading)} className="faq-title" style={{ fontSize: "var(--text-h2)" }}>
-                    {faqHeading}
-                  </h2>
-                )}
-                <Faqs faqs={faqs} showGroupTitles={false} />
-              </div>
-            </div>
-          </div>
-
-          {/* Variant 2 — the section owns its heading, and says how many. */}
-          <div
-            data-impeccable-variant="2"
-            style={{ display: "none" }}
-            data-impeccable-params='[{"id":"count","kind":"toggle","default":true,"label":"Count"}]'
-          >
-            <div className="section section-cream">
-              <div className="shell">
-                <div className="f2-head">
-                  <h2 id={headingId(faqHeading || "Frequently asked questions")} className="f2-title">
-                    {faqHeading || "Frequently asked questions"}
-                  </h2>
-                  <p className="f2-count">
-                    {faqs.length} {faqs.length === 1 ? "question" : "questions"}, answered
-                  </p>
-                </div>
-
-                <Faqs faqs={faqs} showGroupTitles={false} />
-              </div>
-            </div>
-          </div>
-
-          {/* Variant 3 — a ruled head, with a way to ask what is not here. */}
-          <div
-            data-impeccable-variant="3"
-            style={{ display: "none" }}
-            data-impeccable-params='[{"id":"ask","kind":"toggle","default":true,"label":"Ask link"}]'
-          >
-            <div className="section section-cream">
-              <div className="shell">
-                <div className="f3-head">
-                  <div>
-                    <h2 id={headingId(faqHeading || "Frequently asked questions")} className="f3-title">
-                      {faqHeading || "Frequently asked questions"}
-                    </h2>
-                    <p className="f3-count">
-                      {faqs.length} {faqs.length === 1 ? "question" : "questions"}, answered
-                    </p>
-                  </div>
-
-                  <Link href="/contact" className="btn btn-outline f3-ask shrink-0">
-                    Ask something else
-                  </Link>
-                </div>
-
-                <Faqs faqs={faqs} showGroupTitles={false} />
-              </div>
-            </div>
-          </div>
-          {/* impeccable-variants-end 5231fab7 */}
         </div>
       )}
-
     </article>
   );
 }
