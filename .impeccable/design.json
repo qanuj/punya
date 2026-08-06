@@ -1,0 +1,425 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-06T00:00:00.000Z",
+  "title": "Design System: Punya.ngo",
+  "extensions": {
+    "colorMeta": {
+      "deed-navy": {
+        "role": "primary",
+        "displayName": "Deed Navy",
+        "canonical": "#1B2C5C",
+        "tonalRamp": [
+          "#0C1633",
+          "#101C3F",
+          "#14224E",
+          "#1B2C5C",
+          "#243870",
+          "#4A5F96",
+          "#8E9DC4",
+          "#E8EDF8"
+        ]
+      },
+      "diya-gold": {
+        "role": "secondary",
+        "displayName": "Diya Gold",
+        "canonical": "#D9952A",
+        "tonalRamp": [
+          "#5C3C0A",
+          "#8A5C12",
+          "#B8791A",
+          "#C4841F",
+          "#D9952A",
+          "#E8B45C",
+          "#F0D09A",
+          "#F8EAD2"
+        ]
+      },
+      "cream-paper": {
+        "role": "tertiary",
+        "displayName": "Cream Paper",
+        "canonical": "#FDF9F0",
+        "tonalRamp": [
+          "#4A4133",
+          "#6E6250",
+          "#948570",
+          "#BFAE93",
+          "#EAE2D0",
+          "#F3E6CC",
+          "#FBF3E3",
+          "#FDF9F0"
+        ]
+      },
+      "ink-body": {
+        "role": "neutral",
+        "displayName": "Ink Body",
+        "canonical": "#4B5563",
+        "tonalRamp": [
+          "#111827",
+          "#1F2937",
+          "#374151",
+          "#4B5563",
+          "#6B7280",
+          "#9CA3AF",
+          "#D1D5DB",
+          "#F3F4F6"
+        ]
+      },
+      "border-warm": {
+        "role": "neutral",
+        "displayName": "Warm Border",
+        "canonical": "#EAE2D0",
+        "tonalRamp": [
+          "#5C5340",
+          "#7D7259",
+          "#9E9174",
+          "#BFB194",
+          "#D5C9B2",
+          "#EAE2D0",
+          "#F5F0E6",
+          "#FCFAF5"
+        ]
+      },
+      "danger": {
+        "role": "neutral",
+        "displayName": "Field Error Red",
+        "canonical": "#C0392B",
+        "tonalRamp": [
+          "#4A150F",
+          "#6B1F16",
+          "#8C291E",
+          "#A83226",
+          "#C0392B",
+          "#D96A5F",
+          "#EBA79F",
+          "#F8DDD9"
+        ]
+      },
+      "ink-quiet": {
+        "role": "neutral",
+        "displayName": "Ink Quiet",
+        "canonical": "#616B7A",
+        "tonalRamp": [
+          "#1B2027",
+          "#2C333D",
+          "#3E4653",
+          "#4F5866",
+          "#616B7A",
+          "#8A93A0",
+          "#B5BCC6",
+          "#E4E7EB"
+        ]
+      },
+      "diya-gold-text": {
+        "role": "secondary",
+        "displayName": "Diya Gold Text",
+        "canonical": "#8F5C11",
+        "tonalRamp": [
+          "#3A2506",
+          "#54360A",
+          "#70480D",
+          "#8F5C11",
+          "#B8791A",
+          "#D9952A",
+          "#E8B45C",
+          "#F8EAD2"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Ink Muted (borders only)",
+        "canonical": "#9CA3AF",
+        "tonalRamp": [
+          "#111827",
+          "#1F2937",
+          "#374151",
+          "#4B5563",
+          "#6B7280",
+          "#9CA3AF",
+          "#D1D5DB",
+          "#F3F4F6"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "hero": {
+        "displayName": "Hero",
+        "purpose": "The first line of a landing surface. One per page, Playfair at 56px."
+      },
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page titles in Playfair at 44px."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings and the closing ask, Playfair at 32px."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Wordmark and sub-section headings — the smallest size Playfair is allowed (22px)."
+      },
+      "subtitle": {
+        "displayName": "Subtitle",
+        "purpose": "Card titles, step names, FAQ questions. Source Sans 3 at 600, never the serif."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All reading copy at 16.5px / 1.7, capped at 72ch, in ink strong."
+      },
+      "body-large": {
+        "displayName": "Body Large",
+        "purpose": "Lead paragraphs and the closing ask's line."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Chips, brand line, eyebrows. Uppercase only with the full 0.18em track."
+      },
+      "stat": {
+        "displayName": "Stat Number",
+        "purpose": "The counted number inside a navy stat panel."
+      },
+      "devanagari": {
+        "displayName": "Devanagari Accent",
+        "purpose": "Devotional accent lines only; never functional content, never letterspaced."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card-rest",
+        "value": "0 1px 3px rgba(16,24,64,.06)",
+        "purpose": "Every card and authored block at rest. Navy-tinted, never neutral grey."
+      },
+      {
+        "name": "card-hover",
+        "value": "0 6px 16px rgba(16,24,64,.10)",
+        "purpose": "Card hover, paired with translateY(-2px) over 200ms."
+      },
+      {
+        "name": "float",
+        "value": "0 8px 24px rgba(16,24,64,.12)",
+        "purpose": "Elements that genuinely leave the page — sticky bars and overlays only."
+      },
+      {
+        "name": "focus-ring",
+        "value": "0 0 0 2px #FFFFFF, 0 0 0 4px #D9952A",
+        "purpose": "A white gap then a gold ring, legible on white, cream and navy alike."
+      }
+    ],
+    "motion": [
+      {
+        "name": "transition-fast",
+        "value": "150ms ease",
+        "purpose": "Colour and shadow changes on buttons and links."
+      },
+      {
+        "name": "transition-med",
+        "value": "200ms ease",
+        "purpose": "Card lift: shadow plus transform."
+      },
+      {
+        "name": "image-zoom",
+        "value": "500ms",
+        "purpose": "Cover photograph scales to 1.03 on hover."
+      },
+      {
+        "name": "press",
+        "value": "scale(.98)",
+        "purpose": "Button :active — a physical press."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "shell",
+        "value": "1200px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Donate Button",
+      "kind": "button",
+      "refersTo": "button-gold",
+      "description": "The one gold action per view. Pilled, 44px tall.",
+      "html": "<button class=\"ds-btn ds-btn-gold\">Donate Now</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding-inline: 24px; border: none; border-radius: 999px; font-family: var(--font-sans, 'Source Sans 3', system-ui, sans-serif); font-weight: 600; font-size: 16.5px; cursor: pointer; transition: background 150ms ease, color 150ms ease, box-shadow 150ms ease, transform 150ms ease; } .ds-btn:active { transform: scale(.98); } .ds-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #D9952A; } .ds-btn-gold { background: #D9952A; color: #14224E; } .ds-btn-gold:hover { background: #C4841F; }"
+    },
+    {
+      "name": "Navy Button",
+      "kind": "button",
+      "refersTo": "button-navy",
+      "description": "Any real action that is not the donation.",
+      "html": "<button class=\"ds-btn ds-btn-navy\">Read the report</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding-inline: 24px; border: none; border-radius: 999px; font-family: var(--font-sans, 'Source Sans 3', system-ui, sans-serif); font-weight: 600; font-size: 16.5px; cursor: pointer; transition: background 150ms ease, transform 150ms ease; } .ds-btn:active { transform: scale(.98); } .ds-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #D9952A; } .ds-btn-navy { background: #1B2C5C; color: #FFFFFF; } .ds-btn-navy:hover { background: #14224E; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "The way out of a section to everything else. The system's one 1.5px stroke.",
+      "html": "<button class=\"ds-btn ds-btn-outline\">All sevas</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding-inline: 24px; border-radius: 999px; font-family: var(--font-sans, 'Source Sans 3', system-ui, sans-serif); font-weight: 600; font-size: 16.5px; cursor: pointer; transition: background 150ms ease, color 150ms ease, transform 150ms ease; } .ds-btn:active { transform: scale(.98); } .ds-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #D9952A; } .ds-btn-outline { background: #FFFFFF; color: #1B2C5C; border: 1.5px solid #1B2C5C; } .ds-btn-outline:hover { background: #FBF3E3; color: #14224E; }"
+    },
+    {
+      "name": "Seva Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "One named seva: photograph, classification, title, summary and the amount being decided.",
+      "html": "<article class=\"ds-card\"><div class=\"ds-card-cover\"></div><div class=\"ds-chips\"><span class=\"ds-chip ds-chip-category\">Chara</span><span class=\"ds-chip ds-chip-popular\">Most chosen</span></div><h3 class=\"ds-card-title\">A day's green fodder</h3><p class=\"ds-card-summary\">Fresh chara for the whole herd for one day, photographed and recorded in the Punya app.</p><p class=\"ds-card-price\">₹2,100</p></article>",
+      "css": ".ds-card { background: #FFFFFF; border: 1px solid #EAE2D0; border-radius: 12px; box-shadow: 0 1px 3px rgba(16,24,64,.06); padding: 24px; display: flex; flex-direction: column; gap: 12px; max-width: 360px; transition: box-shadow 200ms ease, transform 200ms ease; } .ds-card:hover { box-shadow: 0 6px 16px rgba(16,24,64,.10); transform: translateY(-2px); } .ds-card-cover { aspect-ratio: 16 / 10; border-radius: 12px; background: linear-gradient(0deg, #F3E6CC, #F3E6CC); } .ds-chips { display: flex; flex-wrap: wrap; gap: 8px; } .ds-chip { border-radius: 999px; padding: 4px 10px; font-family: var(--font-sans, 'Source Sans 3', system-ui, sans-serif); font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; } .ds-chip-category { background: #FBF3E3; color: #1B2C5C; } .ds-chip-popular { background: #F8EAD2; color: #8F5C11; font-weight: 600; } .ds-card-title { font-family: var(--font-sans, 'Source Sans 3', system-ui, sans-serif); font-size: 18px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; color: #1B2C5C; margin: 0; } .ds-card-summary { color: #4B5563; font-size: 14px; line-height: 1.7; margin: 0; } .ds-card-price { font-family: var(--font-serif, 'Playfair Display', Georgia, serif); font-size: 22px; font-weight: 700; color: #1B2C5C; margin: 0; }"
+    },
+    {
+      "name": "Chips",
+      "kind": "chip",
+      "refersTo": "chip-popular",
+      "description": "Category is neutral cream; Most chosen is the trust's own steer and the only gold mark on a card.",
+      "html": "<span class=\"ds-chip ds-chip-category\">Annadan</span> <span class=\"ds-chip ds-chip-popular\">Most chosen</span>",
+      "css": ".ds-chip { display: inline-block; border-radius: 999px; padding: 4px 10px; font-family: var(--font-sans, 'Source Sans 3', system-ui, sans-serif); font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; } .ds-chip-category { background: #FBF3E3; color: #1B2C5C; } .ds-chip-popular { background: #F8EAD2; color: #8F5C11; font-weight: 600; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "CMS-defined form field. Cool border, gold focus ring, red only when broken.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Your name</span><input class=\"ds-input\" type=\"text\" placeholder=\"As it should appear on the receipt\" /></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 8px; font-family: var(--font-sans, 'Source Sans 3', system-ui, sans-serif); max-width: 360px; } .ds-field-label { font-size: 14px; font-weight: 600; color: #1F2937; } .ds-input { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 12px; padding: 12px; font: inherit; font-size: 16.5px; color: #1F2937; transition: border-color 150ms ease, box-shadow 150ms ease; } .ds-input::placeholder { color: #616B7A; } .ds-input:focus-visible { outline: none; box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #D9952A; } .ds-input[aria-invalid=\"true\"] { border-color: #C0392B; }"
+    },
+    {
+      "name": "Site Header",
+      "kind": "nav",
+      "refersTo": "button-gold",
+      "description": "Navy utility topbar carrying the devotional line, white header with the mark, wrapping menu and one gold action.",
+      "html": "<div class=\"ds-nav\"><div class=\"ds-topbar\"><span class=\"ds-deva\">गौ सेवा · गौ संरक्षण · गौ संवर्धन</span><span class=\"ds-topbar-en\">Serving Cows, Serving Dharma</span></div><header class=\"ds-header\"><span class=\"ds-mark\">Punya<span class=\"ds-mark-tld\">.ngo</span></span><nav class=\"ds-menu\"><a href=\"#\">Sevas</a><a href=\"#\">Gaushalas</a><a href=\"#\">Transparency</a></nav><button class=\"ds-btn ds-btn-gold\">Donate Now</button></header></div>",
+      "css": ".ds-nav { font-family: var(--font-sans, 'Source Sans 3', system-ui, sans-serif); } .ds-topbar { background: #101C3F; color: #B9C4E2; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 24px; } .ds-deva { font-family: var(--font-devanagari, 'Tiro Devanagari Hindi', serif); font-size: 14px; letter-spacing: 0; } .ds-topbar-en { font-size: 12px; } .ds-header { background: #FFFFFF; border-bottom: 1px solid #EAE2D0; display: flex; flex-wrap: wrap; align-items: center; gap: 24px; padding: 16px 24px; } .ds-mark { font-family: var(--font-serif, 'Playfair Display', Georgia, serif); font-weight: 700; font-size: 22px; color: #1B2C5C; } .ds-mark-tld { color: #D9952A; } .ds-menu { display: flex; flex-wrap: wrap; gap: 24px; } .ds-menu a { color: #1B2C5C; font-weight: 600; font-size: 16.5px; text-decoration: none; transition: color 150ms ease; } .ds-menu a:hover { color: #C4841F; } .ds-btn { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; height: 44px; padding-inline: 24px; border: none; border-radius: 999px; font-weight: 600; font-size: 16.5px; cursor: pointer; transition: background 150ms ease, transform 150ms ease; } .ds-btn:active { transform: scale(.98); } .ds-btn-gold { background: #D9952A; color: #14224E; } .ds-btn-gold:hover { background: #C4841F; }"
+    },
+    {
+      "name": "Stat Band",
+      "kind": "custom",
+      "refersTo": "stat-panel",
+      "description": "A run of :::stat blocks closes its gutter and reads as one deep-navy band. Reserved for real counted numbers.",
+      "html": "<div class=\"ds-stats\"><div class=\"ds-stat\"><h3>1,240</h3><p>Cows under care</p></div><div class=\"ds-stat\"><h3>38</h3><p>Gaushalas served</p></div><div class=\"ds-stat\"><h3>21,700</h3><p>Sevas completed</p></div></div>",
+      "css": ".ds-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; } .ds-stat { background: #14224E; padding: 32px 24px; text-align: center; border-left: 1px solid rgba(255,255,255,.15); } .ds-stat:first-child { border-left: 0; border-radius: 16px 0 0 16px; } .ds-stat:last-child { border-radius: 0 16px 16px 0; } .ds-stat h3 { font-family: var(--font-serif, 'Playfair Display', Georgia, serif); font-size: 26px; font-weight: 700; line-height: 1.15; color: #FFFFFF; margin: 0; } .ds-stat p { font-family: var(--font-sans, 'Source Sans 3', system-ui, sans-serif); color: #B9C4E2; font-size: 14px; margin: 8px 0 0; }"
+    },
+    {
+      "name": "Closing Ask",
+      "kind": "custom",
+      "refersTo": "note-block",
+      "description": "The :::cta block. Cream rather than navy — an invitation, not a statement.",
+      "html": "<section class=\"ds-cta\"><h2>One seva, recorded and shown</h2><p>Choose an act, and see the day it was carried out.</p><a class=\"ds-cta-action\" href=\"#\">Choose a seva</a></section>",
+      "css": ".ds-cta { background: #FBF3E3; border: 1px solid #EAE2D0; border-radius: 12px; padding: 64px 32px; text-align: center; font-family: var(--font-sans, 'Source Sans 3', system-ui, sans-serif); } .ds-cta h2 { font-family: var(--font-serif, 'Playfair Display', Georgia, serif); font-size: 32px; font-weight: 700; line-height: 1.25; color: #1B2C5C; margin: 0; } .ds-cta p { color: #4B5563; font-size: 18px; line-height: 1.7; margin: 8px 0 0; } .ds-cta-action { display: inline-flex; align-items: center; height: 44px; padding-inline: 24px; margin-top: 12px; background: #D9952A; color: #FFFFFF; border-radius: 999px; font-weight: 600; text-decoration: none; transition: background 150ms ease; } .ds-cta-action:hover { background: #C4841F; }"
+    },
+    {
+      "name": "Section Ornament",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "A centred serif heading between two 44px gold hairlines. The system's only decorative device.",
+      "html": "<div class=\"ds-ornament\"><h2>Ways to serve</h2></div>",
+      "css": ".ds-ornament { display: flex; align-items: center; justify-content: center; gap: 12px; color: #D9952A; } .ds-ornament::before, .ds-ornament::after { content: \"\"; height: 1px; width: 44px; background: #E8B45C; } .ds-ornament h2 { font-family: var(--font-serif, 'Playfair Display', Georgia, serif); font-size: 32px; font-weight: 700; line-height: 1.25; color: #1B2C5C; margin: 0; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Trust Deed",
+    "overview": "Punya.ngo looks like an obligation formally recorded and faithfully kept. Deed navy is the ink an undertaking is written in; cream is the paper it is written on; diya gold is the flame lit once the seva is performed. The register is devotional but never ornamental for its own sake — the warmth comes from paper tone and Devanagari accents, the rigour from hairline rules, exact rupee amounts and a single unmistakable action.\n\nThe system is dense with content and light on effect. Solid surfaces only: no gradients outside a photo fade, no blur, no glass. Photography of the cows and the gaushala does the emotional work, and it is real photography — the design's job is to frame it cleanly and put a named seva and a price beside it. Long-form copy runs at a genuinely readable 16.5px / 1.7 in a humanist sans, because the site's real work is explaining where a donation goes; Playfair holds the brand at display sizes and hands off to the sans below 22px, where its hairlines break down.\n\nConfirmed anti-references: guilt-driven NGO fundraising (distressed imagery, red urgency banners, countdowns, ₹1-a-day guilt framing), kitsch devotional web (garland borders, animated om GIFs, saffron gradients, shadowed Devanagari), and crowdfunding platforms (progress bars, donor leaderboards, share counts, urgency percentages). The trust asks on the strength of what it can show, not on pressure.",
+    "keyCharacteristics": [
+      "Deed navy for trust, diya gold for the act of giving, cream for warmth, on white",
+      "One gold call to action per view — gold is the action colour and is not spent elsewhere",
+      "Playfair Display above 22px, Source Sans 3 at and below it",
+      "Hairline warm borders (#EAE2D0), 12px card radius, pill buttons at a 44px touch height",
+      "Devanagari carries devotion; English always carries the function beside it",
+      "96px section rhythm, 1200px shell, twelve-column author blocks that stack on a phone",
+      "Real gaushala photography at a fixed 16:10 crop; no illustration, no stock"
+    ],
+    "rules": [
+      {
+        "name": "The One Gold Action Rule",
+        "body": "Gold fills exactly one call to action per view. If a second gold button appears, one of them is wrong — demote it to navy or outline. Gold's rarity is what makes \"Donate Now\" findable without a banner.",
+        "section": "colors"
+      },
+      {
+        "name": "The Never-Black Rule",
+        "body": "No heading, border or panel is #000. Headings are deed navy, rules are warm border, dark panels are navy. Black reads as a different brand.",
+        "section": "colors"
+      },
+      {
+        "name": "The Guilt-Free Rule",
+        "body": "Red exists only as --danger on a broken form field. It never marks urgency, scarcity or a deadline.",
+        "section": "colors"
+      },
+      {
+        "name": "The 22px Floor Rule",
+        "body": "Playfair Display is never set below 22px. At 18px its hairlines break up and the reader slows — every heading at or under 18px is Source Sans 3 at 600.",
+        "section": "typography"
+      },
+      {
+        "name": "The Devotion-Beside-Function Rule",
+        "body": "A Devanagari line never carries information the visitor needs to act. गौ सेवा · गौ संरक्षण · गौ संवर्धन sets the register; the English beside it does the work. Never letterspace Devanagari, and never shadow or outline it.",
+        "section": "typography"
+      },
+      {
+        "name": "The Reading Ink Rule",
+        "body": "Long-form prose takes ink strong (#1F2937); ink body (#4B5563) is for what sits beside the reading — summaries, captions, blurbs — never for the reading itself.",
+        "section": "typography"
+      },
+      {
+        "name": "The Phone-First Rhythm Rule",
+        "body": "The donating majority is on a mid-range Android phone. Any layout whose stacked order buries the price, the seva name or the action below three screens is wrong, however it reads at 1440px.",
+        "section": "layout"
+      },
+      {
+        "name": "The Border-And-Lift Rule",
+        "body": "A card carries both a 1px warm border and the rest shadow. Neither alone is the system: the border defines the edge on cream, the shadow says it is a discrete object.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Navy Shadow Rule",
+        "body": "Every shadow is rgba(16,24,64,…). Never rgba(0,0,0,…).",
+        "section": "elevation"
+      },
+      {
+        "name": "The Supplied-Mark Rule",
+        "body": "The Punya mark is used as supplied and never redrawn, recoloured, outlined or set on a gold field. The wordmark is Playfair navy with .ngo in gold, with Care · Respect · Nurture letterspaced beneath at 10px.",
+        "section": "shapes"
+      },
+      {
+        "name": "The 4.5 Rule",
+        "body": "Every text colour clears 4.5:1 against every surface it lands on, measured, not estimated. Two colours exist solely because of it - Ink Quiet and Diya Gold Text - and two are banned from text entirely: Ink Muted (2.5:1) and white on Diya Gold (2.5:1). A donor reading a phone in sunlight is the test case, not a design tool's preview.",
+        "section": "colors"
+      }
+    ],
+    "dos": [
+      "Do keep one gold action per view; demote every competing action to navy or outline.",
+      "Do set headings at or below 18px in Source Sans 3 at 600 — the 22px Floor Rule.",
+      "Do tint every shadow navy (rgba(16,24,64,…)).",
+      "Do give cards both a 1px warm border and the rest shadow.",
+      "Do format rupees en-IN with no fractional digits: ₹2,100.",
+      "Do name the seva and its price together; a card without an amount is an unfinished ask.",
+      "Do alternate white / cream section grounds on a 96px rhythm.",
+      "Do ship real gaushala photography at 16:10 with explicit sizes.",
+      "Do keep the focus ring gold-on-white-gap, on every focusable element.",
+      "Do measure every new text-on-surface pair against 4.5:1 before shipping it.",
+      "Do use Ink Quiet (#616B7A) for the quietest text and Diya Gold Text (#8F5C11) for any gold word."
+    ],
+    "donts": [
+      "Don't set white text on Diya Gold, or Ink Muted (#9CA3AF) as text at any size.",
+      "Don't use gradients, blur or glass. Solid surfaces only; the one permitted gradient is a fade over a photograph.",
+      "Don't set Playfair Display below 22px.",
+      "Don't letterspace, shadow or outline Devanagari, or let it carry functional content alone.",
+      "Don't introduce red, countdowns, progress bars, donor leaderboards or share counts — the confirmed anti-references are guilt fundraising and crowdfunding UI.",
+      "Don't add garlands, om/swastik motifs, saffron gradients or animated devotional ornament.",
+      "Don't use #000 for text, borders or panels.",
+      "Don't redraw, recolour or reset the supplied Punya mark.",
+      "Don't invent a fourth typeface or a second accent colour; two voices and one gold is the whole system.",
+      "Don't state a number, badge or claim the CMS did not return."
+    ]
+  }
+}

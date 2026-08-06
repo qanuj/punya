@@ -95,7 +95,95 @@ export function unwrapMigratedImages(md: string): string {
   );
 }
 
-const toHtml = (md: string) => marked.parse(unwrapMigratedImages(md.trim()), { async: false }) as string;
+/**
+ * A heading with nothing under it, at the very end of a body.
+ *
+ * Authors end a post with "Frequently Asked Questions" and then write the
+ * questions into the CMS's own FAQ fields, so the body's last line is a
+ * heading for a section that lives outside it - and the page shows the words
+ * twice with an empty gap between them. Dropped only when it is genuinely
+ * trailing: a heading with any content after it is a real section.
+ */
+/** The heading `stripTrailingHeading` would remove, as the author wrote it. */
+export function trailingHeading(md: string): string {
+  const stripped = stripTrailingHeading(md);
+  if (stripped === md) return "";
+
+  const before = md.replace(/\s+$/, "").split("\n");
+  const after = new Set(stripped.split("\n"));
+  const line = before.find((entry) => /^#{1,6}\s+\S/.test(entry.trim()) && !after.has(entry));
+  return line ? line.trim().replace(/^#{1,6}\s*/, "").replace(/\s*#*$/, "") : "";
+}
+
+export function stripTrailingHeading(md: string): string {
+  const lines = md.replace(/\s+$/, "").split("\n");
+  let at = lines.length - 1;
+
+  /*
+   * Walk back past what does not render inside the reading: blank lines, and
+   * whole `:::faq` style fences, whose contents are pulled out and rendered as
+   * their own section. What is left is the body's real last line.
+   */
+  while (at >= 0) {
+    const line = lines[at]!.trim();
+    if (!line) {
+      at -= 1;
+      continue;
+    }
+    if (CLOSE.test(line)) {
+      let open = at - 1;
+      while (open >= 0 && !OPEN.test(lines[open]!.trim())) open -= 1;
+      if (open < 0) break;
+      at = open - 1;
+      continue;
+    }
+    break;
+  }
+
+  return at >= 0 && /^#{1,6}\s+\S/.test(lines[at]!.trim())
+    ? [...lines.slice(0, at), ...lines.slice(at + 1)].join("\n").replace(/\s+$/, "")
+    : md;
+}
+
+/** A heading's anchor: what a contents list and a shared link both need. */
+export function headingId(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/<[^>]*>/g, "")
+    .replace(/&[a-z]+;/g, " ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
+}
+
+/**
+ * Section headings, in the order they are written.
+ *
+ * A page of nine programmes under three headings is a page somebody scrolls
+ * looking for one of them. Read from the markdown rather than from the DOM, so
+ * a contents list can be rendered on the server with the page.
+ */
+export function headings(md: string): { level: number; text: string; id: string }[] {
+  return md
+    .split("\n")
+    .map((line) => /^(#{2,3})\s+(.+?)\s*#*$/.exec(line.trim()))
+    .filter((match): match is RegExpExecArray => Boolean(match))
+    .map((match) => {
+      const text = match[2]!.replace(/[*_`]/g, "").trim();
+      return { level: match[1]!.length, text, id: headingId(text) };
+    });
+}
+
+/** Every h2 and h3 gets an id, so a contents list and a shared link both work. */
+function withAnchors(html: string): string {
+  return html.replace(
+    /<(h[23])>([\s\S]*?)<\/\1>/g,
+    (_all, tag: string, inner: string) => `<${tag} id="${headingId(inner)}">${inner}</${tag}>`,
+  );
+}
+
+const toHtml = (md: string) =>
+  withAnchors(marked.parse(unwrapMigratedImages(md.trim()), { async: false }) as string);
 
 /** A node in the body, before it is grouped into segments. */
 type Node =

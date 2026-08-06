@@ -55,12 +55,7 @@ async function related(item: CmsItem, type: CmsType, take: number): Promise<CmsI
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2
-        className="mb-3 text-[11px] uppercase"
-        style={{ color: "var(--ink-400)", letterSpacing: "var(--track-caps)" }}
-      >
-        {title}
-      </h2>
+      <h2 className="label-caps mb-3">{title}</h2>
       {children}
     </section>
   );
@@ -81,14 +76,11 @@ function Row({ item, type }: { item: CmsItem; type: CmsType }) {
         ) : null}
 
         <span className="min-w-0">
-          <span
-            className="block text-sm font-semibold group-hover:underline"
-            style={{ color: "var(--text-heading)" }}
-          >
+          <span className="link-strong block group-hover:underline">
             {field(item, "name") || item.title}
           </span>
           {price && (
-            <span className="mt-0.5 block text-sm" style={{ color: "var(--ink-400)" }}>
+            <span className="figure-unit mt-0.5 block">
               ₹{Number(price).toLocaleString("en-IN")}
             </span>
           )}
@@ -112,7 +104,7 @@ export async function ItemAside({ item, type }: { item: CmsItem; type: CmsType }
     <aside className="space-y-8 lg:sticky lg:top-8 lg:self-start">
       {isSeva && (
         <div className="card space-y-3">
-          <p style={{ color: "var(--ink-600)", fontSize: "var(--text-sm)" }}>
+          <p className="meta">
             Every contribution is recorded in the Punya app, with daily photos from the gaushala.
           </p>
           <Link href="/donate" className="btn btn-gold w-full">
@@ -128,8 +120,7 @@ export async function ItemAside({ item, type }: { item: CmsItem; type: CmsType }
               <li key={author.id}>
                 <Link
                   href={facetPath(type, "author", author.name)}
-                  className="text-sm font-semibold"
-                  style={{ color: "var(--navy-700)" }}
+                  className="link-strong"
                 >
                   {author.name}
                 </Link>
@@ -148,8 +139,7 @@ export async function ItemAside({ item, type }: { item: CmsItem; type: CmsType }
                     to more of the same is decoration. */}
                 <Link
                   href={facetPath(type, "tag", tag)}
-                  className="inline-block rounded-[var(--radius-pill)] px-3 py-1.5 text-sm transition-colors"
-                  style={{ background: "var(--surface-warm)", color: "var(--navy-700)" }}
+                  className="chip"
                 >
                   {tag}
                 </Link>
@@ -169,8 +159,7 @@ export async function ItemAside({ item, type }: { item: CmsItem; type: CmsType }
 
           <Link
             href={type.path}
-            className="mt-4 inline-block text-sm font-semibold"
-            style={{ color: "var(--navy-700)" }}
+            className="link-strong mt-4 inline-block"
           >
             Browse {type.pluralName} →
           </Link>

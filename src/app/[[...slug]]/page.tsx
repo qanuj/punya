@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import {
+  field,
   getItem,
   getSite,
   itemBody,
@@ -11,7 +13,7 @@ import {
   type CmsItem,
   type CmsType,
 } from "@/lib/cms";
-import { excerpt } from "@/lib/markdown";
+import { excerpt, headingId, headings, stripTrailingHeading, trailingHeading } from "@/lib/markdown";
 import { Body, Faqs } from "@/components/body";
 import { CardFor } from "@/components/cards";
 import { HomeSections } from "@/components/home-sections";
@@ -114,11 +116,19 @@ export default async function Page({ params, searchParams }: Params) {
     const tag = typeof query.tag === "string" ? query.tag : "";
     if (tag) permanentRedirect(facetPath(route.type, "tag", tag));
 
-    return <IndexPage type={route.type} />;
+    return <IndexPage type={route.type} page={pageOf(query)} search={searchOf(query)} />;
   }
 
   if (route.kind === "filter") {
-    return <IndexPage type={route.type} facet={route.facet} value={route.value} />;
+    return (
+      <IndexPage
+        type={route.type}
+        facet={route.facet}
+        value={route.value}
+        page={pageOf(query)}
+        search={searchOf(query)}
+      />
+    );
   }
 
   /*
@@ -148,48 +158,165 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
   const body = itemBody(item);
   const faqs = item.faqs ?? [];
 
+  /*
+   * A body that ends on a bare heading is ending on a label for the questions
+   * the CMS holds separately, so the page said "Frequently Asked Questions"
+   * twice with an empty gap between. The heading belongs to the FAQ section,
+   * which renders it once, below.
+   */
+  const reading = faqs.length > 0 ? stripTrailingHeading(body) : body;
+  const faqHeading = faqs.length > 0 ? trailingHeading(body) : "";
+  /*
+   * The questions are a section of the page even though they live outside the
+   * body, so the contents list carries them - dropping the heading from the
+   * reading must not drop the way to reach it.
+   */
+  const sections = [
+    ...headings(reading),
+    ...(faqHeading ? [{ level: 2, text: faqHeading, id: headingId(faqHeading) }] : []),
+  ];
+
   return (
     <article>
-      {/* Cream hero: warmth before the ask, as the brand leads with. */}
-      <header className="section-warm" style={{ paddingBlock: "var(--space-8)" }}>
+      {/* Cream hero: the line, then the ask, inside the first screen. */}
+      <header className="hero">
         <div className="shell">
-          <h1 className="max-w-3xl" style={{ fontSize: "var(--text-h1)", lineHeight: "var(--lh-tight)" }}>
-            {item.title}
-          </h1>
-          {summary && (
-            <p
-              className="mt-4 max-w-2xl"
-              style={{ color: "var(--ink-600)", fontSize: "var(--text-body-lg)" }}
-            >
-              {summary}
-            </p>
-          )}
+          <h1 className="hero-title">{item.title}</h1>
+          {summary && <p className="hero-lead">{summary}</p>}
+
+          <div className="hero-act">
+            <Link href="/donate" className="btn btn-gold">
+              Donate Now
+            </Link>
+            <span className="hero-note">Every seva is recorded in the Punya app.</span>
+          </div>
         </div>
       </header>
 
       {body && (
         <div className="section">
-          {/*
-           * Prose and its aside. One column until there is room for two - a
-           * sidebar stacked under a long article on a phone is a footer nobody
-           * reaches.
-           */}
-          <div className="shell grid gap-10 lg:grid-cols-[minmax(0,1fr)_16rem]">
-            <div className="min-w-0">
-              <Body markdown={body} />
+          <div className={sections.length > 1 ? "shell toc-grid" : "shell article-grid"}>
+            {sections.length > 1 && (
+              <nav className="toc" aria-label="On this page">
+                <p className="label-caps toc-head">On this page</p>
+                <div className="toc-list">
+                  {sections.map((entry) => (
+                    <a
+                      key={entry.id}
+                      href={`#${entry.id}`}
+                      className={entry.level === 3 ? "toc-link is-sub" : "toc-link"}
+                    >
+                      {entry.text}
+                    </a>
+                  ))}
+                </div>
+              </nav>
+            )}
+
+            <div className="article-read min-w-0">
+              <Body markdown={reading} />
             </div>
+
             {type && <ItemAside item={item} type={type} />}
           </div>
         </div>
       )}
 
       {faqs.length > 0 && (
-        <div className="section section-cream">
-          <div className="shell">
-            <Faqs faqs={faqs} />
+        <div data-impeccable-variants="5231fab7" data-impeccable-variant-count="3" style={{ display: "contents" }}>
+          {/* impeccable-variants-start 5231fab7 */}
+          {/* Original */}
+          <div data-impeccable-variant="original">
+            <div className="section section-cream">
+              <div className="shell">
+                <Faqs faqs={faqs} />
+              </div>
+            </div>
           </div>
+          {/* Variants: insert below this line */}
+          <style data-impeccable-css="5231fab7">{`
+            @scope ([data-impeccable-variant="2"]) {
+              :scope .f2-head { margin-bottom: var(--space-6); }
+              :scope .f2-title { font-family: var(--font-serif); font-weight: var(--weight-heading); font-size: var(--text-h2); line-height: var(--lh-heading); color: var(--text-heading); }
+              :scope .f2-count { margin-top: var(--space-2); color: var(--ink-500); font-size: var(--text-sm); }
+              :scope[data-p-count="0"] .f2-count { display: none; }
+            }
+
+            @scope ([data-impeccable-variant="3"]) {
+              :scope .f3-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-6); padding-bottom: var(--space-4); border-bottom: 1px solid var(--border-warm); }
+              :scope .f3-title { font-family: var(--font-serif); font-weight: var(--weight-heading); font-size: var(--text-h2); line-height: var(--lh-heading); color: var(--text-heading); }
+              :scope .f3-count { margin-top: var(--space-2); color: var(--ink-500); font-size: var(--text-sm); }
+              :scope[data-p-ask="0"] .f3-ask { display: none; }
+            }
+          `}</style>
+
+          {/* Variant 1 — the author's heading is the only one; the section adds none. */}
+          <div data-impeccable-variant="1">
+            <div className="section section-cream">
+              <div className="shell">
+                {faqHeading && (
+                  <h2 id={headingId(faqHeading)} className="faq-title" style={{ fontSize: "var(--text-h2)" }}>
+                    {faqHeading}
+                  </h2>
+                )}
+                <Faqs faqs={faqs} showGroupTitles={false} />
+              </div>
+            </div>
+          </div>
+
+          {/* Variant 2 — the section owns its heading, and says how many. */}
+          <div
+            data-impeccable-variant="2"
+            style={{ display: "none" }}
+            data-impeccable-params='[{"id":"count","kind":"toggle","default":true,"label":"Count"}]'
+          >
+            <div className="section section-cream">
+              <div className="shell">
+                <div className="f2-head">
+                  <h2 id={headingId(faqHeading || "Frequently asked questions")} className="f2-title">
+                    {faqHeading || "Frequently asked questions"}
+                  </h2>
+                  <p className="f2-count">
+                    {faqs.length} {faqs.length === 1 ? "question" : "questions"}, answered
+                  </p>
+                </div>
+
+                <Faqs faqs={faqs} showGroupTitles={false} />
+              </div>
+            </div>
+          </div>
+
+          {/* Variant 3 — a ruled head, with a way to ask what is not here. */}
+          <div
+            data-impeccable-variant="3"
+            style={{ display: "none" }}
+            data-impeccable-params='[{"id":"ask","kind":"toggle","default":true,"label":"Ask link"}]'
+          >
+            <div className="section section-cream">
+              <div className="shell">
+                <div className="f3-head">
+                  <div>
+                    <h2 id={headingId(faqHeading || "Frequently asked questions")} className="f3-title">
+                      {faqHeading || "Frequently asked questions"}
+                    </h2>
+                    <p className="f3-count">
+                      {faqs.length} {faqs.length === 1 ? "question" : "questions"}, answered
+                    </p>
+                  </div>
+
+                  <Link href="/contact" className="btn btn-outline f3-ask shrink-0">
+                    Ask something else
+                  </Link>
+                </div>
+
+                <Faqs faqs={faqs} showGroupTitles={false} />
+              </div>
+            </div>
+          </div>
+          {/* impeccable-variants-end 5231fab7 */}
         </div>
       )}
+
     </article>
   );
 }
@@ -207,17 +334,43 @@ const SECTION_BLURB: Record<string, string> = {
   location: "The gaushalas in our care, and the cows living in each.",
 };
 
+/** Thirty to a page: enough to browse, few enough to load on mobile data. */
+const PER_PAGE = 30;
+
+/**
+ * Types that are a catalogue rather than a publication.
+ *
+ * A donor deciding between seva wants to see the whole list and narrow it; a
+ * reader of sixty-three posts wants the newest, a search box and a feed. Same
+ * route, two different jobs, so the affordances differ by type rather than
+ * being offered everywhere and useful nowhere.
+ */
+const CATALOGUE_TYPES = new Set(["product", "location"]);
+
 async function IndexPage({
   type,
   facet,
   value = "",
+  page = 1,
+  search = "",
 }: {
   type: CmsType;
   facet?: Facet;
   value?: string;
+  page?: number;
+  search?: string;
 }) {
-  const { items } = await listItems(type.key, {
-    limit: 60,
+  /*
+   * A narrowed listing still filters in this file - the delivery API has no
+   * query for "carries this label" - so it asks for everything and pages in
+   * memory. An open listing pages at the API, which is what the meta is for.
+   */
+  const catalogue = CATALOGUE_TYPES.has(type.key);
+
+  const { items, meta } = await listItems(type.key, {
+    page: facet || catalogue ? 1 : page,
+    limit: facet || catalogue ? 100 : PER_PAGE,
+    ...(search ? { search } : {}),
     /*
      * publishedAt is asked for by name. A narrowed response carries only what
      * is listed - it came back with `fields`, `id`, `slug` and `title` alone -
@@ -238,14 +391,29 @@ async function IndexPage({
       ? (entry.authors ?? []).some((author) => toSlug(author.name) === value)
       : itemTags(entry).some((name) => toSlug(name) === value);
 
-  const shown = facet ? items.filter(matches) : items;
+  const filtered = facet ? items.filter(matches) : items;
+
+  /*
+   * A narrowed listing pages what it filtered; an open one is already the
+   * page the API returned.
+   */
+  const pageCount = catalogue
+    ? 1
+    : facet
+      ? Math.max(1, Math.ceil(filtered.length / PER_PAGE))
+      : (meta?.pageCount ?? 1);
+  const current = Math.min(Math.max(1, page), pageCount);
+  const shown =
+    facet && !catalogue
+      ? filtered.slice((current - 1) * PER_PAGE, current * PER_PAGE)
+      : filtered;
 
   /*
    * A label nothing carries is not a page. Served as an empty section it is a
    * thin page a crawler will index and a visitor will bounce from, and there
    * are as many of those as someone can type.
    */
-  if (facet && shown.length === 0) notFound();
+  if (facet && filtered.length === 0) notFound();
 
   // The label as it was written, not as it was slugified.
   const label = !facet
@@ -255,48 +423,412 @@ async function IndexPage({
       : (itemTags(shown[0] ?? ({} as CmsItem)).find((name) => toSlug(name) === value) ?? value);
   const blurb = SECTION_BLURB[type.key];
 
+  /* Every label on this page, most-used first: the way into a narrowed view. */
+  const tags = topTags(shown);
+  const base = facet ? facetPath(type, facet, value) : type.path;
+
   return (
     <>
       {/* Cream header, as every other page on the site opens. */}
-      <header className="section-warm" style={{ paddingBlock: "var(--space-8)" }}>
+      <header className="page-header">
         <div className="shell">
-          <h1 style={{ fontSize: "var(--text-h1)", lineHeight: "var(--lh-tight)" }}>
-            {label || type.pluralName}
-          </h1>
+          <h1 className="page-title">{label || type.pluralName}</h1>
 
           {facet && (
             <p className="mt-3">
-              <Link href={type.path} style={{ color: "var(--navy-700)" }}>
+              <Link href={type.path} className="link-strong">
                 ← All {type.pluralName.toLowerCase()}
               </Link>
             </p>
           )}
-          {blurb && (
-            <p
-              className="mt-4 max-w-2xl"
-              style={{ color: "var(--ink-600)", fontSize: "var(--text-body-lg)" }}
-            >
-              {blurb}
-            </p>
-          )}
+          {blurb && <p className="lead">{blurb}</p>}
         </div>
       </header>
 
       <div className="section">
         <div className="shell">
-          {shown.length === 0 ? (
-            <p style={{ color: "var(--ink-600)" }}>Nothing published here yet.</p>
-          ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {shown.map((entry) => (
-                <CardFor key={entry.id} item={entry} type={type} />
-              ))}
-            </div>
-          )}
+          {(() => {
+            const groups = groupByCategory(shown);
+
+            return (
+              <>
+                {groups.length > 1 && (
+                  <div className="group-jump">
+                    {groups.map((group) => (
+                      <a key={group.name} href={`#${toSlug(group.name)}`} className="chip">
+                        {group.name}
+                      </a>
+                    ))}
+                  </div>
+                )}
+
+                {groups.map((group) => (
+                  <section key={group.name} id={toSlug(group.name)} className="group">
+                    <div className="group-head">
+                      <h2 className="group-name">{group.name}</h2>
+                      <span className="label-caps">{group.items.length} ways</span>
+                    </div>
+
+                    <div className="card-grid">
+                      {group.items.map((entry) => (
+                        <CardFor key={entry.id} item={entry} type={type} />
+                      ))}
+                    </div>
+                  </section>
+                ))}
+              </>
+            );
+          })()}
         </div>
       </div>
     </>
   );
+}
+
+/** Items under the label they carry, the biggest group first. */
+function groupByCategory(items: CmsItem[]): { name: string; items: CmsItem[] }[] {
+  const groups = new Map<string, CmsItem[]>();
+
+  for (const item of items) {
+    const name = itemTags(item)[0] || "Everything else";
+    groups.set(name, [...(groups.get(name) ?? []), item]);
+  }
+
+  return [...groups.entries()]
+    .map(([name, entries]) => ({ name, items: entries }))
+    .sort((a, b) => b.items.length - a.items.length);
+}
+
+/* ── Listing furniture ──────────────────────────────────────────────────── */
+
+/** ?page= and ?q=, read the way a URL actually arrives. */
+function pageOf(query: Record<string, string | string[] | undefined>): number {
+  const raw = typeof query.page === "string" ? Number(query.page) : 1;
+  return Number.isFinite(raw) && raw > 0 ? Math.floor(raw) : 1;
+}
+
+function searchOf(query: Record<string, string | string[] | undefined>): string {
+  return typeof query.q === "string" ? query.q.trim().slice(0, 80) : "";
+}
+
+/** A page's labels, most-used first. */
+function topTags(items: CmsItem[]): string[] {
+  const counts = new Map<string, number>();
+  for (const item of items) {
+    for (const tag of itemTags(item)) counts.set(tag, (counts.get(tag) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([tag]) => tag);
+}
+
+function postDate(item: CmsItem): string {
+  const value = item.publishedAt ?? item.createdAt;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? ""
+    : date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+}
+
+/** A URL that keeps the search and moves the page. */
+function pageHref(base: string, search: string, page: number): string {
+  const params = new URLSearchParams();
+  if (search) params.set("q", search);
+  if (page > 1) params.set("page", String(page));
+  const query = params.toString();
+  return query ? `${base}?${query}` : base;
+}
+
+/**
+ * Find, narrow, subscribe.
+ *
+ * A section of sixty-three posts with no way to search it, no way to see one
+ * subject and no way to follow it is a wall. The form is a plain GET - it
+ * works with JavaScript off and leaves a shareable URL - and the feed link is
+ * the one people forget to offer.
+ */
+function Controls({
+  type,
+  base,
+  search,
+  tags,
+  current,
+  pageCount,
+}: {
+  type: CmsType;
+  base: string;
+  search: string;
+  tags: string[];
+  current: number;
+  pageCount: number;
+}) {
+  return (
+    <div className="finder">
+      <form className="finder-search" action={base} method="get" role="search">
+        <label className="sr-only" htmlFor="listing-q">
+          Search {type.pluralName.toLowerCase()}
+        </label>
+        <svg
+          className="finder-icon"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          aria-hidden
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+        <input
+          id="listing-q"
+          type="search"
+          name="q"
+          defaultValue={search}
+          placeholder={`Search ${type.pluralName.toLowerCase()}`}
+          className="finder-input"
+        />
+        <button type="submit" className="btn btn-navy finder-go">
+          Search
+        </button>
+      </form>
+
+      <div className="finder-meta">
+        {search && (
+          <Link href={base} className="link-strong">
+            Clear “{search}”
+          </Link>
+        )}
+        {pageCount > 1 && (
+          <span className="label-caps">
+            Page {current} of {pageCount}
+          </span>
+        )}
+        <a href="/feed.xml" className="finder-rss">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+            <circle cx="6.2" cy="17.8" r="2.2" />
+            <path d="M3 10.4v3a6.6 6.6 0 0 1 6.6 6.6h3A9.6 9.6 0 0 0 3 10.4Z" />
+            <path d="M3 4v3a13 13 0 0 1 13 13h3A16 16 0 0 0 3 4Z" />
+          </svg>
+          Subscribe
+        </a>
+      </div>
+
+      {tags.length > 0 && (
+        <div className="finder-tags">
+          {tags.map((tag) => (
+            <Link key={tag} href={facetPath(type, "tag", tag)} className="chip">
+              {tag}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** The same three affordances, stacked for a rail. */
+function Rail({
+  type,
+  base,
+  search,
+  tags,
+}: {
+  type: CmsType;
+  base: string;
+  search: string;
+  tags: string[];
+}) {
+  return (
+    <div className="rail">
+      <form className="finder-search" action={base} method="get" role="search">
+        <label className="sr-only" htmlFor="rail-q">
+          Search {type.pluralName.toLowerCase()}
+        </label>
+        <svg
+          className="finder-icon"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          aria-hidden
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+        <input
+          id="rail-q"
+          type="search"
+          name="q"
+          defaultValue={search}
+          placeholder="Search"
+          className="finder-input"
+        />
+      </form>
+
+      {tags.length > 0 && (
+        <div className="rail-block">
+          <p className="label-caps mb-3">Subjects</p>
+          <div className="finder-tags">
+            {tags.map((tag) => (
+              <Link key={tag} href={facetPath(type, "tag", tag)} className="chip">
+                {tag}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="rail-block">
+        <p className="label-caps mb-3">Follow</p>
+        <a href="/feed.xml" className="finder-rss">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+            <circle cx="6.2" cy="17.8" r="2.2" />
+            <path d="M3 10.4v3a6.6 6.6 0 0 1 6.6 6.6h3A9.6 9.6 0 0 0 3 10.4Z" />
+            <path d="M3 4v3a13 13 0 0 1 13 13h3A16 16 0 0 0 3 4Z" />
+          </svg>
+          Subscribe by RSS
+        </a>
+      </div>
+    </div>
+  );
+}
+
+/** Previous, the numbers, next. Links, so a crawler can walk the archive. */
+function Pager({
+  base,
+  search,
+  current,
+  pageCount,
+}: {
+  base: string;
+  search: string;
+  current: number;
+  pageCount: number;
+}) {
+  if (pageCount <= 1) return null;
+
+  const numbers = Array.from({ length: pageCount }, (_, at) => at + 1).filter(
+    (page) => page === 1 || page === pageCount || Math.abs(page - current) <= 1,
+  );
+
+  return (
+    <nav className="pager" aria-label="Pages">
+      {current > 1 ? (
+        <Link href={pageHref(base, search, current - 1)} className="pager-step">
+          ← Previous
+        </Link>
+      ) : (
+        <span className="pager-step is-off">← Previous</span>
+      )}
+
+      <span className="pager-numbers">
+        {numbers.map((page, at) => (
+          <span key={page} className="contents">
+            {at > 0 && numbers[at - 1] !== page - 1 && <span className="pager-gap">…</span>}
+            {page === current ? (
+              <span className="pager-page is-here" aria-current="page">
+                {page}
+              </span>
+            ) : (
+              <Link href={pageHref(base, search, page)} className="pager-page">
+                {page}
+              </Link>
+            )}
+          </span>
+        ))}
+      </span>
+
+      {current < pageCount ? (
+        <Link href={pageHref(base, search, current + 1)} className="pager-step">
+          Next →
+        </Link>
+      ) : (
+        <span className="pager-step is-off">Next →</span>
+      )}
+    </nav>
+  );
+}
+
+/** A lead story: the picture at full width, the title at display size. */
+function FeatureCard({ item, type }: { item: CmsItem; type: CmsType }) {
+  const href = itemPath(type, item.slug);
+  const tag = itemTags(item)[0] ?? "";
+
+  return (
+    <article className="lead-card">
+      <Link href={href} className="lead-media block" aria-hidden tabIndex={-1}>
+        {itemImage(item) && (
+          <Image
+            src={itemImage(item)}
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 560px, 90vw"
+            className="object-cover"
+          />
+        )}
+      </Link>
+
+      <div className="lead-body">
+        <h2 className="lead-title">
+          <Link href={href}>{item.title}</Link>
+        </h2>
+
+        {itemSummary(item) && <p className="meta line-clamp-3">{itemSummary(item)}</p>}
+
+        <p className="label-caps lead-meta">
+          {tag && <span style={{ color: "var(--gold-text)" }}>{tag}</span>}
+          {tag && postDate(item) && <span aria-hidden>·</span>}
+          <span>{postDate(item)}</span>
+        </p>
+      </div>
+    </article>
+  );
+}
+
+/** The price as a number, for sorting and banding. */
+function priceOf(item: CmsItem): number {
+  const value = Number(field(item, "price"));
+  return Number.isFinite(value) ? value : 0;
+}
+
+/** The amount split for display, the way the seva cards set it. */
+function amountOf(item: CmsItem): { symbol: string; digits: string; period: string } {
+  const currency = field(item, "currency") || "INR";
+  const value = priceOf(item);
+
+  let formatted = `${currency} ${value.toLocaleString("en-IN")}`;
+  try {
+    formatted = new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency,
+      maximumFractionDigits: 0,
+    }).format(value);
+  } catch {
+    /* the fallback above already reads correctly */
+  }
+
+  const frequency = (field(item, "frequency") || "").toLowerCase();
+  const period =
+    frequency === "one-time" || frequency === "once"
+      ? "One-time gift"
+      : frequency === "monthly"
+        ? "Every month"
+        : frequency === "yearly" || frequency === "annual"
+          ? "Every year"
+          : field(item, "frequency");
+
+  return {
+    symbol: formatted.replace(/[\d.,\s]/g, "") || "₹",
+    digits: formatted.replace(/[^\d.,]/g, ""),
+    period,
+  };
 }
 
 /** No home item chosen, or the CMS is not wired up yet. */

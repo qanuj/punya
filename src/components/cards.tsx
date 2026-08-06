@@ -29,6 +29,33 @@ function money(amount: string, currency: string): string {
   }
 }
 
+/**
+ * The amount, split so the symbol and the number can be set separately.
+ *
+ * "₹2,100" in one run of Playfair puts a complex glyph at the same weight as
+ * the digits that matter, and at card sizes the rupee sign is what a reader
+ * loses first. Two spans: the symbol can sit smaller or in another colour
+ * while the number carries the size.
+ */
+function currencySymbol(currency: string): string {
+  const formatted = money("0", currency);
+  return formatted.replace(/[\d.,\s]/g, "") || "₹";
+}
+
+function amountDigits(amount: string, currency: string): string {
+  return money(amount, currency).replace(/[^\d.,]/g, "");
+}
+
+/** "one-time" and "monthly" as a donor would read them on a receipt. */
+function periodLabel(frequency: string): string {
+  const value = (frequency || "").toLowerCase();
+  if (!value) return "";
+  if (value === "one-time" || value === "once") return "One-time gift";
+  if (value === "monthly") return "Every month";
+  if (value === "yearly" || value === "annual") return "Every year";
+  return frequency;
+}
+
 function when(value: string | null | undefined): string {
   if (!value) return "";
   const date = new Date(value);
@@ -63,11 +90,13 @@ function Cover({ src, alt, priority = false }: { src: string; alt: string; prior
 }
 
 /**
- * One seva.
+ * One seva, in the same tile a post takes.
  *
- * The amount is the thing being decided, so it is the largest thing on the
- * card after the name. "Popular" is the trust's own steer and earns the one
- * gold mark on the card.
+ * Two card designs for two content types made the catalogue and the writing
+ * look like two sites. The seva keeps what only it has - the amount, the
+ * frequency, the category - and takes the blog tile for everything else. The
+ * amount is a line of the tile rather than a slip with a button, so the tile
+ * itself is the only thing to click, as on a post.
  */
 export function SevaCard({ item, type }: { item: CmsItem; type: CmsType }) {
   const href = itemPath(type, item.slug);
@@ -76,71 +105,45 @@ export function SevaCard({ item, type }: { item: CmsItem; type: CmsType }) {
   const category = field(item, "category");
   const popular = item.fields?.popular === true;
 
+  const symbol = currencySymbol(field(item, "currency"));
+  const digits = amountDigits(price, field(item, "currency"));
+  const period = periodLabel(frequency);
+
   return (
-    <article className="card flex flex-col gap-3">
-      <Link href={href} className="block">
-        <Cover src={itemImage(item)} alt={item.title} />
+    <article className="post">
+      <Link href={href} className="post-link">
+        <span className="post-media">
+          {itemImage(item) && (
+            <Image
+              src={itemImage(item)}
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
+              className="object-cover"
+            />
+          )}
+        </span>
+
+        <span className="post-body">
+          <span className="post-rule" aria-hidden />
+          <span className="post-title block">{item.title}</span>
+
+          <span className="post-amount">
+            <span className="post-sym">{symbol}</span>
+            <span className="post-num">{digits}</span>
+            {period && <span className="post-period">{period.toLowerCase()}</span>}
+          </span>
+
+          {itemSummary(item) && (
+            <span className="meta line-clamp-2 block">{itemSummary(item)}</span>
+          )}
+
+          <span className="post-meta flex flex-wrap items-center gap-2">
+            {category && <span className="chip">{category}</span>}
+            {popular && <span className="chip chip-gold">Most chosen</span>}
+          </span>
+        </span>
       </Link>
-
-      <div className="flex flex-wrap items-center gap-2">
-        {category && (
-          <span
-            className="rounded-[var(--radius-pill)] px-2.5 py-1 text-[11px] uppercase"
-            style={{
-              background: "var(--surface-warm)",
-              color: "var(--navy-700)",
-              letterSpacing: "var(--track-caps)",
-            }}
-          >
-            {category}
-          </span>
-        )}
-        {popular && (
-          <span
-            className="rounded-[var(--radius-pill)] px-2.5 py-1 text-[11px] font-semibold uppercase"
-            style={{
-              background: "var(--gold-100)",
-              color: "var(--gold-600)",
-              letterSpacing: "var(--track-caps)",
-            }}
-          >
-            Most chosen
-          </span>
-        )}
-      </div>
-
-      <h3 className="card-title">
-        <Link href={href}>{item.title}</Link>
-      </h3>
-
-      {itemSummary(item) && (
-        <p className="line-clamp-3" style={{ color: "var(--ink-600)", fontSize: "var(--text-sm)" }}>
-          {itemSummary(item)}
-        </p>
-      )}
-
-      {/* Pushed to the bottom so every card in a row ends the same way. */}
-      <div className="mt-auto flex items-end justify-between gap-3 pt-2">
-        {price && (
-          <p className="leading-none">
-            <span
-              className="font-[family-name:var(--font-serif)]"
-              style={{ fontSize: "var(--text-h3)", color: "var(--navy-700)" }}
-            >
-              {money(price, field(item, "currency"))}
-            </span>
-            {frequency && (
-              <span className="ml-1" style={{ color: "var(--ink-400)", fontSize: "var(--text-sm)" }}>
-                {frequency.toLowerCase() === "one-time" ? "once" : frequency.toLowerCase()}
-              </span>
-            )}
-          </p>
-        )}
-
-        <Link href={href} className="btn btn-gold shrink-0">
-          Offer seva
-        </Link>
-      </div>
     </article>
   );
 }
@@ -151,39 +154,37 @@ export function PostCard({ item, type }: { item: CmsItem; type: CmsType }) {
   const tags = Array.isArray(item.fields?.tags) ? (item.fields.tags as string[]) : [];
   const date = when(item.publishedAt ?? item.createdAt);
 
+  const image = itemImage(item);
+  const stamp = item.publishedAt ?? item.createdAt;
+
   return (
-    <article className="card flex flex-col gap-3">
-      <Link href={href} className="block">
-        <Cover src={itemImage(item)} alt={item.title} />
-      </Link>
+    <article className="post">
+      <Link href={href} className="post-link">
+        <span className="post-media">
+          {image && (
+            <Image
+              src={image}
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
+              className="object-cover"
+            />
+          )}
+        </span>
 
-      {(tags[0] || date) && (
-        <p
-          className="flex flex-wrap items-center gap-2 text-[11px] uppercase"
-          style={{ color: "var(--ink-400)", letterSpacing: "var(--track-caps)" }}
-        >
-          {tags[0] && <span style={{ color: "var(--gold-600)" }}>{tags[0]}</span>}
-          {tags[0] && date && <span aria-hidden>·</span>}
-          {date && <time dateTime={item.publishedAt ?? item.createdAt}>{date}</time>}
-        </p>
-      )}
+        <span className="post-body">
+          <span className="post-rule" aria-hidden />
+          <span className="post-title block">{item.title}</span>
+          {itemSummary(item) && (
+            <span className="meta line-clamp-2 block">{itemSummary(item)}</span>
+          )}
 
-      <h3 className="card-title">
-        <Link href={href}>{item.title}</Link>
-      </h3>
-
-      {itemSummary(item) && (
-        <p className="line-clamp-3" style={{ color: "var(--ink-600)", fontSize: "var(--text-sm)" }}>
-          {itemSummary(item)}
-        </p>
-      )}
-
-      <Link
-        href={href}
-        className="mt-auto pt-1 text-sm font-semibold"
-        style={{ color: "var(--navy-700)" }}
-      >
-        Read on →
+          <span className="label-caps post-meta">
+            {tags[0] && <span style={{ color: "var(--gold-text)" }}>{tags[0]}</span>}
+            {tags[0] && date && <span aria-hidden>·</span>}
+            {date && <time dateTime={stamp}>{date}</time>}
+          </span>
+        </span>
       </Link>
     </article>
   );
@@ -207,18 +208,13 @@ export function GaushalaCard({ item, type }: { item: CmsItem; type: CmsType }) {
       </h3>
 
       {place && (
-        <p style={{ color: "var(--ink-600)", fontSize: "var(--text-sm)" }}>{place}</p>
+        <p className="meta">{place}</p>
       )}
 
       {cows && (
-        <p className="mt-auto pt-2" style={{ fontSize: "var(--text-sm)" }}>
-          <span
-            className="font-[family-name:var(--font-serif)]"
-            style={{ fontSize: "var(--text-h4)", color: "var(--navy-700)" }}
-          >
-            {cows}
-          </span>
-          <span style={{ color: "var(--ink-400)" }}>
+        <p className="mt-auto pt-2">
+          <span className="figure figure-sm">{cows}</span>
+          <span className="figure-unit">
             {" "}
             cows in care{capacity ? ` of ${capacity}` : ""}
           </span>
@@ -246,7 +242,7 @@ export function ItemCard({ item, type }: { item: CmsItem; type: CmsType }) {
       </h3>
 
       {itemSummary(item) && (
-        <p className="line-clamp-3" style={{ color: "var(--ink-600)", fontSize: "var(--text-sm)" }}>
+        <p className="meta line-clamp-3">
           {itemSummary(item)}
         </p>
       )}

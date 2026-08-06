@@ -112,8 +112,16 @@ a:hover { color: var(--link-hover); }
 }
 .btn:active { transform: scale(.98); }
 
-.btn-gold { background: var(--btn-gold); color: var(--white); }
-.btn-gold:hover { background: var(--btn-gold-hover); color: var(--white); }
+/*
+ * Navy on gold, not white on gold.
+ *
+ * White text on #D9952A measures 2.5:1 - the site's single most important
+ * control was its least readable one, and in sunlight on a phone it washed out
+ * entirely. Navy on the same gold measures 6:1 and keeps the accent exactly
+ * where the system put it.
+ */
+.btn-gold { background: var(--btn-gold); color: var(--navy-800); }
+.btn-gold:hover { background: var(--btn-gold-hover); color: var(--navy-800); }
 
 .btn-navy { background: var(--btn-navy); color: var(--white); }
 .btn-navy:hover { background: var(--btn-navy-hover); color: var(--white); }
@@ -148,6 +156,1049 @@ a:hover { color: var(--link-hover); }
   background: var(--surface-warm);
   color: var(--navy-700);
 }
+
+/* ── Patterns ──────────────────────────────────────────────────────────── */
+
+/*
+ * The handful of things every surface writes.
+ *
+ * These were inline styles repeated across the cards, the aside, the listings
+ * and the footer - the same colour and size typed out six times, which is how
+ * a system drifts one card at a time. A name each, so a new section inherits
+ * the decision instead of restating it.
+ */
+
+/** Secondary copy: a card summary, a place, a caption. Never the reading. */
+.meta {
+  color: var(--ink-600);
+  font-size: var(--text-sm);
+}
+
+/**
+ * A tracked, uppercase label: a sidebar panel's title, a card's date line, a
+ * footer column head. Only ever a label for what follows - never a kicker set
+ * above a heading, which the heading does not need.
+ */
+.label-caps {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: var(--track-caps);
+  color: var(--ink-500);
+}
+
+/** A pilled label. Cream by default; gold only where the trust has chosen. */
+.chip {
+  display: inline-block;
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+  font-size: 11px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: var(--track-caps);
+  background: var(--surface-warm);
+  color: var(--navy-700);
+}
+.chip-gold {
+  background: var(--gold-100);
+  color: var(--gold-text);
+  font-weight: 600;
+}
+/** The same pill as a link: through to the section, filtered. */
+a.chip {
+  padding: 6px 12px;
+  font-size: var(--text-sm);
+  text-transform: none;
+  letter-spacing: normal;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
+
+/**
+ * A counted number: a price, a herd size, a figure in the stat band. Serif and
+ * navy, because the number is what is being decided on.
+ */
+.figure {
+  font-family: var(--font-serif);
+  font-weight: var(--weight-heading);
+  font-size: var(--text-h3);
+  line-height: var(--lh-tight);
+  color: var(--navy-700);
+}
+.figure-sm { font-size: var(--text-h4); }
+/** What sits beside a figure: a frequency, a capacity, a unit. */
+.figure-unit {
+  color: var(--ink-500);
+  font-size: var(--text-sm);
+}
+
+/** A listing: three across when there is room, one on a phone. */
+.card-grid {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 40rem) { .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 64rem) { .card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/** The cream band every page opens with, and the title inside it. */
+.page-header {
+  background: var(--surface-warm);
+  padding-block: var(--space-8);
+}
+.page-title {
+  font-size: var(--text-h1);
+  line-height: var(--lh-tight);
+  max-width: 40ch;
+}
+/** The line under a title or a section heading. */
+.lead {
+  margin-top: var(--space-4);
+  max-width: 60ch;
+  color: var(--ink-600);
+  font-size: var(--text-body-lg);
+}
+
+/** A way onward set in the run of the page: "Read on", "Browse all". */
+.link-strong {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--navy-700);
+}
+.link-strong:hover { color: var(--gold-text); }
+
+/* ── Utility bar ───────────────────────────────────────────────────────── */
+
+/*
+ * The devotional line, and the two ways to reach a person.
+ *
+ * A trust asking strangers for money has to be reachable, and the phone number
+ * lived only at the bottom of the page. It sits in the first line of every
+ * screen now, set as an action rather than as small print, with the address
+ * book quieter beside it and the trust's own channels at the end.
+ *
+ * The Devanagari is still the accent; the English beside it - the number, the
+ * address - is what carries the function.
+ */
+
+.topbar { background: var(--surface-topbar); color: var(--text-on-dark-soft); }
+
+.topbar-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-5);
+  padding-block: var(--space-2);
+}
+.topbar-deva { font-size: var(--text-sm); }
+
+.topbar-right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+}
+
+.topbar-contact {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--white);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.topbar-contact:hover { color: var(--gold-300); }
+.topbar-contact svg { flex: none; color: var(--gold-300); }
+/** The address book, not the action: same row, less weight. */
+.topbar-mail { font-weight: 400; }
+
+.topbar-socials { display: flex; align-items: center; gap: var(--space-2); }
+.topbar-social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  width: 28px;
+  border-radius: var(--radius-pill);
+  color: var(--text-on-dark-soft);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.topbar-social:hover { background: rgba(255, 255, 255, .10); color: var(--white); }
+
+/* ── Navigation ────────────────────────────────────────────────────────── */
+
+/*
+ * Who is receiving the money, beside the mark that asks for it.
+ *
+ * "Punya.ngo" is the brand; "Punya Charitable Trust" is the registered body a
+ * donation is actually made to, and it appeared nowhere above the fold. A
+ * hairline and a tracked line of caps - the name comes from the CMS, so a fork
+ * of this template shows its own or shows nothing.
+ *
+ * Held back until 48rem: on a phone the header is a mark and an ask, and a
+ * third thing in that row is one thing too many.
+ */
+
+.mark-note {
+  display: none;
+  align-items: center;
+  gap: var(--space-4);
+  margin-left: var(--space-4);
+}
+.mark-rule { width: 1px; height: 40px; background: var(--border-warm); }
+.mark-name {
+  max-width: 14ch;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-transform: uppercase;
+  letter-spacing: var(--track-caps);
+  color: var(--ink-500);
+}
+@media (min-width: 48rem) { .mark-note { display: flex; } }
+
+/*
+ * Two tiers: who this is and what to do, then where to go.
+ *
+ * One row of mark, seven sections and a gold button wrapped onto three lines
+ * on a phone and pushed the page down before it started. Split in two, the top
+ * row keeps the mark and the ask on one line at every width, and the sections
+ * ride a rail that scrolls sideways rather than wrapping or hiding behind a
+ * hamburger - nothing is more than a swipe away and nothing is concealed.
+ */
+
+.nav { background: var(--white); border-bottom: 1px solid var(--border-warm); }
+
+.nav-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+}
+
+.nav-rail { border-top: 1px solid var(--border-warm); }
+.nav-scroll {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding-block: var(--space-3);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-scroll::-webkit-scrollbar { display: none; }
+
+.nav-link {
+  white-space: nowrap;
+  color: var(--navy-700);
+  font-weight: 600;
+  font-size: var(--text-body);
+}
+.nav-link:hover { color: var(--gold-text); }
+
+/* ── Hero ──────────────────────────────────────────────────────────────── */
+
+/*
+ * The opening of a page that has something to ask for.
+ *
+ * The title ran at the same size as a listing's and the ask lived in the
+ * header bar and the footer - so a visitor who arrived, read the line and
+ * agreed with it had nowhere to act. The title takes the display size, the
+ * summary follows at reading size, and the gold action sits in the first
+ * screen with the one fact that makes it credible beside it.
+ *
+ * Sized down a step at a time on narrow screens: 56px of Playfair is a
+ * headline on a desktop and a wall on a phone.
+ */
+
+.hero { background: var(--surface-warm); padding-block: var(--space-9); }
+
+.hero-title {
+  max-width: 18ch;
+  font-family: var(--font-serif);
+  font-weight: var(--weight-heading);
+  font-size: var(--text-hero);
+  line-height: var(--lh-tight);
+  color: var(--text-heading);
+  text-wrap: balance;
+}
+@media (max-width: 48rem) { .hero-title { font-size: var(--text-h1); } }
+@media (max-width: 30rem) { .hero-title { font-size: var(--text-h2); } }
+
+.hero-lead {
+  margin-top: var(--space-5);
+  max-width: 52ch;
+  color: var(--ink-600);
+  font-size: var(--text-body-lg);
+}
+
+.hero-act {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+.hero-note { color: var(--ink-500); font-size: var(--text-sm); }
+
+/* ── Article ───────────────────────────────────────────────────────────── */
+
+/*
+ * A page that reads like something written, not something rendered.
+ *
+ * The body runs a step larger at looser leading, because these pages exist to
+ * explain where a donation goes and a visitor reads them all the way down. The
+ * first paragraph takes the lead size, and each section opens over a gold
+ * hairline - the rules do the work a run of same-size headings could not.
+ */
+
+.article-grid {
+  display: grid;
+  gap: var(--space-8);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 64rem) {
+  .article-grid { grid-template-columns: minmax(0, 1fr) 16rem; align-items: start; }
+}
+
+.article-read .prose {
+  max-width: 66ch;
+  font-size: var(--text-body-lg);
+  line-height: 1.75;
+}
+.article-read .prose > p:first-of-type {
+  font-size: var(--text-lead);
+  line-height: 1.6;
+  color: var(--ink-900);
+}
+.article-read .prose h2 {
+  margin-top: var(--space-8);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--gold-300);
+  font-size: var(--text-h2);
+}
+.article-read .prose h2:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.article-read .prose h3 { font-size: var(--text-h3); }
+
+/* ── Questions ─────────────────────────────────────────────────────────── */
+
+/*
+ * Nothing hidden.
+ *
+ * Twelve questions inside a bordered box, every one collapsed, asked a reader
+ * to click twelve times to find out whether the thing they wanted to know was
+ * even answered. Laid out plainly in two columns, the whole set is scannable
+ * in a screen - and the answers are in the page rather than behind an
+ * interaction, which is how a search engine reads them too.
+ */
+
+.faqs { display: flex; flex-direction: column; gap: var(--space-8); }
+
+.faq-title {
+  margin-bottom: var(--space-5);
+  font-family: var(--font-serif);
+  font-weight: var(--weight-heading);
+  font-size: var(--text-h3);
+  color: var(--text-heading);
+}
+
+.faq-grid {
+  display: grid;
+  gap: var(--space-6) var(--space-8);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 48rem) { .faq-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.faq-item { break-inside: avoid; }
+.faq-rule { width: 32px; height: 1px; background: var(--gold-400); margin-bottom: var(--space-3); }
+
+.faq-q {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--text-h4);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--text-heading);
+}
+.faq-a { margin-top: var(--space-2); color: var(--ink-600); font-size: var(--text-sm); }
+.faq-a p + p { margin-top: var(--space-2); }
+
+/* ── Contents ──────────────────────────────────────────────────────────── */
+
+/*
+ * A rail of what is on the page.
+ *
+ * Our Work is thirty-five paragraphs under three sections and nine programme
+ * headings, and all of that structure was invisible in a single column: a
+ * visitor looking for the medical programme had to scroll for it. Every h2 and
+ * h3 carries an id now, so this list is built on the server and each entry is
+ * a link somebody can send.
+ *
+ * The rail only appears where there is room for it; below 64rem it sits above
+ * the reading, which is where a contents list belongs on a phone.
+ */
+
+.toc-grid {
+  display: grid;
+  gap: var(--space-8);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+@media (min-width: 64rem) {
+  .toc-grid { grid-template-columns: 15rem minmax(0, 1fr) 16rem; }
+  .toc { position: sticky; top: var(--space-5); }
+}
+
+.toc-head { margin-bottom: var(--space-3); }
+
+.toc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-left: 1px solid var(--border-warm);
+}
+.toc-link {
+  display: block;
+  margin-left: -1px;
+  padding: 6px var(--space-4);
+  border-left: 1px solid transparent;
+  color: var(--ink-600);
+  font-size: var(--text-sm);
+}
+.toc-link:hover { color: var(--navy-700); border-left-color: var(--gold-400); }
+/** A sub-heading: indented, and quieter than the section it belongs to. */
+.toc-link.is-sub { padding-left: var(--space-6); font-size: 13px; color: var(--ink-500); }
+
+/* ── Seva ──────────────────────────────────────────────────────────────── */
+
+/*
+ * The amount leads.
+ *
+ * A seva card that opens with a photograph makes a visitor work out what they
+ * are looking at before it says what it costs, and the cost is the decision.
+ * The figure sits first at heading size with its frequency beside it, the name
+ * and the promise under it, and the photograph carries the rest.
+ */
+
+.seva-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface-card);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition-med), transform var(--transition-med);
+}
+.seva-card:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); }
+
+.seva-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-5) var(--space-3);
+}
+.seva-figure {
+  font-family: var(--font-serif);
+  font-weight: var(--weight-heading);
+  font-size: var(--text-h2);
+  line-height: 1;
+  color: var(--navy-700);
+}
+.seva-freq { color: var(--ink-500); font-size: var(--text-sm); }
+
+.seva-name {
+  padding-inline: var(--space-5);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--text-h4);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--text-heading);
+}
+.seva-summary {
+  padding: var(--space-3) var(--space-5) var(--space-5);
+  color: var(--ink-600);
+  font-size: var(--text-sm);
+}
+
+/** Wider than a card cover: the photograph is support here, not the headline. */
+.seva-band {
+  position: relative;
+  aspect-ratio: 16 / 7;
+  overflow: hidden;
+  background: var(--surface-warm);
+}
+.seva-band img { object-fit: cover; transition: transform 500ms ease; }
+.seva-card:hover .seva-band img { transform: scale(1.03); }
+
+.seva-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: auto;
+  padding: var(--space-4) var(--space-5) var(--space-5);
+}
+
+/* ── Finding things ────────────────────────────────────────────────────── */
+
+/*
+ * Search, subjects, and a way to follow.
+ *
+ * Sixty-three posts behind a grid with no search, no subject filter and no
+ * feed link is an archive nobody reaches the bottom of. The form is a plain
+ * GET so it works without JavaScript and leaves a URL worth sharing.
+ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.finder { margin-bottom: var(--space-7); }
+
+.finder-search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px 6px 6px var(--space-4);
+  background: var(--surface-card);
+  border: 1px solid var(--border-cool);
+  border-radius: var(--radius-pill);
+  max-width: 34rem;
+}
+.finder-search:focus-within { box-shadow: var(--focus-ring); }
+.finder-icon { flex: none; color: var(--ink-500); }
+.finder-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--text-body);
+  color: var(--ink-900);
+}
+.finder-input:focus-visible { outline: none; box-shadow: none; }
+.finder-input::placeholder { color: var(--ink-500); }
+.finder-go { height: 36px; padding-inline: var(--space-4); font-size: var(--text-sm); }
+
+.finder-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-4);
+}
+
+.finder-rss {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--navy-700);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.finder-rss svg { color: var(--gold-text); }
+.finder-rss:hover { color: var(--gold-text); }
+
+.finder-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+/** The same three affordances, stacked beside a column of stories. */
+.rail { display: flex; flex-direction: column; gap: var(--space-6); }
+.rail .finder-search { max-width: none; padding-right: var(--space-4); }
+.rail-block { border-top: 1px solid var(--border-warm); padding-top: var(--space-4); }
+
+/* ── Post tile ─────────────────────────────────────────────────────────── */
+
+/*
+ * A post as a cream tile, with the photograph to the edge.
+ *
+ * The old card put 24px of white around the picture, then spent a whole row on
+ * a "Read on" link to a page the card already linked to. The photograph now
+ * reaches the tile's edge, the padding survives only under the words where it
+ * does something, and the tile itself is the link.
+ *
+ * Cream rather than white with a border: on a white page a bordered card is a
+ * box, and a warm tile is a piece of paper.
+ */
+
+.post {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  background: var(--surface-section);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast), transform var(--transition-med);
+}
+.post:hover { background: var(--surface-warm); transform: translateY(-2px); }
+
+.post-link { display: flex; flex-direction: column; height: 100%; }
+
+.post-media {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: var(--cream-300);
+}
+.post-media img { object-fit: cover; transition: transform 500ms ease; }
+.post:hover .post-media img { transform: scale(1.03); }
+
+.post-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+}
+.post-rule { width: 40px; height: 1px; background: var(--gold-400); }
+.post-title {
+  font-family: var(--font-serif);
+  font-weight: var(--weight-heading);
+  font-size: var(--text-h3);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+  text-wrap: balance;
+}
+/** Pushed down so every tile in a row ends on the same line. */
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-2);
+}
+
+/** A seva's amount, set as a line of the tile rather than a slip of its own. */
+.post-amount {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--font-serif);
+  font-weight: var(--weight-heading);
+  line-height: 1;
+  color: var(--navy-700);
+}
+.post-sym { font-size: var(--text-h4); }
+.post-num { font-size: var(--text-h2); font-variant-numeric: tabular-nums; }
+.post-period {
+  margin-left: 4px;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--text-sm);
+  color: var(--ink-500);
+}
+
+/* ── Groups ────────────────────────────────────────────────────────────── */
+
+/*
+ * A catalogue that is already sorted needs no filter control.
+ *
+ * Thirty-one seva behind a row of category chips makes a visitor click to see
+ * what is in each one. Grouped under their own headings, the whole catalogue
+ * is on the page and the categories are the structure rather than a control -
+ * the jump links move within the page instead of loading another.
+ */
+
+.group-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-8);
+}
+
+.group { margin-bottom: var(--space-9); }
+.group:last-child { margin-bottom: 0; }
+
+.group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-warm);
+}
+.group-name {
+  font-family: var(--font-serif);
+  font-weight: var(--weight-heading);
+  font-size: var(--text-h3);
+  color: var(--text-heading);
+}
+
+/* ── Listing ───────────────────────────────────────────────────────────── */
+
+/*
+ * Two lead stories, then the page gets on with it.
+ *
+ * Sixty-three posts at one card size asks a reader to choose between sixty-
+ * three equal things, which is the same as offering no way in. The two most
+ * recent take a wide picture and a serif title; the rest run three across,
+ * which is what a page of an archive should look like.
+ */
+
+.listing-lead {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: minmax(0, 1fr);
+  margin-bottom: var(--space-8);
+}
+@media (min-width: 64rem) { .listing-lead { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.listing-rest {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 40rem) { .listing-rest { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 64rem) { .listing-rest { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* ── Pager ─────────────────────────────────────────────────────────────── */
+
+/*
+ * Real links, not a "load more" button: a crawler walks the archive and a
+ * reader can send someone page four.
+ */
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-warm);
+}
+.pager-step { font-size: var(--text-sm); font-weight: 600; color: var(--navy-700); }
+.pager-step:hover { color: var(--gold-text); }
+.pager-step.is-off { color: var(--ink-500); }
+
+.pager-numbers { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1); }
+.pager-page {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding-inline: 8px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--navy-700);
+  font-variant-numeric: tabular-nums;
+}
+.pager-page:hover { background: var(--surface-warm); }
+.pager-page.is-here { background: var(--navy-700); color: var(--white); }
+.pager-gap { color: var(--ink-500); padding-inline: 4px; }
+
+/* ── Lead card ─────────────────────────────────────────────────────────── */
+
+/** A story that leads a listing: full-width picture, title at headline size. */
+.lead-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface-card);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition-med), transform var(--transition-med);
+}
+.lead-card:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); }
+
+.lead-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--surface-warm);
+}
+.lead-media img { object-fit: cover; transition: transform 500ms ease; }
+.lead-card:hover .lead-media img { transform: scale(1.03); }
+
+.lead-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+}
+.lead-title {
+  font-family: var(--font-serif);
+  font-weight: var(--weight-heading);
+  font-size: var(--text-h3);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+  text-wrap: balance;
+}
+.lead-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: auto;
+}
+
+/* ── Ladder ────────────────────────────────────────────────────────────── */
+
+/*
+ * A catalogue of gifts, banded by what they cost.
+ *
+ * Thirty seva at one card size makes a visitor scroll past ₹11,000 sponsorships
+ * looking for the ₹501 one, and most people are looking for the ₹501 one. The
+ * larger gifts keep the full card - they have a photograph and a promise worth
+ * the room - and the smaller ones become rows, three across, where the name and
+ * the amount are the whole decision.
+ */
+
+.ladder-step { margin-bottom: var(--space-8); }
+.ladder-step:last-child { margin-bottom: 0; }
+
+.ladder-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-warm);
+}
+.ladder-name {
+  font-family: var(--font-serif);
+  font-weight: var(--weight-heading);
+  font-size: var(--text-h3);
+  color: var(--text-heading);
+}
+.ladder-count {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--track-caps);
+  color: var(--ink-500);
+}
+
+.ladder-rows {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 40rem) { .ladder-rows { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 64rem) { .ladder-rows { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.ladder-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--surface-card);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-med);
+}
+.ladder-row:hover { border-color: var(--gold-300); box-shadow: var(--shadow-card); }
+
+.ladder-thumb {
+  position: relative;
+  flex: none;
+  width: 88px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--surface-warm);
+}
+.ladder-thumb img { object-fit: cover; }
+
+.ladder-title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--text-h4);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--text-heading);
+}
+.ladder-money {
+  margin-left: auto;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--font-serif);
+  font-weight: var(--weight-heading);
+  color: var(--navy-700);
+}
+.ladder-sym { font-size: var(--text-body); }
+.ladder-num { font-size: var(--text-h3); font-variant-numeric: tabular-nums; }
+
+/* ── Feed ──────────────────────────────────────────────────────────────── */
+
+/*
+ * A lead story, then the rest.
+ *
+ * Three equal cards give a reader no way in - every post argues for itself at
+ * the same volume and the eye picks none of them. The newest takes a half-width
+ * picture and a serif title; the others follow as thumbnail rows under a rule,
+ * which is what a section of writing looks like when someone has decided what
+ * matters most.
+ */
+
+.feature {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+}
+@media (min-width: 48rem) { .feature { grid-template-columns: 1.1fr 1fr; } }
+
+.feature-media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--surface-warm);
+}
+.feature-media img { object-fit: cover; transition: transform 500ms ease; }
+.feature:hover .feature-media img { transform: scale(1.03); }
+
+.feature-title {
+  font-family: var(--font-serif);
+  font-weight: var(--weight-heading);
+  font-size: var(--text-h2);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+}
+.feature-summary {
+  margin-top: var(--space-3);
+  max-width: 52ch;
+  color: var(--ink-600);
+}
+
+/** A post's label and date. Set under the title, never above it. */
+.feed-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.feed-tag { color: var(--gold-text); }
+
+/** Everything after the lead: two up on a desktop, stacked on a phone. */
+.feed-rest {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: minmax(0, 1fr);
+  margin-top: var(--space-7);
+  border-top: 1px solid var(--border-warm);
+  padding-top: var(--space-6);
+}
+@media (min-width: 48rem) {
+  .feed-rest { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6); }
+}
+
+.feed-row { display: flex; align-items: flex-start; gap: var(--space-4); }
+.feed-thumb {
+  position: relative;
+  flex: none;
+  width: 112px;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--surface-warm);
+}
+.feed-thumb img { object-fit: cover; }
+.feed-row-title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--text-h4);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--text-heading);
+}
+.feed-row:hover .feed-row-title { color: var(--gold-text); }
+
+/* ── Footer ────────────────────────────────────────────────────────────── */
+
+/*
+ * The mark, the line and the ask lead; the columns follow.
+ *
+ * A footer that opens with three equal columns makes a visitor read a menu
+ * before it says anything. Here the devotional line is set at heading size
+ * under a gold rule with the one gold action beside it, and where to go next
+ * sits below a hairline - the ask first, the directory after.
+ */
+
+.foot { background: var(--surface-footer); color: var(--text-on-dark-soft); }
+
+.foot-crown {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding-bottom: var(--space-6);
+}
+.foot-ask { max-width: 34ch; }
+.foot-rule {
+  width: 64px;
+  height: 1px;
+  background: var(--gold-400);
+  margin-top: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+.foot-line {
+  margin-top: var(--space-3);
+  font-family: var(--font-devanagari);
+  font-size: var(--text-h3);
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: var(--white);
+}
+
+.foot-cols {
+  display: grid;
+  gap: var(--space-7);
+  grid-template-columns: minmax(0, 1fr);
+  border-top: 1px solid var(--divider-on-dark);
+  padding-top: var(--space-6);
+}
+@media (min-width: 48rem) { .foot-cols { grid-template-columns: 1.4fr 1fr 1fr; } }
+
+.foot-head { margin-bottom: var(--space-3); color: var(--text-on-dark-soft); }
+
+.foot-link {
+  display: block;
+  padding-block: 2px;
+  color: var(--white);
+  font-size: var(--text-sm);
+}
+.foot-link:hover { color: var(--gold-300); }
+
+.foot-social {
+  display: inline-flex;
+  height: 36px;
+  width: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, .08);
+  color: var(--white);
+  transition: background var(--transition-fast);
+}
+.foot-social:hover { background: var(--gold-400); }
 
 /* ── Prose ─────────────────────────────────────────────────────────────── */
 
@@ -302,12 +1353,12 @@ a:hover { color: var(--link-hover); }
   padding-inline: var(--space-5);
   margin-top: var(--space-3);
   background: var(--btn-gold);
-  color: var(--white);
+  color: var(--navy-800);
   border-radius: var(--radius-pill);
   font-weight: 600;
   text-decoration: none;
 }
-.block-cta a:hover { background: var(--btn-gold-hover); color: var(--white); }
+.block-cta a:hover { background: var(--btn-gold-hover); color: var(--navy-800); }
 
 /* A kind this file has not styled still reads as a card rather than as text. */
 .block-default {

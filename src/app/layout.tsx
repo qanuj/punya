@@ -78,7 +78,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
          * no id.
          */}
         <Analytics config={site.config.analytics} />
-      </body>
+      {/* impeccable-live-start */}
+<script src="http://localhost:8401/live.js?token=b0eb3fb6-d6ac-462f-b4e3-3d89b0cf3231"></script>
+{/* impeccable-live-end */}
+</body>
     </html>
   );
 }

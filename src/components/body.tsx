@@ -168,7 +168,7 @@ function BlockView({
  * "Questions, answered", "Pricing questions, answered" - and adding a second
  * put two headings in a row saying the same thing.
  */
-export function Faqs({ faqs }: { faqs: CmsFaq[] }) {
+export function Faqs({ faqs, showGroupTitles = true }: { faqs: CmsFaq[]; showGroupTitles?: boolean }) {
   if (!faqs.length) return null;
 
   const groups: { title: string; items: CmsFaq[] }[] = [];
@@ -180,30 +180,21 @@ export function Faqs({ faqs }: { faqs: CmsFaq[] }) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="faqs">
       {groups.map((group, index) => (
         <div key={index}>
-          {group.title && <h3 className="mb-3" style={{ fontSize: "var(--text-h4)" }}>{group.title}</h3>}
-          <div
-            className="overflow-hidden rounded-[var(--radius-lg)]"
-            style={{ border: "1px solid var(--border-warm)", background: "var(--surface-card)" }}
-          >
+          {showGroupTitles && group.title && <h3 className="faq-title">{group.title}</h3>}
+
+          <div className="faq-grid">
             {group.items.map((faq, at) => (
-              <details
-                key={at}
-                style={{ borderTop: at ? "1px solid var(--border-warm)" : undefined }}
-              >
-                <summary
-                  className="cursor-pointer list-none px-5 py-4"
-                  style={{ fontWeight: 600, color: "var(--text-heading)" }}
-                >
-                  {faq.question}
-                </summary>
+              <div key={at} className="faq-item">
+                <div className="faq-rule" aria-hidden />
+                <h4 className="faq-q">{faq.question}</h4>
                 <div
-                  className="prose px-5 pb-4 text-[length:var(--text-sm)]"
+                  className="prose faq-a"
                   dangerouslySetInnerHTML={{ __html: renderMarkdown(faq.answer) }}
                 />
-              </details>
+              </div>
             ))}
           </div>
         </div>
