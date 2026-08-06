@@ -92,6 +92,12 @@ a:hover { color: var(--link-hover); }
   overflow-wrap: break-word;
 }
 
+/*
+ * Anchors land below the sticky header rather than under it: every h2 and h3
+ * carries an id, and the contents rail sends people to them.
+ */
+html { scroll-padding-top: 8.5rem; }
+
 .shell {
   margin-inline: auto;
   width: 100%;
@@ -373,15 +379,39 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
  * third thing in that row is one thing too many.
  */
 
+/**
+ * The mark, sized by the header's own state.
+ *
+ * The brand line is decoration repeated in the footer, so it is the first
+ * thing the header spends when it condenses - and it never appears on a phone,
+ * where the row has no width to lend it.
+ */
+.nav .mark-img {
+  width: var(--mark-size);
+  height: var(--mark-size);
+}
+.nav .mark-word { font-size: var(--mark-type); }
+.nav .mark-line {
+  display: none;
+  opacity: var(--mark-line);
+  height: calc(var(--mark-line) * 1lh);
+  overflow: hidden;
+}
+@media (min-width: 48rem) { .nav .mark-line { display: block; } }
+
 .mark-note {
   display: none;
   align-items: center;
   gap: var(--space-4);
   margin-left: var(--space-4);
+  white-space: nowrap;
+  opacity: var(--mark-line);
+  max-width: calc(var(--mark-line) * 24ch);
+  overflow: hidden;
 }
 .mark-rule { width: 1px; height: 40px; background: var(--border-warm); }
 .mark-name {
-  max-width: 14ch;
+  max-width: none;
   font-size: 11px;
   font-weight: 600;
   line-height: 1.5;
@@ -389,7 +419,26 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   letter-spacing: var(--track-caps);
   color: var(--ink-500);
 }
-@media (min-width: 48rem) { .mark-note { display: flex; } }
+@media (min-width: 48rem) { /**
+ * The mark, sized by the header's own state.
+ *
+ * The brand line is decoration repeated in the footer, so it is the first
+ * thing the header spends when it condenses - and it never appears on a phone,
+ * where the row has no width to lend it.
+ */
+.nav .mark-img {
+  width: var(--mark-size);
+  height: var(--mark-size);
+}
+.nav .mark-line {
+  display: none;
+  opacity: var(--mark-line);
+  height: calc(var(--mark-line) * 1lh);
+  overflow: hidden;
+}
+@media (min-width: 48rem) { .nav .mark-line { display: block; } }
+
+.mark-note { display: flex; } }
 
 /*
  * Two tiers: who this is and what to do, then where to go.
@@ -401,25 +450,94 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
  * hamburger - nothing is more than a swipe away and nothing is concealed.
  */
 
-.nav { background: var(--white); border-bottom: 1px solid var(--border-warm); }
+/*
+ * The header follows the page down, and gets out of the way while it does.
+ *
+ * The ask and the sections were reachable only by scrolling back to the top,
+ * and on a sixty-three post archive that is a long way back. But a sticky bar
+ * is rent paid on every screen: at full height it would take a sixth of a
+ * phone for the whole visit.
+ *
+ * So it condenses as the page moves - the mark shrinks, the brand line goes,
+ * the rows close up - and settles at about ninety pixels with the Donate
+ * button and every section still on it. Driven by the scroll position itself
+ * rather than by a listener, so there is no JavaScript in it and nothing to
+ * run on a mid-range phone. Where that is unsupported the header simply
+ * sticks at full height, which is the honest fallback.
+ */
+@property --mark-size {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 44px;
+}
+@property --mark-type {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 22px;
+}
+@property --nav-pad {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 12px;
+}
+@property --mark-line {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--white);
+  border-bottom: 1px solid var(--border-warm);
+  --mark-size: 44px;
+  --mark-type: var(--text-h3);
+  --nav-pad: var(--space-3);
+  --mark-line: 1;
+}
+
+@keyframes nav-condense {
+  to {
+    --mark-size: 30px;
+    --mark-type: var(--text-h4);
+    --nav-pad: 6px;
+    --mark-line: 0;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .nav {
+      animation: nav-condense linear both;
+      /* A scroll timeline drives progress, so the animation has no duration of
+         its own; the shorthand's 0s would otherwise pin it at the end. */
+      animation-duration: auto;
+      animation-timeline: scroll(root);
+      animation-range: 0 140px;
+    }
+  }
+}
 
 .nav-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  padding-block: var(--space-4);
+  padding-block: var(--nav-pad);
 }
 
 .nav-rail { border-top: 1px solid var(--border-warm); }
 .nav-scroll {
   display: flex;
   align-items: center;
-  gap: var(--space-6);
-  padding-block: var(--space-3);
+  gap: var(--space-5);
+  padding-block: var(--nav-pad);
   overflow-x: auto;
   scrollbar-width: none;
 }
+@media (min-width: 48rem) { .nav-scroll { gap: var(--space-6); } }
 .nav-scroll::-webkit-scrollbar { display: none; }
 
 .nav-link {
@@ -610,7 +728,7 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
 }
 @media (min-width: 64rem) {
   .toc-grid { grid-template-columns: 15rem minmax(0, 1fr) 16rem; }
-  .toc { position: sticky; top: var(--space-5); }
+  .toc { position: sticky; top: 9rem; }
 }
 
 .toc-head { margin-bottom: var(--space-3); }

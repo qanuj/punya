@@ -23,9 +23,10 @@ import { BadgeRow, selectFooterBadges } from "@tintorch/web";
 function Wordmark({ onDark = false }: { onDark?: boolean }) {
   return (
     <span className="inline-flex items-center gap-3">
-      <Image src="/brand/logo-icon.png" alt="" width={44} height={44} priority />
+      <Image className="mark-img" src="/brand/logo-icon.png" alt="" width={44} height={44} priority />
       <span className="leading-none">
         <span
+          className="mark-word"
           style={{
             fontFamily: "var(--font-serif)",
             fontWeight: "var(--weight-heading)",
@@ -36,7 +37,7 @@ function Wordmark({ onDark = false }: { onDark?: boolean }) {
           Punya<span style={{ color: "var(--gold-400)" }}>.ngo</span>
         </span>
         <span
-          className="mt-1 block"
+          className="mark-line mt-1 block"
           style={{
             fontSize: "10px",
             letterSpacing: "var(--track-caps)",
