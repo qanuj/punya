@@ -102,7 +102,9 @@ html { scroll-padding-top: 5.5rem; }
   margin-inline: auto;
   width: 100%;
   max-width: var(--content-max);
-  padding-inline: var(--space-5);
+  /* The larger of the system's gutter and the phone's own safe area, so a
+     rounded corner or a landscape notch never clips a line of type. */
+  padding-inline: max(var(--space-5), env(safe-area-inset-left));
 }
 
 /* ~96px of vertical rhythm, as the system specifies. */
@@ -246,7 +248,10 @@ html { scroll-padding-top: 5.5rem; }
 }
 /** The same pill as a link: through to the section, filtered. */
 a.chip {
-  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 14px;
   font-size: var(--text-sm);
   text-transform: none;
   letter-spacing: normal;
@@ -342,6 +347,7 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
 .topbar-contact {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   gap: var(--space-2);
   color: var(--white);
   font-size: var(--text-sm);
@@ -350,15 +356,17 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
 .topbar-contact:hover { color: var(--gold-300); }
 .topbar-contact svg { flex: none; color: var(--gold-300); }
 /** The address book, not the action: same row, less weight. */
-.topbar-mail { font-weight: 400; }
+.topbar-mail { display: none; font-weight: 400; }
+@media (min-width: 48rem) { .topbar-mail { display: inline-flex; } }
 
-.topbar-socials { display: flex; align-items: center; gap: var(--space-2); }
+.topbar-socials { display: none; align-items: center; gap: var(--space-2); }
+@media (min-width: 48rem) { .topbar-socials { display: flex; } }
 .topbar-social {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 28px;
-  width: 28px;
+  height: 44px;
+  width: 44px;
   border-radius: var(--radius-pill);
   color: var(--text-on-dark-soft);
   transition: background var(--transition-fast), color var(--transition-fast);
@@ -528,6 +536,8 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   }
 }
 
+.nav-top a { min-height: 44px; display: inline-flex; align-items: center; }
+
 .nav-top {
   display: flex;
   align-items: center;
@@ -566,6 +576,9 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
 .nav-scroll::-webkit-scrollbar { display: none; }
 
 .nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   white-space: nowrap;
   color: var(--navy-700);
   font-weight: 600;
@@ -888,6 +901,7 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
 .finder-input {
   flex: 1;
   min-width: 0;
+  min-height: 44px;
   border: 0;
   background: transparent;
   font: inherit;
@@ -896,7 +910,7 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
 }
 .finder-input:focus-visible { outline: none; box-shadow: none; }
 .finder-input::placeholder { color: var(--ink-500); }
-.finder-go { height: 36px; padding-inline: var(--space-4); font-size: var(--text-sm); }
+.finder-go { height: 44px; padding-inline: var(--space-4); font-size: var(--text-sm); }
 
 .finder-meta {
   display: flex;
@@ -909,6 +923,7 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
 .finder-rss {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   gap: var(--space-2);
   color: var(--navy-700);
   font-size: var(--text-sm);
@@ -1170,7 +1185,14 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   padding-top: var(--space-5);
   border-top: 1px solid var(--border-warm);
 }
-.pager-step { font-size: var(--text-sm); font-weight: 600; color: var(--navy-700); }
+.pager-step {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--navy-700);
+}
 .pager-step:hover { color: var(--gold-text); }
 .pager-step.is-off { color: var(--ink-500); }
 
@@ -1179,8 +1201,8 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 36px;
-  height: 36px;
+  min-width: 44px;
+  height: 44px;
   padding-inline: 8px;
   border-radius: var(--radius-pill);
   font-size: var(--text-sm);
@@ -1336,7 +1358,11 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
  * sits below a hairline - the ask first, the directory after.
  */
 
-.foot { background: var(--surface-footer); color: var(--text-on-dark-soft); }
+.foot {
+  background: var(--surface-footer);
+  color: var(--text-on-dark-soft);
+  padding-bottom: env(safe-area-inset-bottom);
+}
 
 .foot-crown {
   display: flex;
@@ -1375,8 +1401,9 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
 .foot-head { margin-bottom: var(--space-3); color: var(--text-on-dark-soft); }
 
 .foot-link {
-  display: block;
-  padding-block: 2px;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--white);
   font-size: var(--text-sm);
 }
@@ -1384,8 +1411,8 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
 
 .foot-social {
   display: inline-flex;
-  height: 36px;
-  width: 36px;
+  height: 44px;
+  width: 44px;
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-pill);
@@ -1394,6 +1421,14 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   transition: background var(--transition-fast);
 }
 .foot-social:hover { background: var(--gold-400); }
+
+/** The legal line: fine print, but still something a thumb has to hit. */
+.foot-legal a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--text-on-dark-soft);
+}
 
 /* ── Prose ─────────────────────────────────────────────────────────────── */
 

@@ -301,9 +301,9 @@ export async function SiteFooter() {
           style={{ borderTop: "1px solid var(--divider-on-dark)", fontSize: "var(--text-sm)" }}
         >
           <span>© {year} Punya.ngo · All Rights Reserved</span>
-          <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <span className="foot-legal flex flex-wrap items-center gap-x-4">
             {legal.map((link) => (
-              <Link key={link.href} href={link.href} style={{ color: "var(--text-on-dark-soft)" }}>
+              <Link key={link.href} href={link.href}>
                 {link.label}
               </Link>
             ))}

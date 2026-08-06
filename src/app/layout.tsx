@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Source_Sans_3, Tiro_Devanagari_Hindi } from "next/font/google";
 import { Analytics, AnalyticsNoScript, verificationMetadata } from "@tintorch/web";
 import { siteName } from "@/lib/site-name";
@@ -19,6 +19,16 @@ const devanagari = Tiro_Devanagari_Hindi({
   variable: "--font-devanagari-loaded",
   display: "swap",
 });
+
+/*
+ * `viewport-fit=cover` lets the navy bars reach the edges of a notched phone;
+ * the shell below keeps the words out of the rounded corners.
+ */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 /**
  * The site's own name and strapline come from the CMS, so a fork of this
