@@ -336,6 +336,9 @@ async function IndexPage({
       ? (entry.authors ?? []).some((author) => toSlug(author.name) === value)
       : itemTags(entry).some((name) => toSlug(name) === value);
 
+  /* A listing that came back with no meta never reached the CMS at all. */
+  const reachable = meta !== null || items.length > 0;
+
   const filtered = facet ? items.filter(matches) : items;
 
   /*
@@ -382,7 +385,7 @@ async function IndexPage({
           {facet && (
             <p className="mt-3">
               <Link href={type.path} className="link-strong">
-                ← All {type.pluralName.toLowerCase()}
+                ← All {type.pluralName}
               </Link>
             </p>
           )}
@@ -393,9 +396,38 @@ async function IndexPage({
       <div className="section">
         <div className="shell">
           {shown.length === 0 ? (
-            <p className="meta">
-              {search ? "Nothing found. Try another word, or browse everything." : "Nothing published here yet."}
-            </p>
+            <div>
+              {search ? (
+                <>
+                  <p className="lead" style={{ marginTop: 0 }}>
+                    Nothing matches “{search}”.
+                  </p>
+                  <p className="meta">
+                    Try a different word, or{" "}
+                    <Link href={type.path} className="link-strong">
+                      clear the search
+                    </Link>
+                    .
+                  </p>
+                </>
+              ) : reachable ? (
+                <p className="lead" style={{ marginTop: 0 }}>
+                  Nothing has been published here yet.
+                </p>
+              ) : (
+                /* No meta at all means the request failed rather than came back
+                   empty: saying "nothing published" would blame the trust for
+                   an outage. */
+                <>
+                  <p className="lead" style={{ marginTop: 0 }}>
+                    We could not load this section just now.
+                  </p>
+                  <p className="meta">
+                    It is a problem at our end, not yours. Please try again in a moment.
+                  </p>
+                </>
+              )}
+            </div>
           ) : directory ? (
             /* Few enough to give each one a row: the photograph, the place, the herd. */
             <div className="directory">
@@ -468,7 +500,7 @@ function DirectoryRow({ item, type }: { item: CmsItem; type: CmsType }) {
       )}
 
       <span className="directory-body">
-        <span className="directory-name block">{field(item, "name") || item.title}</span>
+        <h3 className="directory-name">{field(item, "name") || item.title}</h3>
         {place && <span className="meta block">{place}</span>}
         {itemSummary(item) && <span className="meta line-clamp-2 block">{itemSummary(item)}</span>}
 
@@ -906,16 +938,29 @@ function amountOf(item: CmsItem): { symbol: string; digits: string; period: stri
   };
 }
 
-/** No home item chosen, or the CMS is not wired up yet. */
+/**
+ * No home item chosen, or the CMS is not wired up yet.
+ *
+ * Whoever lands here in production is a visitor, not the person who can fix
+ * it, and environment variable names tell them nothing they can act on. They
+ * get a plain sentence; the instructions stay in development, where the person
+ * reading them is the one holding the keys.
+ */
 function EmptyHome() {
   return (
     <section className="section">
       <div className="shell max-w-prose">
-        <h1 className="text-2xl font-semibold tracking-tight">Nothing here yet</h1>
-        <p className="mt-2 text-muted">
-          Set <code>TINTORCH_CMS_URL</code> and <code>TINTORCH_CMS_KEY</code>, then choose a home
-          page in the CMS under Settings → Site. Everything this site serves comes from there.
-        </p>
+        <h1 className="page-title">Nothing here yet</h1>
+        {process.env.NODE_ENV === "production" ? (
+          <p className="lead">
+            This page has not been published yet. Please try again later.
+          </p>
+        ) : (
+          <p className="lead">
+            Set <code>TINTORCH_CMS_URL</code> and <code>TINTORCH_CMS_KEY</code>, then choose a home
+            page in the CMS under Settings → Site. Everything this site serves comes from there.
+          </p>
+        )}
       </div>
     </section>
   );

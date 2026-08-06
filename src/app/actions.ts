@@ -13,7 +13,12 @@ export async function submitFormAction(
   formData: FormData,
 ): Promise<SubmitResult> {
   const key = String(formData.get("__form") ?? "");
-  if (!key) return { ok: false, error: "This form is not connected yet." };
+  if (!key) {
+    return {
+      ok: false,
+      error: "This form is not working at the moment. Please use the phone number or email address in the footer.",
+    };
+  }
 
   const data: Record<string, unknown> = {};
   for (const [name, value] of formData.entries()) {

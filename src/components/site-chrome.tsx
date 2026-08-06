@@ -86,7 +86,7 @@ export async function SiteHeader() {
           person. The Hindi is the accent; the number beside it is the function. */}
       <div className="topbar">
         <div className="shell topbar-bar">
-          <span className="devanagari topbar-deva">गौ सेवा · गौ संरक्षण · गौ संवर्धन</span>
+          <span lang="hi" className="devanagari topbar-deva">गौ सेवा · गौ संरक्षण · गौ संवर्धन</span>
 
           <div className="topbar-right">
             {site.config.contact?.phone && (
@@ -215,7 +215,7 @@ export async function SiteFooter() {
           <div className="foot-ask">
             <Wordmark onDark />
             <div className="foot-rule" />
-            <p className="devanagari foot-line">हर सेवा बनेगी आपका पुण्य</p>
+            <p lang="hi" className="devanagari foot-line">हर सेवा बनेगी आपका पुण्य</p>
           </div>
 
           <Link href="/donate" className="btn btn-gold">

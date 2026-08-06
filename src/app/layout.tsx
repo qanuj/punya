@@ -85,8 +85,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             manager is configured. */}
         <AnalyticsNoScript config={site.config.analytics} />
 
+        {/* First in the tab order, visible only once focused. */}
+        <a href="#main" className="skip-link">
+          Skip to the page
+        </a>
+
         <SiteHeader />
-        <main>{children}</main>
+        <main id="main">{children}</main>
         <SiteFooter />
 
         {/*

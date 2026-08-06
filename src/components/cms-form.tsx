@@ -33,7 +33,7 @@ export function CmsForm({ form, source }: { form: CmsForm; source?: string }) {
         style={{ background: "var(--cream-100)", borderColor: "var(--gold-300)" }}
       >
         <p style={{ color: "var(--text-heading)", fontWeight: 600 }}>
-          {state.message || "Thank you. We have your message and will be in touch."}
+          {state.message || "Thank you. Your message has reached the trust, and someone will reply to you by email."}
         </p>
       </div>
     );
@@ -73,7 +73,13 @@ export function CmsForm({ form, source }: { form: CmsForm; source?: string }) {
             </label>
 
             {field.type === "textarea" ? (
-              <textarea {...shared} rows={4} style={{ ...shared.style, padding: "var(--space-3)" }} />
+              /* Bounded so a paste of a novel never reaches the CMS. */
+              <textarea
+                {...shared}
+                rows={4}
+                maxLength={2000}
+                style={{ ...shared.style, padding: "var(--space-3)" }}
+              />
             ) : field.type === "select" ? (
               <select {...shared}>
                 <option value="">Choose one</option>
@@ -86,6 +92,10 @@ export function CmsForm({ form, source }: { form: CmsForm; source?: string }) {
             ) : (
               <input
                 {...shared}
+                maxLength={200}
+                autoComplete={
+                  field.type === "email" ? "email" : field.type === "phone" ? "tel" : undefined
+                }
                 type={field.type === "phone" ? "tel" : field.type === "email" ? "email" : "text"}
               />
             )}
@@ -100,12 +110,16 @@ export function CmsForm({ form, source }: { form: CmsForm; source?: string }) {
         );
       })}
 
+      {/* Announced as well as coloured: red alone carries the message to nobody
+          who cannot see it. */}
       {state.error && (
-        <p style={{ color: "var(--danger)", fontSize: "var(--text-sm)" }}>{state.error}</p>
+        <p role="alert" style={{ color: "var(--danger)", fontSize: "var(--text-sm)" }}>
+          {state.error}
+        </p>
       )}
 
       <button type="submit" className="btn btn-gold w-full" disabled={pending}>
-        {pending ? "Sending…" : (form.submitLabel ?? "Send message")}
+        {pending ? "Sending your message…" : (form.submitLabel ?? "Send message")}
       </button>
     </form>
   );

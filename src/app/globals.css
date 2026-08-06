@@ -58,6 +58,40 @@ a:hover { color: var(--link-hover); }
   border-radius: var(--radius-sm);
 }
 
+/*
+ * Straight to the reading.
+ *
+ * A keyboard visitor crossed the utility bar, the mark and seven sections
+ * before reaching the page on every single load. Off-screen until focused,
+ * then it lands in the top-left corner as a real button.
+ */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: var(--space-3);
+  z-index: 60;
+  padding: var(--space-3) var(--space-5);
+  background: var(--navy-700);
+  color: var(--white);
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+}
+.skip-link:focus-visible { left: var(--space-5); color: var(--white); }
+
+/*
+ * A word with no break in it - a long URL pasted into a body, a compound in a
+ * translation - used to push a card wider than its column.
+ */
+.post-title,
+.lead-title,
+.directory-name,
+.feature-title,
+.hero-title,
+.page-title,
+.prose {
+  overflow-wrap: break-word;
+}
+
 .shell {
   margin-inline: auto;
   width: 100%;

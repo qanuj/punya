@@ -109,30 +109,35 @@ export function SevaCard({ item, type }: { item: CmsItem; type: CmsType }) {
   const digits = amountDigits(price, field(item, "currency"));
   const period = periodLabel(frequency);
 
+  const image = itemImage(item);
+
   return (
     <article className="post">
       <Link href={href} className="post-link">
-        <span className="post-media">
-          {itemImage(item) && (
+        {image && (
+          <span className="post-media">
             <Image
-              src={itemImage(item)}
+              src={image}
               alt=""
               fill
               sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
               className="object-cover"
             />
-          )}
-        </span>
+          </span>
+        )}
 
         <span className="post-body">
           <span className="post-rule" aria-hidden />
-          <span className="post-title block">{item.title}</span>
+          <h3 className="post-title">{item.title}</h3>
 
-          <span className="post-amount">
-            <span className="post-sym">{symbol}</span>
-            <span className="post-num">{digits}</span>
-            {period && <span className="post-period">{period.toLowerCase()}</span>}
-          </span>
+          {/* A seva with no price would otherwise render a rupee sign alone. */}
+          {digits && (
+            <span className="post-amount">
+              <span className="post-sym">{symbol}</span>
+              <span className="post-num">{digits}</span>
+              {period && <span className="post-period">{period.toLowerCase()}</span>}
+            </span>
+          )}
 
           {itemSummary(item) && (
             <span className="meta line-clamp-2 block">{itemSummary(item)}</span>
@@ -160,8 +165,8 @@ export function PostCard({ item, type }: { item: CmsItem; type: CmsType }) {
   return (
     <article className="post">
       <Link href={href} className="post-link">
-        <span className="post-media">
-          {image && (
+        {image && (
+          <span className="post-media">
             <Image
               src={image}
               alt=""
@@ -169,12 +174,12 @@ export function PostCard({ item, type }: { item: CmsItem; type: CmsType }) {
               sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
               className="object-cover"
             />
-          )}
-        </span>
+          </span>
+        )}
 
         <span className="post-body">
           <span className="post-rule" aria-hidden />
-          <span className="post-title block">{item.title}</span>
+          <h3 className="post-title">{item.title}</h3>
           {itemSummary(item) && (
             <span className="meta line-clamp-2 block">{itemSummary(item)}</span>
           )}
@@ -200,8 +205,8 @@ export function GaushalaCard({ item, type }: { item: CmsItem; type: CmsType }) {
   return (
     <article className="post">
       <Link href={href} className="post-link">
-        <span className="post-media">
-          {itemImage(item) && (
+        {itemImage(item) && (
+          <span className="post-media">
             <Image
               src={itemImage(item)}
               alt=""
@@ -209,12 +214,12 @@ export function GaushalaCard({ item, type }: { item: CmsItem; type: CmsType }) {
               sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
               className="object-cover"
             />
-          )}
-        </span>
+          </span>
+        )}
 
         <span className="post-body">
           <span className="post-rule" aria-hidden />
-          <span className="post-title block">{field(item, "name") || item.title}</span>
+          <h3 className="post-title">{field(item, "name") || item.title}</h3>
           {place && <span className="meta block">{place}</span>}
 
           {cows && (

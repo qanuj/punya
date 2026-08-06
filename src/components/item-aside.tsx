@@ -105,7 +105,7 @@ export async function ItemAside({ item, type }: { item: CmsItem; type: CmsType }
       {isSeva && (
         <div className="card space-y-3">
           <p className="meta">
-            Every contribution is recorded in the Punya app, with daily photos from the gaushala.
+            Every seva is recorded in the Punya app, with daily photos from the gaushala.
           </p>
           <Link href="/donate" className="btn btn-gold w-full">
             Offer this seva
@@ -161,7 +161,7 @@ export async function ItemAside({ item, type }: { item: CmsItem; type: CmsType }
             href={type.path}
             className="link-strong mt-4 inline-block"
           >
-            Browse {type.pluralName} →
+            {isSeva ? "See every seva" : `See every ${type.name.toLowerCase()}`} →
           </Link>
         </Panel>
       )}

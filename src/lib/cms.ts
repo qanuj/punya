@@ -279,7 +279,16 @@ export async function submitForm(
   data: Record<string, unknown>,
   sourceUrl?: string,
 ): Promise<SubmitResult> {
-  if (!configured) return { ok: false, error: "This form is not connected yet." };
+  /*
+   * A visitor cannot connect a form; the phone number and address in the
+   * footer are the way to reach the trust while it is not working.
+   */
+  if (!configured) {
+    return {
+      ok: false,
+      error: "This form is not working at the moment. Please use the phone number or email address in the footer.",
+    };
+  }
 
   try {
     const response = await fetch(`${BASE}/api/v1/content/forms/${encodeURIComponent(key)}`, {
@@ -296,14 +305,26 @@ export async function submitForm(
     };
 
     if (response.status === 422) {
-      return { ok: false, fieldErrors: body.fieldErrors, error: "Please check the fields marked." };
+      return {
+        ok: false,
+        fieldErrors: body.fieldErrors,
+        error: "Some details need another look. The fields to check are marked below.",
+      };
     }
-    if (!response.ok) return { ok: false, error: "That did not go through. Try again in a moment." };
+    if (!response.ok) {
+      return {
+        ok: false,
+        error: "Your message did not go through. Nothing was sent, so please try again in a moment.",
+      };
+    }
 
     return { ok: true, message: body.data?.message };
   } catch (error) {
     console.error("[cms] form submit failed", error);
-    return { ok: false, error: "We could not reach the server. Try again in a moment." };
+    return {
+      ok: false,
+      error: "We could not reach the server. Nothing was sent - check your connection and try again.",
+    };
   }
 }
 
