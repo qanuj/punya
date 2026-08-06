@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { badgeItems, getSite, isLegalPage, pageLinks } from "@/lib/cms";
+import { badgeItems, getSite, isLegalPage, pageLinks, type CmsSite } from "@/lib/cms";
 import { navLinks } from "@/lib/routing";
 import { BadgeRow, selectFooterBadges } from "@tintorch/web";
 
@@ -54,8 +54,17 @@ function Wordmark({ onDark = false }: { onDark?: boolean }) {
 /** Pages that earn a place in the top menu; the rest live in the footer. */
 const HEADER_PAGES = ["/about", "/our-work", "/transparency", "/contact"];
 
+/**
+ * Type sections the menu carries whether or not the CMS flags them.
+ *
+ * "Show in navigation" is off for Blog, so sixty-three posts were reachable
+ * only from a link inside a page. Listed here rather than waiting for the flag,
+ * and skipped when the flag is on so turning it on does not produce two Blogs.
+ */
+const HEADER_TYPES = ["/blog"];
+
 export async function SiteHeader() {
-  const [links, pages] = await Promise.all([navLinks(), pageLinks()]);
+  const [links, pages, site] = await Promise.all([navLinks(), pageLinks(), getSite()]);
 
   /*
    * The CMS flags types for navigation - which is how Gaushalas and Seva get
@@ -63,12 +72,13 @@ export async function SiteHeader() {
    * menu. Ordered as listed rather than as published, because a menu's order
    * is a decision and the CMS has nowhere to record it.
    */
-  const menu = [
+  const menu = dedupe([
     ...links,
+    ...typeLinks(site, HEADER_TYPES),
     ...HEADER_PAGES.map((href) => pages.find((page) => page.href === href)).filter(
       (page): page is NonNullable<typeof page> => Boolean(page),
     ),
-  ];
+  ]);
 
   return (
     <>
@@ -111,6 +121,19 @@ export async function SiteHeader() {
   );
 }
 
+/** Sections named by path, as the CMS titles them. */
+function typeLinks(site: CmsSite, paths: string[]) {
+  return paths
+    .map((path) => site.types.find((type) => type.path === path))
+    .filter((type): type is NonNullable<typeof type> => Boolean(type))
+    .map((type) => ({ href: type.path, label: type.pluralName || type.name }));
+}
+
+/** One entry per destination, the first wins - the CMS's own order leads. */
+function dedupe<T extends { href: string }>(links: T[]): T[] {
+  return [...new Map(links.map((link) => [link.href, link])).values()];
+}
+
 export async function SiteFooter() {
   const [site, badges, pages, nav] = await Promise.all([
     getSite(),
@@ -122,7 +145,11 @@ export async function SiteFooter() {
 
   // The policies read as fine print; everything else is a place to go.
   const legal = pages.filter(isLegalPage);
-  const explore = [...nav, ...pages.filter((page) => !isLegalPage(page))];
+  const explore = dedupe([
+    ...nav,
+    ...typeLinks(site, HEADER_TYPES),
+    ...pages.filter((page) => !isLegalPage(page)),
+  ]);
   const year = new Date().getFullYear();
 
   const address = [contact.addressLine, contact.locality, contact.region, contact.postalCode]

@@ -14,6 +14,8 @@ import {
 import { excerpt } from "@/lib/markdown";
 import { Body, Faqs } from "@/components/body";
 import { CardFor } from "@/components/cards";
+import { HomeSections } from "@/components/home-sections";
+import { ItemAside, itemTags, tagSlug } from "@/components/item-aside";
 import { itemPath, resolveRoute, type Route } from "@/lib/routing";
 
 /**
@@ -31,7 +33,10 @@ import { itemPath, resolveRoute, type Route } from "@/lib/routing";
 export const revalidate = 300;
 export const dynamicParams = true;
 
-type Params = { params: Promise<{ slug?: string[] }> };
+type Params = {
+  params: Promise<{ slug?: string[] }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
 
 /** The item a URL resolves to, or null when it names a listing or nothing. */
 async function resolve(segments: string[]): Promise<{ route: Route; item: CmsItem | null }> {
@@ -76,12 +81,16 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
-export default async function Page({ params }: Params) {
+export default async function Page({ params, searchParams }: Params) {
   const { slug = [] } = await params;
+  const query = (await searchParams) ?? {};
   const { route, item } = await resolve(slug);
 
   if (route.kind === "unknown") notFound();
-  if (route.kind === "index") return <IndexPage type={route.type} />;
+  if (route.kind === "index") {
+    const tag = typeof query.tag === "string" ? query.tag : "";
+    return <IndexPage type={route.type} tag={tag} />;
+  }
 
   /*
    * The root with no home item chosen is not an error - it is a workspace
@@ -92,10 +101,20 @@ export default async function Page({ params }: Params) {
     notFound();
   }
 
-  return <ItemPage item={item} />;
+  /*
+   * The home page carries its own words and then the site: a few seva and a
+   * few posts, each with a way through to the rest. Anywhere else, the page is
+   * the page.
+   */
+  return (
+    <>
+      <ItemPage item={item} type={route.kind === "item" ? route.type : undefined} />
+      {route.kind === "home" && <HomeSections />}
+    </>
+  );
 }
 
-function ItemPage({ item }: { item: CmsItem }) {
+function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
   const summary = itemSummary(item);
   const body = itemBody(item);
   const faqs = item.faqs ?? [];
@@ -121,8 +140,16 @@ function ItemPage({ item }: { item: CmsItem }) {
 
       {body && (
         <div className="section">
-          <div className="shell">
-            <Body markdown={body} />
+          {/*
+           * Prose and its aside. One column until there is room for two - a
+           * sidebar stacked under a long article on a phone is a footer nobody
+           * reaches.
+           */}
+          <div className="shell grid gap-10 lg:grid-cols-[minmax(0,1fr)_16rem]">
+            <div className="min-w-0">
+              <Body markdown={body} />
+            </div>
+            {type && <ItemAside item={item} type={type} />}
           </div>
         </div>
       )}
@@ -151,7 +178,7 @@ const SECTION_BLURB: Record<string, string> = {
   location: "The gaushalas in our care, and the cows living in each.",
 };
 
-async function IndexPage({ type }: { type: CmsType }) {
+async function IndexPage({ type, tag = "" }: { type: CmsType; tag?: string }) {
   const { items } = await listItems(type.key, {
     limit: 60,
     /*
@@ -164,6 +191,16 @@ async function IndexPage({ type }: { type: CmsType }) {
       "price,currency,frequency,category,popular,tags,city,region,cowsInCare,capacity",
   });
 
+  /*
+   * `?tag=` is what the labels in a page's sidebar point at. Filtered here
+   * rather than by the API, because the delivery API has no query for "carries
+   * this tag" and these listings are tens of items, not thousands.
+   */
+  const shown = tag
+    ? items.filter((entry) => itemTags(entry).some((name) => tagSlug(name) === tag))
+    : items;
+
+  const label = tag ? (itemTags(shown[0] ?? items[0] ?? ({} as never)).find((name) => tagSlug(name) === tag) ?? tag) : "";
   const blurb = SECTION_BLURB[type.key];
 
   return (
@@ -172,8 +209,16 @@ async function IndexPage({ type }: { type: CmsType }) {
       <header className="section-warm" style={{ paddingBlock: "var(--space-8)" }}>
         <div className="shell">
           <h1 style={{ fontSize: "var(--text-h1)", lineHeight: "var(--lh-tight)" }}>
-            {type.pluralName}
+            {label || type.pluralName}
           </h1>
+
+          {tag && (
+            <p className="mt-3">
+              <Link href={type.path} style={{ color: "var(--navy-700)" }}>
+                ← All {type.pluralName.toLowerCase()}
+              </Link>
+            </p>
+          )}
           {blurb && (
             <p
               className="mt-4 max-w-2xl"
@@ -187,11 +232,11 @@ async function IndexPage({ type }: { type: CmsType }) {
 
       <div className="section">
         <div className="shell">
-          {items.length === 0 ? (
+          {shown.length === 0 ? (
             <p style={{ color: "var(--ink-600)" }}>Nothing published here yet.</p>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {items.map((entry) => (
+              {shown.map((entry) => (
                 <CardFor key={entry.id} item={entry} type={type} />
               ))}
             </div>
