@@ -68,7 +68,6 @@ a:hover { color: var(--link-hover); }
 /* ~96px of vertical rhythm, as the system specifies. */
 .section { padding-block: var(--space-9); }
 .section-cream { background: var(--surface-section); }
-.section-warm { background: var(--surface-warm); }
 
 /** A Hindi accent line. Devotional, never carrying the functional content. */
 .devanagari {
@@ -226,7 +225,6 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   line-height: var(--lh-tight);
   color: var(--navy-700);
 }
-.figure-sm { font-size: var(--text-h4); }
 /** What sits beside a figure: a frequency, a capacity, a unit. */
 .figure-unit {
   color: var(--ink-500);
@@ -462,6 +460,9 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
 @media (min-width: 64rem) {
   .article-grid { grid-template-columns: minmax(0, 1fr) 16rem; align-items: start; }
 }
+
+/** The reading alone: a page with no sidebar keeps no room for one. */
+.article-solo { display: block; }
 
 .article-read .prose {
   max-width: 66ch;
@@ -831,6 +832,86 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   color: var(--ink-500);
 }
 
+/* ── Directory ─────────────────────────────────────────────────────────── */
+
+/*
+ * A place, given a row of its own.
+ *
+ * There are a handful of gaushalas, not sixty, and each one is somewhere real
+ * with a herd in it. A grid of small cards throws away both: the photograph
+ * runs the full height of the row, and the two numbers that say what the place
+ * holds are set as figures rather than as a sentence.
+ */
+
+.directory {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.directory-row {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: minmax(0, 1fr);
+  overflow: hidden;
+  background: var(--surface-section);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+.directory-row:hover { background: var(--surface-warm); }
+
+.directory-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--cream-300);
+}
+.directory-media img { object-fit: cover; transition: transform 500ms ease; }
+.directory-row:hover .directory-media img { transform: scale(1.03); }
+
+.directory-row.is-plain { grid-template-columns: minmax(0, 1fr); }
+
+.directory-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+}
+.directory-name {
+  font-family: var(--font-serif);
+  font-weight: var(--weight-heading);
+  font-size: var(--text-h2);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+}
+
+.directory-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-7);
+  margin-top: auto;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-warm);
+}
+.directory-figure {
+  font-family: var(--font-serif);
+  font-weight: var(--weight-heading);
+  font-size: var(--text-h2);
+  line-height: 1;
+  color: var(--navy-700);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 48rem) {
+  .directory-row { grid-template-columns: 18rem minmax(0, 1fr); }
+  .directory-row.is-plain { grid-template-columns: minmax(0, 1fr); }
+  .directory-row.is-plain .directory-body { padding-left: var(--space-6); }
+  .directory-media { aspect-ratio: auto; height: 100%; }
+  .directory-row.is-plain { grid-template-columns: minmax(0, 1fr); }
+
+.directory-body { padding-left: 0; }
+}
+
 /* ── Groups ────────────────────────────────────────────────────────────── */
 
 /*
@@ -979,96 +1060,6 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   gap: var(--space-2);
   margin-top: auto;
 }
-
-/* ── Ladder ────────────────────────────────────────────────────────────── */
-
-/*
- * A catalogue of gifts, banded by what they cost.
- *
- * Thirty seva at one card size makes a visitor scroll past ₹11,000 sponsorships
- * looking for the ₹501 one, and most people are looking for the ₹501 one. The
- * larger gifts keep the full card - they have a photograph and a promise worth
- * the room - and the smaller ones become rows, three across, where the name and
- * the amount are the whole decision.
- */
-
-.ladder-step { margin-bottom: var(--space-8); }
-.ladder-step:last-child { margin-bottom: 0; }
-
-.ladder-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-5);
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--border-warm);
-}
-.ladder-name {
-  font-family: var(--font-serif);
-  font-weight: var(--weight-heading);
-  font-size: var(--text-h3);
-  color: var(--text-heading);
-}
-.ladder-count {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: var(--track-caps);
-  color: var(--ink-500);
-}
-
-.ladder-rows {
-  display: grid;
-  gap: var(--space-3);
-  grid-template-columns: minmax(0, 1fr);
-}
-@media (min-width: 40rem) { .ladder-rows { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 64rem) { .ladder-rows { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-
-.ladder-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-4);
-  background: var(--surface-card);
-  border: 1px solid var(--border-warm);
-  border-radius: var(--radius-md);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-med);
-}
-.ladder-row:hover { border-color: var(--gold-300); box-shadow: var(--shadow-card); }
-
-.ladder-thumb {
-  position: relative;
-  flex: none;
-  width: 88px;
-  aspect-ratio: 1;
-  overflow: hidden;
-  border-radius: var(--radius-sm);
-  background: var(--surface-warm);
-}
-.ladder-thumb img { object-fit: cover; }
-
-.ladder-title {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: var(--text-h4);
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-  color: var(--text-heading);
-}
-.ladder-money {
-  margin-left: auto;
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  font-family: var(--font-serif);
-  font-weight: var(--weight-heading);
-  color: var(--navy-700);
-}
-.ladder-sym { font-size: var(--text-body); }
-.ladder-num { font-size: var(--text-h3); font-variant-numeric: tabular-nums; }
 
 /* ── Feed ──────────────────────────────────────────────────────────────── */
 

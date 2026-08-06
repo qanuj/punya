@@ -4,22 +4,6 @@ import { field, getSite, itemImage, itemSummary, listItems, type CmsItem, type C
 import { itemPath } from "@/lib/routing";
 import { CardFor } from "@/components/cards";
 
-/** Rupees as a person writes them: ₹2,100, not ₹2100.00. */
-function money(amount: string, currency: string): string {
-  const value = Number(amount);
-  if (!Number.isFinite(value)) return amount;
-
-  try {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: currency || "INR",
-      maximumFractionDigits: 0,
-    }).format(value);
-  } catch {
-    return `${currency} ${value.toLocaleString("en-IN")}`;
-  }
-}
-
 /** A date as a reader writes it. */
 function when(value: string | null | undefined): string {
   if (!value) return "";
@@ -117,55 +101,7 @@ export async function HomeSections() {
 
             <div className="card-grid">
               {featured.map((item) => (
-                <article key={item.id} className="seva-card">
-                  <div className="seva-head">
-                    <span className="seva-figure">
-                      {money(field(item, "price"), field(item, "currency"))}
-                    </span>
-                    {field(item, "frequency") && (
-                      <span className="seva-freq">
-                        {field(item, "frequency").toLowerCase() === "one-time"
-                          ? "once"
-                          : field(item, "frequency").toLowerCase()}
-                      </span>
-                    )}
-                  </div>
-
-                  <h3 className="seva-name">
-                    <Link href={itemPath(seva, item.slug)}>{item.title}</Link>
-                  </h3>
-
-                  {itemSummary(item) && (
-                    <p className="seva-summary line-clamp-2">{itemSummary(item)}</p>
-                  )}
-
-                  <div className="seva-band">
-                    {itemImage(item) && (
-                      <Image
-                        src={itemImage(item)}
-                        alt=""
-                        fill
-                        sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
-                        className="object-cover"
-                      />
-                    )}
-                  </div>
-
-                  <div className="seva-foot">
-                    <span className="flex flex-wrap items-center gap-2">
-                      {field(item, "category") && (
-                        <span className="chip">{field(item, "category")}</span>
-                      )}
-                      {item.fields?.popular === true && (
-                        <span className="chip chip-gold">Most chosen</span>
-                      )}
-                    </span>
-
-                    <Link href={itemPath(seva, item.slug)} className="btn btn-gold shrink-0">
-                      Offer seva
-                    </Link>
-                  </div>
-                </article>
+                <CardFor key={item.id} item={item} type={seva} />
               ))}
             </div>
           </div>

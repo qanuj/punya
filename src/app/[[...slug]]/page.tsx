@@ -195,7 +195,15 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
 
       {body && (
         <div className="section">
-          <div className={sections.length > 1 ? "shell toc-grid" : "shell article-grid"}>
+          <div
+            className={
+              sections.length > 1
+                ? "shell toc-grid"
+                : type
+                  ? "shell article-grid"
+                  : "shell article-solo"
+            }
+          >
             {sections.length > 1 && (
               <nav className="toc" aria-label="On this page">
                 <p className="label-caps toc-head">On this page</p>
@@ -439,19 +447,25 @@ function DirectoryRow({ item, type }: { item: CmsItem; type: CmsType }) {
   const cows = field(item, "cowsInCare");
   const capacity = field(item, "capacity");
 
+  const image = itemImage(item);
+
+  /* No photograph means no 18rem of empty cream: the row closes up instead. */
   return (
-    <Link href={itemPath(type, item.slug)} className="directory-row">
-      <span className="directory-media">
-        {itemImage(item) && (
+    <Link
+      href={itemPath(type, item.slug)}
+      className={image ? "directory-row" : "directory-row is-plain"}
+    >
+      {image && (
+        <span className="directory-media">
           <Image
-            src={itemImage(item)}
+            src={image}
             alt=""
             fill
             sizes="(min-width: 768px) 18rem, 90vw"
             className="object-cover"
           />
-        )}
-      </span>
+        </span>
+      )}
 
       <span className="directory-body">
         <span className="directory-name block">{field(item, "name") || item.title}</span>
