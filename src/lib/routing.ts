@@ -10,16 +10,24 @@ import { getSite, type CmsSite, type CmsType } from "@/lib/cms";
  *
  * Four shapes, and nothing else:
  *
- *   /                    the item chosen as the home page
- *   /blog                every Blog Post
- *   /blog/some-post      one Blog Post
- *   /some-page           one item of the type that owns the root
+ *   /                        the item chosen as the home page
+ *   /blog                    every Blog Post
+ *   /blog/some-post          one Blog Post
+ *   /blog/tag/gau-puja       every Blog Post carrying a label
+ *   /blog/author/anuj-pandey every Blog Post by one person
+ *   /some-page               one item of the type that owns the root
  */
 export type Route =
   | { kind: "home" }
   | { kind: "index"; type: CmsType }
+  | { kind: "filter"; type: CmsType; facet: Facet; value: string }
   | { kind: "item"; type: CmsType; slug: string }
   | { kind: "unknown" };
+
+/** The ways a section can be narrowed. Both are paths, not query strings. */
+export type Facet = "tag" | "author";
+
+const FACETS: Facet[] = ["tag", "author"];
 
 const clean = (path: string) => path.replace(/^\/+|\/+$/g, "");
 
@@ -47,10 +55,25 @@ export function resolveRoute(site: CmsSite, segments: string[]): Route {
     const prefix = clean(type.path);
     if (path === prefix) return { kind: "index", type };
     if (path.startsWith(`${prefix}/`)) {
-      const slug = path.slice(prefix.length + 1);
+      const rest = path.slice(prefix.length + 1).split("/");
+
+      /*
+       * A narrowed section: /blog/tag/gau-puja.
+       *
+       * A path rather than ?tag=, so each one is a page in its own right - one
+       * a crawler will index and a person can link to, which a query string on
+       * a listing is not.
+       *
+       * An item slugged "tag" is still reachable at /blog/tag, because that is
+       * one segment and this needs two.
+       */
+      if (rest.length === 2 && FACETS.includes(rest[0] as Facet)) {
+        return { kind: "filter", type, facet: rest[0] as Facet, value: rest[1]! };
+      }
+
       // One level below the prefix. Anything deeper is not a URL this site
       // publishes, and guessing at it would serve the wrong item.
-      return slug.includes("/") ? { kind: "unknown" } : { kind: "item", type, slug };
+      return rest.length > 1 ? { kind: "unknown" } : { kind: "item", type, slug: rest[0]! };
     }
   }
 
@@ -83,4 +106,21 @@ export async function navLinks(): Promise<{ label: string; href: string }[]> {
   return site.nav
     .filter((entry) => entry.label && entry.path)
     .map((entry) => ({ label: entry.label, href: entry.path }));
+}
+
+/** A label as it appears in a URL. One definition, so links and routes agree. */
+export function toSlug(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/** Where a narrowed section lives. */
+export function facetPath(type: CmsType, facet: Facet, value: string): string {
+  const prefix = clean(type.path);
+  const slug = toSlug(value);
+  return prefix ? `/${prefix}/${facet}/${slug}` : `/${facet}/${slug}`;
 }

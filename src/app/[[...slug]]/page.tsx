@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import {
   getItem,
   getSite,
@@ -15,8 +15,8 @@ import { excerpt } from "@/lib/markdown";
 import { Body, Faqs } from "@/components/body";
 import { CardFor } from "@/components/cards";
 import { HomeSections } from "@/components/home-sections";
-import { ItemAside, itemTags, tagSlug } from "@/components/item-aside";
-import { itemPath, resolveRoute, type Route } from "@/lib/routing";
+import { ItemAside, itemTags } from "@/components/item-aside";
+import { facetPath, itemPath, resolveRoute, toSlug, type Facet, type Route } from "@/lib/routing";
 
 /**
  * Every page on the site.
@@ -61,6 +61,25 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     return { title: route.type.pluralName };
   }
 
+  /*
+   * A narrowed section is a page of its own, so it says what it is. Without a
+   * title of its own every tag page would share the section's, and a search
+   * engine shown forty identical titles picks one and drops the rest.
+   */
+  if (route.kind === "filter") {
+    const name = route.value.replace(/-/g, " ");
+    return {
+      title:
+        route.facet === "author"
+          ? `${name} - ${route.type.pluralName}`
+          : `${name} - ${route.type.pluralName}`,
+      description:
+        route.facet === "author"
+          ? `Everything in ${route.type.pluralName} written by ${name}.`
+          : `Everything in ${route.type.pluralName} about ${name}.`,
+    };
+  }
+
   if (!item) return {};
 
   const title = item.seo?.metaTitle || item.title;
@@ -88,8 +107,18 @@ export default async function Page({ params, searchParams }: Params) {
 
   if (route.kind === "unknown") notFound();
   if (route.kind === "index") {
+    /*
+     * ?tag= was the first shape these filters took. Anything already linked or
+     * indexed under it is moved to the path form rather than served at both.
+     */
     const tag = typeof query.tag === "string" ? query.tag : "";
-    return <IndexPage type={route.type} tag={tag} />;
+    if (tag) permanentRedirect(facetPath(route.type, "tag", tag));
+
+    return <IndexPage type={route.type} />;
+  }
+
+  if (route.kind === "filter") {
+    return <IndexPage type={route.type} facet={route.facet} value={route.value} />;
   }
 
   /*
@@ -178,7 +207,15 @@ const SECTION_BLURB: Record<string, string> = {
   location: "The gaushalas in our care, and the cows living in each.",
 };
 
-async function IndexPage({ type, tag = "" }: { type: CmsType; tag?: string }) {
+async function IndexPage({
+  type,
+  facet,
+  value = "",
+}: {
+  type: CmsType;
+  facet?: Facet;
+  value?: string;
+}) {
   const { items } = await listItems(type.key, {
     limit: 60,
     /*
@@ -192,15 +229,30 @@ async function IndexPage({ type, tag = "" }: { type: CmsType; tag?: string }) {
   });
 
   /*
-   * `?tag=` is what the labels in a page's sidebar point at. Filtered here
-   * rather than by the API, because the delivery API has no query for "carries
-   * this tag" and these listings are tens of items, not thousands.
+   * Narrowed here rather than by the API: the delivery API has no query for
+   * "carries this label" or "written by", and these listings are tens of items
+   * rather than thousands.
    */
-  const shown = tag
-    ? items.filter((entry) => itemTags(entry).some((name) => tagSlug(name) === tag))
-    : items;
+  const matches = (entry: CmsItem) =>
+    facet === "author"
+      ? (entry.authors ?? []).some((author) => toSlug(author.name) === value)
+      : itemTags(entry).some((name) => toSlug(name) === value);
 
-  const label = tag ? (itemTags(shown[0] ?? items[0] ?? ({} as never)).find((name) => tagSlug(name) === tag) ?? tag) : "";
+  const shown = facet ? items.filter(matches) : items;
+
+  /*
+   * A label nothing carries is not a page. Served as an empty section it is a
+   * thin page a crawler will index and a visitor will bounce from, and there
+   * are as many of those as someone can type.
+   */
+  if (facet && shown.length === 0) notFound();
+
+  // The label as it was written, not as it was slugified.
+  const label = !facet
+    ? ""
+    : facet === "author"
+      ? ((shown[0]?.authors ?? []).find((author) => toSlug(author.name) === value)?.name ?? value)
+      : (itemTags(shown[0] ?? ({} as CmsItem)).find((name) => toSlug(name) === value) ?? value);
   const blurb = SECTION_BLURB[type.key];
 
   return (
@@ -212,7 +264,7 @@ async function IndexPage({ type, tag = "" }: { type: CmsType; tag?: string }) {
             {label || type.pluralName}
           </h1>
 
-          {tag && (
+          {facet && (
             <p className="mt-3">
               <Link href={type.path} style={{ color: "var(--navy-700)" }}>
                 ← All {type.pluralName.toLowerCase()}

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { field, itemImage, listItems, type CmsItem, type CmsType } from "@/lib/cms";
-import { itemPath } from "@/lib/routing";
+import { facetPath, itemPath, toSlug } from "@/lib/routing";
 
 /**
  * The column beside a page.
@@ -15,16 +15,6 @@ import { itemPath } from "@/lib/routing";
 const CARD_FIELDS =
   "title,name,summary,featuredImage,image,images,publishedAt,tags,categories," +
   "price,currency,frequency,category,popular";
-
-/** A tag as it appears in a URL, matching the filter the index reads. */
-export function tagSlug(tag: string): string {
-  return tag
-    .trim()
-    .toLowerCase()
-    .replace(/&/g, " and ")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
 /** Every label an item carries, however its type stores them. */
 export function itemTags(item: CmsItem): string[] {
@@ -49,13 +39,13 @@ export function itemTags(item: CmsItem): string[] {
  */
 async function related(item: CmsItem, type: CmsType, take: number): Promise<CmsItem[]> {
   const { items } = await listItems(type.key, { limit: 40, fields: CARD_FIELDS });
-  const mine = new Set(itemTags(item).map(tagSlug));
+  const mine = new Set(itemTags(item).map(toSlug));
 
   return items
     .filter((entry) => entry.id !== item.id)
     .map((entry) => ({
       entry,
-      shared: itemTags(entry).filter((tag) => mine.has(tagSlug(tag))).length,
+      shared: itemTags(entry).filter((tag) => mine.has(toSlug(tag))).length,
     }))
     .sort((a, b) => b.shared - a.shared)
     .slice(0, take)
@@ -110,10 +100,11 @@ function Row({ item, type }: { item: CmsItem; type: CmsType }) {
 
 export async function ItemAside({ item, type }: { item: CmsItem; type: CmsType }) {
   const tags = itemTags(item);
+  const authors = item.authors ?? [];
   const others = await related(item, type, 4);
 
   // Nothing to say: a page with no labels and a type with nothing else in it.
-  if (!tags.length && !others.length) return null;
+  if (!tags.length && !authors.length && !others.length) return null;
 
   const isSeva = type.key === "product";
 
@@ -130,6 +121,24 @@ export async function ItemAside({ item, type }: { item: CmsItem; type: CmsType }
         </div>
       )}
 
+      {authors.length > 0 && (
+        <Panel title="Written by">
+          <ul className="space-y-1">
+            {authors.map((author) => (
+              <li key={author.id}>
+                <Link
+                  href={facetPath(type, "author", author.name)}
+                  className="text-sm font-semibold"
+                  style={{ color: "var(--navy-700)" }}
+                >
+                  {author.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      )}
+
       {tags.length > 0 && (
         <Panel title={isSeva ? "Category" : "Tags"}>
           <ul className="flex flex-wrap gap-2">
@@ -138,7 +147,7 @@ export async function ItemAside({ item, type }: { item: CmsItem; type: CmsType }
                 {/* Through to the section, filtered - a label that is not a way
                     to more of the same is decoration. */}
                 <Link
-                  href={`${type.path}?tag=${tagSlug(tag)}`}
+                  href={facetPath(type, "tag", tag)}
                   className="inline-block rounded-[var(--radius-pill)] px-3 py-1.5 text-sm transition-colors"
                   style={{ background: "var(--surface-warm)", color: "var(--navy-700)" }}
                 >
