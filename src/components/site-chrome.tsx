@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { badgeItems, getSite } from "@/lib/cms";
+import { badgeItems, getSite, isLegalPage, pageLinks } from "@/lib/cms";
 import { navLinks } from "@/lib/routing";
 import { BadgeRow, selectFooterBadges } from "@tintorch/web";
 
@@ -51,8 +51,24 @@ function Wordmark({ onDark = false }: { onDark?: boolean }) {
   );
 }
 
+/** Pages that earn a place in the top menu; the rest live in the footer. */
+const HEADER_PAGES = ["/about", "/our-work", "/transparency", "/contact"];
+
 export async function SiteHeader() {
-  const links = await navLinks();
+  const [links, pages] = await Promise.all([navLinks(), pageLinks()]);
+
+  /*
+   * The CMS flags types for navigation - which is how Gaushalas and Seva get
+   * here - but a page is not a type, so About and Contact had no way into any
+   * menu. Ordered as listed rather than as published, because a menu's order
+   * is a decision and the CMS has nowhere to record it.
+   */
+  const menu = [
+    ...links,
+    ...HEADER_PAGES.map((href) => pages.find((page) => page.href === href)).filter(
+      (page): page is NonNullable<typeof page> => Boolean(page),
+    ),
+  ];
 
   return (
     <>
@@ -74,7 +90,7 @@ export async function SiteHeader() {
           </Link>
 
           <nav className="flex flex-wrap items-center gap-x-6 gap-y-1">
-            {links.map((link) => (
+            {menu.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -96,8 +112,17 @@ export async function SiteHeader() {
 }
 
 export async function SiteFooter() {
-  const [site, badges] = await Promise.all([getSite(), badgeItems()]);
+  const [site, badges, pages, nav] = await Promise.all([
+    getSite(),
+    badgeItems(),
+    pageLinks(),
+    navLinks(),
+  ]);
   const { contact = {}, socialLinks = [] } = site.config;
+
+  // The policies read as fine print; everything else is a place to go.
+  const legal = pages.filter(isLegalPage);
+  const explore = [...nav, ...pages.filter((page) => !isLegalPage(page))];
   const year = new Date().getFullYear();
 
   const address = [contact.addressLine, contact.locality, contact.region, contact.postalCode]
@@ -107,7 +132,7 @@ export async function SiteFooter() {
   return (
     <footer style={{ background: "var(--surface-footer)", color: "var(--text-on-dark-soft)" }}>
       <div className="shell py-14">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr]">
+        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
           <div className="space-y-4">
             <Wordmark onDark />
             <p className="devanagari max-w-sm" style={{ fontSize: "var(--text-body)" }}>
@@ -131,6 +156,32 @@ export async function SiteFooter() {
               )}
             </div>
           </div>
+
+          {/*
+           * Every page this site publishes. They were live and in the sitemap
+           * with nothing linking to them, so the only way to reach Transparency
+           * or the policies was to already know the URL.
+           */}
+          {explore.length > 0 && (
+            <nav className="space-y-2" aria-label="Sections">
+              <p
+                className="text-[11px] uppercase"
+                style={{ color: "var(--text-on-dark-soft)", letterSpacing: "var(--track-caps)" }}
+              >
+                Explore
+              </p>
+              {explore.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="block"
+                  style={{ color: "var(--white)", fontSize: "var(--text-sm)" }}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          )}
 
           <div className="space-y-4">
             <Link href="/donate" className="btn btn-gold">
@@ -181,7 +232,14 @@ export async function SiteFooter() {
           style={{ borderTop: "1px solid var(--divider-on-dark)", fontSize: "var(--text-sm)" }}
         >
           <span>© {year} Punya.ngo · All Rights Reserved</span>
-          <span>Made with ♥ for Gau Seva</span>
+
+          <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            {legal.map((link) => (
+              <Link key={link.href} href={link.href} style={{ color: "var(--text-on-dark-soft)" }}>
+                {link.label}
+              </Link>
+            ))}
+          </span>
         </div>
       </div>
     </footer>

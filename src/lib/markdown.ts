@@ -68,7 +68,34 @@ export type Segment =
    *  as a component rather than rendered here as a string. */
   | { kind: "form"; formKey: string; heading: string; intro: string };
 
-const toHtml = (md: string) => marked.parse(md.trim(), { async: false }) as string;
+/**
+ * Undo the old site's image URLs.
+ *
+ * This content was migrated out of a Next app, and its bodies carry the
+ * optimizer's own URLs verbatim - `/_next/image?url=<encoded>&w=3840&dpl=...`.
+ * Those point at a build that no longer exists, so nine images across the pages
+ * rendered as broken icons with their alt text showing.
+ *
+ * Unwrapped back to whatever was inside: a media.tintorch.com URL works
+ * immediately, and a root-relative one resolves against this site, where the
+ * four files it names now live in public/.
+ */
+export function unwrapMigratedImages(md: string): string {
+  return md.replace(
+    /\/_next\/image\?url=([^)\s"']+)/g,
+    (whole, encoded: string) => {
+      // The optimizer's own parameters follow the url; they are not part of it.
+      const [url] = encoded.split("&");
+      try {
+        return decodeURIComponent(url ?? "") || whole;
+      } catch {
+        return whole;
+      }
+    },
+  );
+}
+
+const toHtml = (md: string) => marked.parse(unwrapMigratedImages(md.trim()), { async: false }) as string;
 
 /** A node in the body, before it is grouped into segments. */
 type Node =

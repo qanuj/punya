@@ -6,6 +6,27 @@
 @import "../styles/spacing.css";
 
 /*
+ * Three deviations from the system's type scale, all for reading.
+ *
+ * The scale was drawn for a brochure: 15px body, 13px captions, and Playfair
+ * Display for every heading down to 18px. Playfair is a display face - its
+ * thin strokes are the point at 44px and a liability at 18, which is the size
+ * every card title and section heading actually renders at. On a site whose
+ * job is explaining where someone's donation goes, that is the wrong trade.
+ *
+ * So: the body sizes go up a step, long-form text takes the darker ink rather
+ * than the grey meant for secondary copy, and headings below h3 are set in the
+ * sans. The display sizes - hero, h1, h2 - keep Playfair, which is where the
+ * brand actually lives.
+ */
+:root {
+  --text-body: 16.5px;
+  --text-body-lg: 18px;
+  --text-sm: 14px;
+  --lh-body: 1.7;
+}
+
+/*
  * Navy for trust, gold for action, cream for warmth, on white. Serif headings,
  * humanist sans body, Devanagari for the devotional accents. Solid surfaces
  * only - the system asks for no gradients outside a photo fade, and no blur.
@@ -293,4 +314,32 @@ a:hover { color: var(--link-hover); }
   background: var(--surface-card);
   border: 1px solid var(--border-warm);
   padding: var(--space-5);
+}
+
+/* ── Reading ───────────────────────────────────────────────────────────── */
+
+/**
+ * Small headings in the sans.
+ *
+ * A card title, a step name, an FAQ question: all of them land at 18px, where
+ * Playfair's hairlines break up and a reader slows down. The sans holds its
+ * weight at that size, and the serif is still doing the brand's work anywhere
+ * it is large enough to be read as a face rather than as text.
+ */
+h4,
+.card-title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+}
+
+.card-title {
+  font-size: var(--text-h4);
+  color: var(--text-heading);
+}
+
+/* Long-form copy takes the darker ink; the grey is for what sits beside it. */
+.prose {
+  color: var(--ink-900);
 }

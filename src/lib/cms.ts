@@ -306,3 +306,34 @@ export async function submitForm(
     return { ok: false, error: "We could not reach the server. Try again in a moment." };
   }
 }
+
+/* ── Pages, for the menus ───────────────────────────────────────────────── */
+
+export type PageLink = { href: string; label: string };
+
+/**
+ * The pages this site publishes, minus the one serving as the home page.
+ *
+ * The header carries the types the CMS flags for navigation, which is how
+ * Gaushalas and Seva get there - but a page is not a type, so About, Contact,
+ * Transparency and the policies had no way into any menu at all. They were
+ * live, in the sitemap, and unreachable by clicking.
+ *
+ * The home item is dropped because it answers at "/" and its own slug
+ * redirects there, so listing it is a link to a redirect.
+ */
+export async function pageLinks(): Promise<PageLink[]> {
+  const [site, items] = await Promise.all([
+    getSite(),
+    listAllItems("page", { fields: "title", revalidate: 3600 }),
+  ]);
+
+  return items
+    .filter((item) => item.id !== site.home?.id && item.slug !== "home")
+    .map((item) => ({ href: `/${item.slug}`, label: item.title }));
+}
+
+/** Policies and terms, which belong in the fine print rather than the menu. */
+export function isLegalPage(link: PageLink): boolean {
+  return /privacy|terms|policy|cookie|refund|disclaimer|accessib/i.test(link.href);
+}

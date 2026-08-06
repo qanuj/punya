@@ -13,6 +13,7 @@ import {
 } from "@/lib/cms";
 import { excerpt } from "@/lib/markdown";
 import { Body, Faqs } from "@/components/body";
+import { CardFor } from "@/components/cards";
 import { itemPath, resolveRoute, type Route } from "@/lib/routing";
 
 /**
@@ -137,36 +138,67 @@ function ItemPage({ item }: { item: CmsItem }) {
   );
 }
 
+/**
+ * One line under a section's heading.
+ *
+ * Written here rather than in the CMS because there is nowhere in the CMS to
+ * put it - a type carries a name and a path and nothing that says what the
+ * section is for. A type with no line simply has none.
+ */
+const SECTION_BLURB: Record<string, string> = {
+  product: "Choose a seva. Every contribution is recorded in the Punya app, with daily photos and updates from the gaushala.",
+  blog: "Writing on gau seva, festivals and the everyday work of running a gaushala.",
+  location: "The gaushalas in our care, and the cows living in each.",
+};
+
 async function IndexPage({ type }: { type: CmsType }) {
   const { items } = await listItems(type.key, {
     limit: 60,
-    fields: "title,summary,excerpt,tagline,description,featuredImage,image,seo",
+    /*
+     * publishedAt is asked for by name. A narrowed response carries only what
+     * is listed - it came back with `fields`, `id`, `slug` and `title` alone -
+     * so every post card rendered without its date and nothing said why.
+     */
+    fields:
+      "title,name,summary,excerpt,tagline,description,featuredImage,image,images,seo,publishedAt," +
+      "price,currency,frequency,category,popular,tags,city,region,cowsInCare,capacity",
   });
 
-  return (
-    <section className="section">
-      <div className="shell">
-        <h1 className="text-2xl font-semibold tracking-tight">{type.pluralName}</h1>
+  const blurb = SECTION_BLURB[type.key];
 
-        {items.length === 0 ? (
-          <p className="mt-3 text-muted">Nothing published here yet.</p>
-        ) : (
-          <ul className="mt-5 divide-y divide-line border-y border-line">
-            {items.map((entry) => {
-              const summary = itemSummary(entry);
-              return (
-                <li key={entry.id} className="py-3">
-                  <Link href={itemPath(type, entry.slug)} className="font-medium hover:underline">
-                    {entry.title}
-                  </Link>
-                  {summary && <p className="mt-0.5 text-sm text-muted">{summary}</p>}
-                </li>
-              );
-            })}
-          </ul>
-        )}
+  return (
+    <>
+      {/* Cream header, as every other page on the site opens. */}
+      <header className="section-warm" style={{ paddingBlock: "var(--space-8)" }}>
+        <div className="shell">
+          <h1 style={{ fontSize: "var(--text-h1)", lineHeight: "var(--lh-tight)" }}>
+            {type.pluralName}
+          </h1>
+          {blurb && (
+            <p
+              className="mt-4 max-w-2xl"
+              style={{ color: "var(--ink-600)", fontSize: "var(--text-body-lg)" }}
+            >
+              {blurb}
+            </p>
+          )}
+        </div>
+      </header>
+
+      <div className="section">
+        <div className="shell">
+          {items.length === 0 ? (
+            <p style={{ color: "var(--ink-600)" }}>Nothing published here yet.</p>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {items.map((entry) => (
+                <CardFor key={entry.id} item={entry} type={type} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </section>
+    </>
   );
 }
 
