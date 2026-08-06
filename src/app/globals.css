@@ -96,7 +96,7 @@ a:hover { color: var(--link-hover); }
  * Anchors land below the sticky header rather than under it: every h2 and h3
  * carries an id, and the contents rail sends people to them.
  */
-html { scroll-padding-top: 8.5rem; }
+html { scroll-padding-top: 5.5rem; }
 
 .shell {
   margin-inline: auto;
@@ -485,6 +485,11 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   inherits: true;
   initial-value: 1;
 }
+@property --rail {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
 
 .nav {
   position: sticky;
@@ -496,14 +501,17 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   --mark-type: var(--text-h3);
   --nav-pad: var(--space-3);
   --mark-line: 1;
+  --rail: 1;
 }
 
 @keyframes nav-condense {
   to {
+    --rail-visibility: hidden;
     --mark-size: 30px;
     --mark-type: var(--text-h4);
-    --nav-pad: 6px;
+    --nav-pad: 8px;
     --mark-line: 0;
+    --rail: 0;
   }
 }
 
@@ -528,7 +536,24 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   padding-block: var(--nav-pad);
 }
 
-.nav-rail { border-top: 1px solid var(--border-warm); }
+/*
+ * The sections fold away as the page moves.
+ *
+ * What a visitor needs on the way down a long page is the mark and the ask;
+ * the directory is what they came through, not what they are using. It folds
+ * to nothing and the bar settles at about fifty pixels - and because the row
+ * genuinely goes to zero height rather than merely going transparent, its
+ * links leave the tab order with it instead of lying in wait for a keyboard.
+ */
+.nav-rail {
+  max-height: calc(var(--rail) * 60px);
+  opacity: var(--rail);
+  /* Unregistered, so it flips rather than interpolates: the links leave the
+     tab order once the row is genuinely gone. */
+  visibility: var(--rail-visibility, visible);
+  overflow: hidden;
+  border-top: 1px solid var(--border-warm);
+}
 .nav-scroll {
   display: flex;
   align-items: center;
@@ -728,7 +753,7 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
 }
 @media (min-width: 64rem) {
   .toc-grid { grid-template-columns: 15rem minmax(0, 1fr) 16rem; }
-  .toc { position: sticky; top: 9rem; }
+  .toc { position: sticky; top: 5.5rem; }
 }
 
 .toc-head { margin-bottom: var(--space-3); }
