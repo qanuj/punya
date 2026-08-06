@@ -8,6 +8,12 @@ import type { NextConfig } from "next";
 const mediaHost = process.env.NEXT_PUBLIC_MEDIA_HOST ?? "media.tintorch.com";
 
 const nextConfig: NextConfig = {
+  /*
+   * The shared package ships .tsx rather than compiled output, so Next builds
+   * it with the app - no build step in the package, and the "use client"
+   * boundary stays where it was written.
+   */
+  transpilePackages: ["@tintorch/web"],
   images: {
     remotePatterns: [{ protocol: "https", hostname: mediaHost }],
   },

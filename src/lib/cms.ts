@@ -6,6 +6,8 @@
  * server-only: it has no NEXT_PUBLIC_ prefix and nothing here runs in the
  * browser.
  */
+import { BADGE_FIELDS, type SiteAnalytics, type SiteVerification } from "@tintorch/web";
+
 const BASE = (process.env.TINTORCH_CMS_URL ?? "")
   .replace(/\/+$/, "")
   // An http:// base is redirected to https, and a redirect drops the
@@ -88,6 +90,10 @@ export type CmsSite = {
     contact?: Record<string, string>;
     branding?: Record<string, string>;
     socialLinks?: SiteSocialLink[];
+    /** Measurement ids - Settings › Site › Analytics in the workspace. */
+    analytics?: SiteAnalytics;
+    /** Ownership proofs, rendered as meta tags. */
+    verifications?: SiteVerification[];
   };
 };
 
@@ -202,6 +208,21 @@ export function itemImage(item: CmsItem | null): string {
     if (value.trim()) return value;
   }
   return item?.seo?.ogImage ?? "";
+}
+
+/* ── Badges ─────────────────────────────────────────────────────────────── */
+
+/**
+ * Registrations, certifications and awards for the footer.
+ *
+ * The fetch is here, because the authenticated client and the cache tags are
+ * here; the selecting, ordering and rendering are shared - see @tintorch/web.
+ *
+ * A lapsed registration drops out on its own. For a trust asking the public for
+ * money, a certification shown past its date is a claim it can no longer make.
+ */
+export async function badgeItems(): Promise<CmsItem[]> {
+  return listAllItems("badge", { fields: BADGE_FIELDS, revalidate: 3600 });
 }
 
 /* ── Forms ──────────────────────────────────────────────────────────────── */

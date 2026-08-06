@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getSite } from "@/lib/cms";
+import { badgeItems, getSite } from "@/lib/cms";
 import { navLinks } from "@/lib/routing";
+import { BadgeRow, selectFooterBadges } from "@tintorch/web";
 
 /**
  * The header and footer.
@@ -95,7 +96,7 @@ export async function SiteHeader() {
 }
 
 export async function SiteFooter() {
-  const site = await getSite();
+  const [site, badges] = await Promise.all([getSite(), badgeItems()]);
   const { contact = {}, socialLinks = [] } = site.config;
   const year = new Date().getFullYear();
 
@@ -162,6 +163,18 @@ export async function SiteFooter() {
             )}
           </div>
         </div>
+
+        {/*
+         * Registrations and certifications, above the legal line: on a page
+         * that asks for a donation, the proof belongs next to the ask.
+         */}
+        <BadgeRow
+          badges={selectFooterBadges(badges)}
+          siteUrl={site.siteUrl}
+          className="mt-10 flex flex-wrap items-center gap-6 border-t border-[color:var(--divider-on-dark)] pt-8"
+          itemClassName="flex items-center"
+          imageClassName="h-14 w-auto max-w-[11rem] object-contain"
+        />
 
         <div
           className="mt-10 flex flex-wrap items-center justify-between gap-3 pt-6"
