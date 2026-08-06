@@ -190,7 +190,7 @@ export function PostCard({ item, type }: { item: CmsItem; type: CmsType }) {
   );
 }
 
-/** One gaushala. Where it is, and how many cows are in it. */
+/** One gaushala: where it is, and how many cows are living in it. */
 export function GaushalaCard({ item, type }: { item: CmsItem; type: CmsType }) {
   const href = itemPath(type, item.slug);
   const place = [field(item, "city"), field(item, "region")].filter(Boolean).join(", ");
@@ -198,28 +198,35 @@ export function GaushalaCard({ item, type }: { item: CmsItem; type: CmsType }) {
   const capacity = field(item, "capacity");
 
   return (
-    <article className="card flex flex-col gap-3">
-      <Link href={href} className="block">
-        <Cover src={itemImage(item)} alt={item.title} />
+    <article className="post">
+      <Link href={href} className="post-link">
+        <span className="post-media">
+          {itemImage(item) && (
+            <Image
+              src={itemImage(item)}
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
+              className="object-cover"
+            />
+          )}
+        </span>
+
+        <span className="post-body">
+          <span className="post-rule" aria-hidden />
+          <span className="post-title block">{field(item, "name") || item.title}</span>
+          {place && <span className="meta block">{place}</span>}
+
+          {cows && (
+            <span className="post-amount post-meta">
+              <span className="post-num">{cows}</span>
+              <span className="post-period">
+                cows in care{capacity ? ` of ${capacity} places` : ""}
+              </span>
+            </span>
+          )}
+        </span>
       </Link>
-
-      <h3 className="card-title">
-        <Link href={href}>{field(item, "name") || item.title}</Link>
-      </h3>
-
-      {place && (
-        <p className="meta">{place}</p>
-      )}
-
-      {cows && (
-        <p className="mt-auto pt-2">
-          <span className="figure figure-sm">{cows}</span>
-          <span className="figure-unit">
-            {" "}
-            cows in care{capacity ? ` of ${capacity}` : ""}
-          </span>
-        </p>
-      )}
     </article>
   );
 }

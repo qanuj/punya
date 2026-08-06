@@ -274,6 +274,15 @@ const PER_PAGE = 30;
  */
 const CATALOGUE_TYPES = new Set(["product", "location"]);
 
+/**
+ * Types with few enough items to give each one a row.
+ *
+ * A gaushala is a place, and there are a handful of them: a grid of small
+ * cards throws away the photograph and the numbers that make one worth
+ * visiting. A directory shows each in full.
+ */
+const DIRECTORY_TYPES = new Set(["location"]);
+
 async function IndexPage({
   type,
   facet,
@@ -293,6 +302,7 @@ async function IndexPage({
    * memory. An open listing pages at the API, which is what the meta is for.
    */
   const catalogue = CATALOGUE_TYPES.has(type.key);
+  const directory = DIRECTORY_TYPES.has(type.key);
 
   const { items, meta } = await listItems(type.key, {
     page: facet || catalogue ? 1 : page,
@@ -374,42 +384,166 @@ async function IndexPage({
 
       <div className="section">
         <div className="shell">
-          {(() => {
-            const groups = groupByCategory(shown);
+          {shown.length === 0 ? (
+            <p className="meta">
+              {search ? "Nothing found. Try another word, or browse everything." : "Nothing published here yet."}
+            </p>
+          ) : directory ? (
+            /* Few enough to give each one a row: the photograph, the place, the herd. */
+            <div className="directory">
+              {shown.map((entry) => (
+                <DirectoryRow key={entry.id} item={entry} type={type} />
+              ))}
+            </div>
+          ) : catalogue ? (
+            /* A catalogue is already sorted, so its categories are the structure. */
+            <CatalogueGroups items={shown} type={type} />
+          ) : (
+            /* A publication leads with its newest, and pages the rest. */
+            <>
+              <Controls
+                type={type}
+                base={base}
+                search={search}
+                tags={tags}
+                current={current}
+                pageCount={pageCount}
+              />
 
-            return (
-              <>
-                {groups.length > 1 && (
-                  <div className="group-jump">
-                    {groups.map((group) => (
-                      <a key={group.name} href={`#${toSlug(group.name)}`} className="chip">
-                        {group.name}
-                      </a>
-                    ))}
-                  </div>
-                )}
-
-                {groups.map((group) => (
-                  <section key={group.name} id={toSlug(group.name)} className="group">
-                    <div className="group-head">
-                      <h2 className="group-name">{group.name}</h2>
-                      <span className="label-caps">{group.items.length} ways</span>
-                    </div>
-
-                    <div className="card-grid">
-                      {group.items.map((entry) => (
-                        <CardFor key={entry.id} item={entry} type={type} />
-                      ))}
-                    </div>
-                  </section>
+              <div className="listing-lead">
+                {shown.slice(0, 2).map((entry) => (
+                  <FeatureCard key={entry.id} item={entry} type={type} />
                 ))}
-              </>
-            );
-          })()}
+              </div>
+
+              <div className="listing-rest">
+                {shown.slice(2).map((entry) => (
+                  <CardFor key={entry.id} item={entry} type={type} />
+                ))}
+              </div>
+
+              <Pager base={base} search={search} current={current} pageCount={pageCount} />
+            </>
+          )}
         </div>
       </div>
     </>
   );
+}
+
+/**
+ * One place in a directory: the photograph, where it is, and what it holds.
+ */
+function DirectoryRow({ item, type }: { item: CmsItem; type: CmsType }) {
+  const place = [field(item, "city"), field(item, "region")].filter(Boolean).join(", ");
+  const cows = field(item, "cowsInCare");
+  const capacity = field(item, "capacity");
+
+  return (
+    <Link href={itemPath(type, item.slug)} className="directory-row">
+      <span className="directory-media">
+        {itemImage(item) && (
+          <Image
+            src={itemImage(item)}
+            alt=""
+            fill
+            sizes="(min-width: 768px) 18rem, 90vw"
+            className="object-cover"
+          />
+        )}
+      </span>
+
+      <span className="directory-body">
+        <span className="directory-name block">{field(item, "name") || item.title}</span>
+        {place && <span className="meta block">{place}</span>}
+        {itemSummary(item) && <span className="meta line-clamp-2 block">{itemSummary(item)}</span>}
+
+        {(cows || capacity) && (
+          <span className="directory-stats">
+            {cows && (
+              <span className="block">
+                <span className="directory-figure block">{cows}</span>
+                <span className="label-caps">Cows in care</span>
+              </span>
+            )}
+            {capacity && (
+              <span className="block">
+                <span className="directory-figure block">{capacity}</span>
+                <span className="label-caps">Places</span>
+              </span>
+            )}
+          </span>
+        )}
+      </span>
+    </Link>
+  );
+}
+
+/** A catalogue under its own category headings, or plainly when it has one. */
+function CatalogueGroups({ items, type }: { items: CmsItem[]; type: CmsType }) {
+  const groups = groupByCategory(items);
+
+  if (groups.length < 2) {
+    return (
+      <div className="card-grid">
+        {items.map((entry) => (
+          <CardFor key={entry.id} item={entry} type={type} />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="group-jump">
+        {groups.map((group) => (
+          <a key={group.name} href={`#${toSlug(group.name)}`} className="chip">
+            {group.name}
+          </a>
+        ))}
+      </div>
+
+      {groups.map((group) => (
+        <section key={group.name} id={toSlug(group.name)} className="group">
+          <div className="group-head">
+            <h2 className="group-name">{group.name}</h2>
+            <span className="label-caps">{countOf(group.items.length, type)}</span>
+          </div>
+
+          <div className="card-grid">
+            {group.items.map((entry) => (
+              <CardFor key={entry.id} item={entry} type={type} />
+            ))}
+          </div>
+        </section>
+      ))}
+    </>
+  );
+}
+
+/**
+ * How many, in the type's own words.
+ *
+ * The count read "1 ways" on a page of one gaushala: a plural bolted to a
+ * seva's vocabulary. The CMS names every type in the singular and the plural,
+ * so the count uses whichever the number calls for.
+ */
+function countOf(total: number, type: CmsType): string {
+  return `${total} ${total === 1 ? type.name : type.pluralName}`.toLowerCase();
+}
+
+/** Items under a field they carry, the biggest group first. */
+function groupByField(items: CmsItem[], key: string): { name: string; items: CmsItem[] }[] {
+  const groups = new Map<string, CmsItem[]>();
+
+  for (const item of items) {
+    const name = field(item, key) || "Elsewhere";
+    groups.set(name, [...(groups.get(name) ?? []), item]);
+  }
+
+  return [...groups.entries()]
+    .map(([name, entries]) => ({ name, items: entries }))
+    .sort((a, b) => b.items.length - a.items.length);
 }
 
 /** Items under the label they carry, the biggest group first. */
