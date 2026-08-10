@@ -44,7 +44,11 @@ being a label on a payment form.
   degrade to a plain section, never leak as text.
 - Donors sign in through TinTorch Account (OIDC) for their account page.
 - The Punya app is the companion surface where a donor sees their recorded seva; the site hands off
-  to it rather than duplicating it.
+  to it rather than duplicating it. Recurring seva is **managed in the app only** — the site may
+  start one, but pause, edit and cancel live in the app and the site must say so rather than imply
+  it can manage them.
+- The site is also read by machines: feed readers, search crawlers and AI assistants. Machine-
+  readable surfaces are a real audience, not plumbing.
 
 ## Capabilities and Constraints
 
@@ -54,11 +58,20 @@ being a label on a payment form.
 - Seva items carry `price`, `currency`, `frequency`, `category`, `popular`, `tags`; `popular` items
   lead a listing.
 - Forms are CMS-defined; FAQ and form fences are handled outside the generic block renderer.
+- Donors sign in via OIDC to an authenticated `/account` surface — the site's only logged-in page,
+  and the seam to the app.
+- Discovery surfaces are committed capabilities, not incidentals: RSS/Atom feeds site-wide and
+  per tag, `llms.txt` for AI assistants, a sectioned sitemap with a stylesheet, `robots.txt`, and a
+  web-app manifest with install icons. Content that ships must remain representable in them.
+- The site is installable as a PWA; treat the standalone launch (no browser chrome) as a real
+  presentation, not a fallback.
 - Bilingual by design in a specific way: Devanagari carries devotional accent lines
   (गौ सेवा · गौ संरक्षण · गौ संवर्धन); English always carries the functional content beside it.
   Never make Devanagari the only route to a function.
-- Undecided: whether the site itself should ever offer a full Hindi UI, and whether recurring seva
-  is managed on the site or only in the app.
+- **A full Hindi UI is planned.** Every layout, component and CMS field decision must leave room for
+  a second locale: no baked-in English strings, no widths tuned to English word length, no place
+  where a language switch would have nowhere to live. Until it ships, the rule above still holds —
+  English carries function.
 
 ## Brand Commitments
 
@@ -77,11 +90,16 @@ being a label on a payment form.
 Real and usable — design must source these, never invent substitutes:
 
 - Trust registration and 80G numbers.
-- Audited accounts / utilisation reports backing the `/transparency` page.
-- Ongoing genuine photography of the cows, staff and facilities, delivered via the CMS and the app.
-- Live counts: cows under care, sevas completed, gaushalas served.
+- Audited accounts / utilisation reports **in hand and publishable** on `/transparency` — the page
+  can show real documents, not a promise of them.
+- A **grown library** of genuine photography of the cows, staff and facilities, delivered via the
+  CMS and the app. Photography is abundant enough to lead a layout; stock or illustration is never
+  the answer to a missing image.
+- Live counts — cows under care, sevas completed, gaushalas served — are **real CMS numbers**, not
+  placeholders. They can be stated plainly and given prominence.
 - Local assets: `public/brand/logo-icon.png`, `logo-mono.png`, `favicon-512.png`,
-  `cows.png`, `home-banner.png`, `ourwork.png`, `ourwork-banner.png`.
+  `cows.png`, `home-banner.png`, `ourwork.png`, `ourwork-banner.png`, plus PWA install icons
+  `web-app-manifest-192x192.png` / `-512x512.png`.
 
 Absent — must not be fabricated: donor testimonials, press coverage, awards, celebrity or
 institutional endorsements, and any statistic not returned by the CMS.
@@ -93,8 +111,8 @@ institutional endorsements, and any statistic not returned by the CMS.
    transparency page — or they are not made.
 3. **The CMS owns the words.** Layout is the repo's job; copy, numbers and links are the trust's.
 4. **Phone first, India first.** The donating majority is on a mid-range phone on mobile data.
-5. **Devotion carries, English functions.** Sanskrit/Hindi sets the register; English never stops
-   working.
+5. **Devotion carries, English functions — and Hindi is coming.** Sanskrit/Hindi sets the register;
+   English never stops working; nothing is built in a way a second locale would have to undo.
 
 ## Accessibility & Inclusion
 

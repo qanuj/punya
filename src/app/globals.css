@@ -1,52 +1,30 @@
 @import "tailwindcss";
 
-/* The Punya.ngo design system, verbatim. No token value is overridden here. */
+/* Painted Hoarding — gouache panels torn against poster stock. */
 @import "../styles/colors.css";
 @import "../styles/typography.css";
 @import "../styles/spacing.css";
 
 /*
- * Three deviations from the system's type scale, all for reading.
+ * The world in one paragraph.
  *
- * The scale was drawn for a brochure: 15px body, 13px captions, and Playfair
- * Display for every heading down to 18px. Playfair is a display face - its
- * thin strokes are the point at 44px and a liability at 18, which is the size
- * every card title and section heading actually renders at. On a site whose
- * job is explaining where someone's donation goes, that is the wrong trade.
+ * Every surface is either paint or paper. Paint is the indigo gouache panel of
+ * a cow at dusk; paper is bone poster stock with its fibre showing. Where they
+ * meet there is a real torn deckle, never a straight edge and never a rule.
+ * One vermilion is spent on the act of giving and nowhere else, so a donor can
+ * find the way to give without being told where to look.
  *
- * So: the body sizes go up a step, long-form text takes the darker ink rather
- * than the grey meant for secondary copy, and headings below h3 are set in the
- * sans. The display sizes - hero, h1, h2 - keep Playfair, which is where the
- * brand actually lives.
- */
-:root {
-  --text-body: 16.5px;
-  --text-body-lg: 18px;
-  --text-sm: 14px;
-  --lh-body: 1.7;
-}
-
-/*
- * Navy for trust, gold for action, cream for warmth, on white. Serif headings,
- * humanist sans body, Devanagari for the devotional accents. Solid surfaces
- * only - the system asks for no gradients outside a photo fade, and no blur.
+ * Nothing is rounded and nothing casts a shadow: depth comes from the tear.
  */
 
 body {
-  background: var(--surface-page);
+  background: var(--surface-page) var(--paper) repeat;
+  background-size: 900px;
   color: var(--text-body);
   font-family: var(--font-sans);
   font-size: var(--text-body);
   line-height: var(--lh-body);
   -webkit-font-smoothing: antialiased;
-}
-
-h1, h2, h3, h4 {
-  font-family: var(--font-serif);
-  color: var(--text-heading);
-  font-weight: var(--weight-heading);
-  line-height: var(--lh-heading);
-  margin: 0;
 }
 
 a { color: var(--link); text-decoration: none; transition: color var(--transition-fast); }
@@ -55,198 +33,224 @@ a:hover { color: var(--link-hover); }
 :where(a, button, input, select, textarea, summary):focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
-  border-radius: var(--radius-sm);
 }
 
-/*
- * Straight to the reading.
- *
- * A keyboard visitor crossed the utility bar, the mark and seven sections
- * before reaching the page on every single load. Off-screen until focused,
- * then it lands in the top-left corner as a real button.
- */
 .skip-link {
   position: absolute;
   left: -9999px;
   top: var(--space-3);
   z-index: 60;
   padding: var(--space-3) var(--space-5);
-  background: var(--navy-700);
-  color: var(--white);
+  background: var(--vermilion-500);
+  color: var(--btn-give-text);
+  font-family: var(--font-condensed);
   font-weight: 600;
-  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+  letter-spacing: var(--track-caps);
 }
-.skip-link:focus-visible { left: var(--space-5); color: var(--white); }
+.skip-link:focus-visible { left: var(--space-5); color: var(--btn-give-text); }
 
-/*
- * A word with no break in it - a long URL pasted into a body, a compound in a
- * translation - used to push a card wider than its column.
- */
-.post-title,
-.lead-title,
-.directory-name,
-.feature-title,
-.hero-title,
-.page-title,
-.prose {
+.post-title, .lead-title, .directory-name, .feature-title, .hero-title, .page-title, .prose {
   overflow-wrap: break-word;
 }
 
-/*
- * Anchors land below the sticky header rather than under it: every h2 and h3
- * carries an id, and the contents rail sends people to them.
- */
-html { scroll-padding-top: 5.5rem; }
+html { scroll-padding-top: 6rem; }
 
 .shell {
   margin-inline: auto;
   width: 100%;
   max-width: var(--content-max);
-  /* The larger of the system's gutter and the phone's own safe area, so a
-     rounded corner or a landscape notch never clips a line of type. */
   padding-inline: max(var(--space-5), env(safe-area-inset-left));
 }
 
-/* ~96px of vertical rhythm, as the system specifies. */
 .section { padding-block: var(--space-9); }
+
+/*
+ * A section on paint rather than paper. It carries its own torn top edge, so
+ * the boundary between the two grounds is the material one, not a border.
+ */
 .section-cream { background: var(--surface-section); }
 
-/** A Hindi accent line. Devotional, never carrying the functional content. */
-.devanagari {
-  font-family: var(--font-devanagari);
-  letter-spacing: 0;
+.on-paint {
+  position: relative;
+  background: var(--surface-dark);
+  color: var(--text-on-dark);
 }
+.on-paint h1, .on-paint h2, .on-paint h3, .on-paint h4 { color: var(--text-on-dark); }
+.on-paint p { color: var(--text-on-dark-soft); }
 
-/**
- * A section header: centred serif heading between short gold dashes.
- * — ◆ Heading ◆ —
+/*
+ * The torn seam. A drawn deckle with real alpha, laid across the boundary at
+ * full width. `mask` is not involved: this is the paper itself, photographed
+ * torn, which is why it never reads as a CSS zigzag.
  */
-.ornament {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-  color: var(--gold-400);
-}
-.ornament::before,
-.ornament::after {
+.seam-top::before,
+.seam-bottom::after {
   content: "";
-  height: 1px;
-  width: 44px;
-  background: var(--gold-300);
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--seam-height);
+  background: var(--seam-h) repeat-x;
+  background-size: auto 100%;
+  pointer-events: none;
+  z-index: 2;
 }
+.seam-top::before { top: 0; transform: translateY(-1px); }
+.seam-bottom::after { bottom: 0; transform: scaleY(-1) translateY(-1px); }
+
+/** A dry-brush rule. Never a hairline — the world has no 1px lines. */
+.rule-brush {
+  height: 8px;
+  border: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='8' viewBox='0 0 240 8' preserveAspectRatio='none'%3E%3Cpath d='M1 4.6C34 2.4 52 6.2 84 4.1c30-2 52 2.9 78 .7 22-1.9 46 3 77-1.4' stroke='%231F1A2E' stroke-width='2.6' fill='none' stroke-linecap='round' opacity='.5'/%3E%3C/svg%3E") repeat-x;
+  background-size: 240px 8px;
+}
+.on-paint .rule-brush { filter: invert(1) brightness(1.6); opacity: .5; }
+
+.devanagari { font-family: var(--font-display); letter-spacing: 0; }
+
+/* The ornament is gone with the old world: a heading needs no dashes. */
+.ornament { display: block; }
+.ornament::before, .ornament::after { content: none; }
 
 /* ── Buttons ───────────────────────────────────────────────────────────── */
 
+/*
+ * One brushed block of vermilion.
+ *
+ * The primary action is the only place the hot colour appears, and its edges
+ * are a real brush shape rather than a border trick: an SVG mask cut from a
+ * loaded stroke, so the block ends where the paint ran out.
+ */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  height: 44px;
-  padding-inline: var(--space-5);
-  border-radius: var(--radius-pill);
+  min-height: 52px;
+  padding-inline: var(--space-6);
+  font-family: var(--font-condensed);
   font-weight: 600;
-  font-size: var(--text-body);
-  transition: background var(--transition-fast), color var(--transition-fast),
-    box-shadow var(--transition-fast), transform var(--transition-fast);
+  font-size: 19px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
 }
-.btn:active { transform: scale(.98); }
+.btn:active { transform: translateY(1px); }
+
+.btn-gold,
+.btn-give {
+  background: var(--btn-give);
+  color: var(--btn-give-text);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='60' viewBox='0 0 300 60' preserveAspectRatio='none'%3E%3Cpath d='M4 12c40-6 92-4 140-5s96-3 152 2c4 14 2 30-1 45-52 5-104 3-152 4s-100 2-141-3c-3-15-4-29 2-43z' fill='%23000'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='60' viewBox='0 0 300 60' preserveAspectRatio='none'%3E%3Cpath d='M4 12c40-6 92-4 140-5s96-3 152 2c4 14 2 30-1 45-52 5-104 3-152 4s-100 2-141-3c-3-15-4-29 2-43z' fill='%23000'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+}
+.btn-gold:hover, .btn-give:hover { background: var(--btn-give-hover); color: var(--btn-give-text); }
+
+/* Every other action is quiet: brushed underline, no fill, no box. */
+.btn-navy,
+.btn-outline {
+  padding-inline: 0;
+  min-height: 44px;
+  background: none;
+  color: var(--btn-quiet-text);
+  border-bottom: 3px solid var(--vermilion-500);
+}
+.btn-navy:hover, .btn-outline:hover { background: none; color: var(--vermilion-600); }
+.on-paint .btn-navy, .on-paint .btn-outline { color: var(--text-on-dark); }
+
+/* ── The standing panel ────────────────────────────────────────────────── */
 
 /*
- * Navy on gold, not white on gold.
- *
- * White text on #D9952A measures 2.5:1 - the site's single most important
- * control was its least readable one, and in sunlight on a phone it washed out
- * entirely. Navy on the same gold measures 6:1 and keeps the accent exactly
- * where the system put it.
+ * The painting is not a hero image; it is a standing companion. It holds a
+ * third of the desktop width for the whole of the first screen and returns as
+ * a band on a phone, torn along its inner edge either way.
  */
-.btn-gold { background: var(--btn-gold); color: var(--navy-800); }
-.btn-gold:hover { background: var(--btn-gold-hover); color: var(--navy-800); }
-
-.btn-navy { background: var(--btn-navy); color: var(--white); }
-.btn-navy:hover { background: var(--btn-navy-hover); color: var(--white); }
-
-.btn-outline {
-  border: 1.5px solid var(--navy-700);
-  color: var(--navy-700);
-  background: var(--white);
+.panel {
+  position: relative;
+  align-self: stretch;
+  background: var(--indigo-900) url("/art/panel-cow-dusk.webp") center / cover no-repeat;
+  min-height: 46vh;
 }
-.btn-outline:hover { background: var(--cream-200); color: var(--navy-800); }
+.panel::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--seam-height);
+  background: var(--seam-h) repeat-x;
+  background-size: auto 100%;
+  transform: scaleY(-1);
+}
 
-/* ── Cards ─────────────────────────────────────────────────────────────── */
+@media (min-width: 64rem) {
+  .panel { min-height: 82vh; }
+  .panel::after {
+    left: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: var(--seam-height);
+    height: auto;
+    background: var(--seam-v) repeat-y;
+    background-size: 100% auto;
+    transform: scaleX(-1);
+  }
+}
+
+/* ── Cards, which in this world are rows of paper ──────────────────────── */
 
 .card {
-  background: var(--surface-card);
-  border: 1px solid var(--border-warm);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-card);
-  padding: var(--space-5);
-  transition: box-shadow var(--transition-med), transform var(--transition-med);
+  background: transparent;
+  border: 0;
+  padding: var(--space-5) 0;
+  border-top: 8px solid transparent;
+  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='8' viewBox='0 0 240 8' preserveAspectRatio='none'%3E%3Cpath d='M1 4.6C34 2.4 52 6.2 84 4.1c30-2 52 2.9 78 .7 22-1.9 46 3 77-1.4' stroke='%231F1A2E' stroke-width='2.6' fill='none' stroke-linecap='round' opacity='.5'/%3E%3C/svg%3E") 0 0 8 0 repeat;
+  transition: background var(--transition-med);
 }
-.card:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); }
+.card:hover { background: rgba(31, 26, 46, .04); }
 
-/** The cream circle a brand icon sits in. */
 .icon-circle {
   display: flex;
   align-items: center;
   justify-content: center;
   width: var(--icon-circle);
   height: var(--icon-circle);
-  border-radius: var(--radius-pill);
   background: var(--surface-warm);
-  color: var(--navy-700);
+  color: var(--indigo-900);
 }
 
 /* ── Patterns ──────────────────────────────────────────────────────────── */
 
-/*
- * The handful of things every surface writes.
- *
- * These were inline styles repeated across the cards, the aside, the listings
- * and the footer - the same colour and size typed out six times, which is how
- * a system drifts one card at a time. A name each, so a new section inherits
- * the decision instead of restating it.
- */
+.meta { color: var(--text-muted); font-size: var(--text-sm); }
 
-/** Secondary copy: a card summary, a place, a caption. Never the reading. */
-.meta {
-  color: var(--ink-600);
-  font-size: var(--text-sm);
-}
-
-/**
- * A tracked, uppercase label: a sidebar panel's title, a card's date line, a
- * footer column head. Only ever a label for what follows - never a kicker set
- * above a heading, which the heading does not need.
- */
 .label-caps {
-  font-size: 11px;
+  font-family: var(--font-condensed);
+  font-size: 13px;
   font-weight: 600;
   line-height: 1.4;
   text-transform: uppercase;
   letter-spacing: var(--track-caps);
-  color: var(--ink-500);
+  color: var(--text-muted);
 }
 
-/** A pilled label. Cream by default; gold only where the trust has chosen. */
+/** A stamped label. Square-cut paper, never a pill. */
 .chip {
   display: inline-block;
-  border-radius: var(--radius-pill);
-  padding: 4px 10px;
-  font-size: 11px;
+  padding: 3px 9px;
+  font-family: var(--font-condensed);
+  font-size: 13px;
+  font-weight: 600;
   line-height: 1.4;
   text-transform: uppercase;
   letter-spacing: var(--track-caps);
   background: var(--surface-warm);
-  color: var(--navy-700);
+  color: var(--indigo-800);
 }
-.chip-gold {
-  background: var(--gold-100);
-  color: var(--gold-text);
-  font-weight: 600;
-}
-/** The same pill as a link: through to the section, filtered. */
+/** The trust's own steer, stamped in vermilion. */
+.chip-gold { background: transparent; color: var(--vermilion-700); box-shadow: inset 0 0 0 2px var(--vermilion-500); }
 a.chip {
   display: inline-flex;
   align-items: center;
@@ -257,26 +261,22 @@ a.chip {
   letter-spacing: normal;
   transition: background var(--transition-fast), color var(--transition-fast);
 }
-a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
+a.chip:hover { background: var(--stock-300); color: var(--indigo-900); }
 
-/**
- * A counted number: a price, a herd size, a figure in the stat band. Serif and
- * navy, because the number is what is being decided on.
+/*
+ * A price. The largest thing in a row after the name, in the giving colour,
+ * because the amount is the decision being made.
  */
 .figure {
-  font-family: var(--font-serif);
-  font-weight: var(--weight-heading);
-  font-size: var(--text-h3);
+  font-family: var(--font-condensed);
+  font-weight: 700;
+  font-size: var(--price);
   line-height: var(--lh-tight);
-  color: var(--navy-700);
+  color: var(--text-price);
+  font-variant-numeric: tabular-nums;
 }
-/** What sits beside a figure: a frequency, a capacity, a unit. */
-.figure-unit {
-  color: var(--ink-500);
-  font-size: var(--text-sm);
-}
+.figure-unit { color: var(--text-muted); font-size: var(--text-sm); font-family: var(--font-condensed); }
 
-/** A listing: three across when there is room, one on a phone. */
 .card-grid {
   display: grid;
   gap: var(--space-6);
@@ -285,48 +285,54 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
 @media (min-width: 40rem) { .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 64rem) { .card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
-/** The cream band every page opens with, and the title inside it. */
+/*
+ * Every page opens on paint, torn away into the reading.
+ */
 .page-header {
-  background: var(--surface-warm);
-  padding-block: var(--space-8);
+  position: relative;
+  background: var(--surface-dark);
+  color: var(--text-on-dark);
+  padding-block: var(--space-8) calc(var(--space-8) + var(--seam-height));
 }
+.page-header::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: var(--seam-height);
+  background: var(--seam-h) repeat-x;
+  background-size: auto 100%;
+  transform: scaleY(-1);
+}
+.page-header h1, .page-header .page-title { color: var(--text-on-dark); }
+.page-header .lead { color: var(--text-on-dark-soft); }
+
 .page-title {
+  font-family: var(--font-display);
   font-size: var(--text-h1);
   line-height: var(--lh-tight);
-  max-width: 40ch;
+  max-width: 22ch;
 }
-/** The line under a title or a section heading. */
 .lead {
   margin-top: var(--space-4);
-  max-width: 60ch;
-  color: var(--ink-600);
-  font-size: var(--text-body-lg);
+  max-width: 58ch;
+  color: var(--text-body);
+  font-size: var(--text-lead);
 }
 
-/** A way onward set in the run of the page: "Read on", "Browse all". */
 .link-strong {
-  font-size: var(--text-sm);
+  font-family: var(--font-condensed);
+  font-size: 17px;
   font-weight: 600;
-  color: var(--navy-700);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--indigo-900);
+  border-bottom: 3px solid var(--vermilion-500);
 }
-.link-strong:hover { color: var(--gold-text); }
+.link-strong:hover { color: var(--vermilion-600); }
 
 /* ── Utility bar ───────────────────────────────────────────────────────── */
 
-/*
- * The devotional line, and the two ways to reach a person.
- *
- * A trust asking strangers for money has to be reachable, and the phone number
- * lived only at the bottom of the page. It sits in the first line of every
- * screen now, set as an action rather than as small print, with the address
- * book quieter beside it and the trust's own channels at the end.
- *
- * The Devanagari is still the accent; the English beside it - the number, the
- * address - is what carries the function.
- */
-
 .topbar { background: var(--surface-topbar); color: var(--text-on-dark-soft); }
-
 .topbar-bar {
   display: flex;
   flex-wrap: wrap;
@@ -335,30 +341,22 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   gap: var(--space-3) var(--space-5);
   padding-block: var(--space-2);
 }
-.topbar-deva { font-size: var(--text-sm); }
-
-.topbar-right {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3) var(--space-5);
-}
-
+.topbar-deva { font-family: var(--font-display); font-size: 17px; color: var(--ochre-300); }
+.topbar-right { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-5); }
 .topbar-contact {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
   gap: var(--space-2);
-  color: var(--white);
-  font-size: var(--text-sm);
+  color: var(--text-on-dark);
+  font-family: var(--font-condensed);
+  font-size: 17px;
   font-weight: 600;
 }
-.topbar-contact:hover { color: var(--gold-300); }
-.topbar-contact svg { flex: none; color: var(--gold-300); }
-/** The address book, not the action: same row, less weight. */
+.topbar-contact:hover { color: var(--ochre-300); }
+.topbar-contact svg { flex: none; color: var(--ochre-400); }
 .topbar-mail { display: none; font-weight: 400; }
 @media (min-width: 48rem) { .topbar-mail { display: inline-flex; } }
-
 .topbar-socials { display: none; align-items: center; gap: var(--space-2); }
 @media (min-width: 48rem) { .topbar-socials { display: flex; } }
 .topbar-social {
@@ -367,38 +365,15 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   justify-content: center;
   height: 44px;
   width: 44px;
-  border-radius: var(--radius-pill);
   color: var(--text-on-dark-soft);
   transition: background var(--transition-fast), color var(--transition-fast);
 }
-.topbar-social:hover { background: rgba(255, 255, 255, .10); color: var(--white); }
+.topbar-social:hover { background: rgba(245, 239, 224, .10); color: var(--text-on-dark); }
 
 /* ── Navigation ────────────────────────────────────────────────────────── */
 
-/*
- * Who is receiving the money, beside the mark that asks for it.
- *
- * "Punya.ngo" is the brand; "Punya Charitable Trust" is the registered body a
- * donation is actually made to, and it appeared nowhere above the fold. A
- * hairline and a tracked line of caps - the name comes from the CMS, so a fork
- * of this template shows its own or shows nothing.
- *
- * Held back until 48rem: on a phone the header is a mark and an ask, and a
- * third thing in that row is one thing too many.
- */
-
-/**
- * The mark, sized by the header's own state.
- *
- * The brand line is decoration repeated in the footer, so it is the first
- * thing the header spends when it condenses - and it never appears on a phone,
- * where the row has no width to lend it.
- */
-.nav .mark-img {
-  width: var(--mark-size);
-  height: var(--mark-size);
-}
-.nav .mark-word { font-size: var(--mark-type); }
+.nav .mark-img { width: var(--mark-size); height: var(--mark-size); }
+.nav .mark-word { font-family: var(--font-display); font-size: var(--mark-type); }
 .nav .mark-line {
   display: none;
   opacity: var(--mark-line);
@@ -417,118 +392,50 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   max-width: calc(var(--mark-line) * 24ch);
   overflow: hidden;
 }
-.mark-rule { width: 1px; height: 40px; background: var(--border-warm); }
+.mark-rule { width: 2px; height: 34px; background: var(--rule); }
 .mark-name {
   max-width: none;
-  font-size: 11px;
+  font-family: var(--font-condensed);
+  font-size: 13px;
   font-weight: 600;
   line-height: 1.5;
   text-transform: uppercase;
   letter-spacing: var(--track-caps);
-  color: var(--ink-500);
+  color: var(--text-muted);
 }
-@media (min-width: 48rem) { /**
- * The mark, sized by the header's own state.
- *
- * The brand line is decoration repeated in the footer, so it is the first
- * thing the header spends when it condenses - and it never appears on a phone,
- * where the row has no width to lend it.
- */
-.nav .mark-img {
-  width: var(--mark-size);
-  height: var(--mark-size);
-}
-.nav .mark-line {
-  display: none;
-  opacity: var(--mark-line);
-  height: calc(var(--mark-line) * 1lh);
-  overflow: hidden;
-}
-@media (min-width: 48rem) { .nav .mark-line { display: block; } }
+@media (min-width: 48rem) { .mark-note { display: flex; } }
 
-.mark-note { display: flex; } }
+@property --mark-size { syntax: "<length>"; inherits: true; initial-value: 48px; }
+@property --mark-type { syntax: "<length>"; inherits: true; initial-value: 30px; }
+@property --nav-pad { syntax: "<length>"; inherits: true; initial-value: 12px; }
+@property --mark-line { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --rail { syntax: "<number>"; inherits: true; initial-value: 1; }
 
 /*
- * Two tiers: who this is and what to do, then where to go.
- *
- * One row of mark, seven sections and a gold button wrapped onto three lines
- * on a phone and pushed the page down before it started. Split in two, the top
- * row keeps the mark and the ask on one line at every width, and the sections
- * ride a rail that scrolls sideways rather than wrapping or hiding behind a
- * hamburger - nothing is more than a swipe away and nothing is concealed.
+ * The header is paper laid over the page, and it condenses as the page moves —
+ * driven by the scroll position itself, so there is no JavaScript in it.
  */
-
-/*
- * The header follows the page down, and gets out of the way while it does.
- *
- * The ask and the sections were reachable only by scrolling back to the top,
- * and on a sixty-three post archive that is a long way back. But a sticky bar
- * is rent paid on every screen: at full height it would take a sixth of a
- * phone for the whole visit.
- *
- * So it condenses as the page moves - the mark shrinks, the brand line goes,
- * the rows close up - and settles at about ninety pixels with the Donate
- * button and every section still on it. Driven by the scroll position itself
- * rather than by a listener, so there is no JavaScript in it and nothing to
- * run on a mid-range phone. Where that is unsupported the header simply
- * sticks at full height, which is the honest fallback.
- */
-@property --mark-size {
-  syntax: "<length>";
-  inherits: true;
-  initial-value: 44px;
-}
-@property --mark-type {
-  syntax: "<length>";
-  inherits: true;
-  initial-value: 22px;
-}
-@property --nav-pad {
-  syntax: "<length>";
-  inherits: true;
-  initial-value: 12px;
-}
-@property --mark-line {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 1;
-}
-@property --rail {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 1;
-}
-
 .nav {
   position: sticky;
   top: 0;
   z-index: 40;
-  background: var(--white);
-  border-bottom: 1px solid var(--border-warm);
-  --mark-size: 44px;
-  --mark-type: var(--text-h3);
+  background: var(--stock-100) var(--paper) repeat;
+  background-size: 900px;
+  border-bottom: 3px solid var(--indigo-900);
+  --mark-size: 48px;
+  --mark-type: 30px;
   --nav-pad: var(--space-3);
   --mark-line: 1;
   --rail: 1;
 }
 
 @keyframes nav-condense {
-  to {
-    --rail-visibility: hidden;
-    --mark-size: 30px;
-    --mark-type: var(--text-h4);
-    --nav-pad: 8px;
-    --mark-line: 0;
-    --rail: 0;
-  }
+  to { --rail-visibility: hidden; --mark-size: 32px; --mark-type: 21px; --nav-pad: 8px; --mark-line: 0; --rail: 0; }
 }
-
 @supports (animation-timeline: scroll()) {
   @media (prefers-reduced-motion: no-preference) {
     .nav {
       animation: nav-condense linear both;
-      /* A scroll timeline drives progress, so the animation has no duration of
-         its own; the shorthand's 0s would otherwise pin it at the end. */
       animation-duration: auto;
       animation-timeline: scroll(root);
       animation-range: 0 140px;
@@ -537,7 +444,6 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
 }
 
 .nav-top a { min-height: 44px; display: inline-flex; align-items: center; }
-
 .nav-top {
   display: flex;
   align-items: center;
@@ -546,23 +452,12 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   padding-block: var(--nav-pad);
 }
 
-/*
- * The sections fold away as the page moves.
- *
- * What a visitor needs on the way down a long page is the mark and the ask;
- * the directory is what they came through, not what they are using. It folds
- * to nothing and the bar settles at about fifty pixels - and because the row
- * genuinely goes to zero height rather than merely going transparent, its
- * links leave the tab order with it instead of lying in wait for a keyboard.
- */
 .nav-rail {
   max-height: calc(var(--rail) * 60px);
   opacity: var(--rail);
-  /* Unregistered, so it flips rather than interpolates: the links leave the
-     tab order once the row is genuinely gone. */
   visibility: var(--rail-visibility, visible);
   overflow: hidden;
-  border-top: 1px solid var(--border-warm);
+  border-top: 2px solid var(--rule);
 }
 .nav-scroll {
   display: flex;
@@ -580,121 +475,136 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   align-items: center;
   min-height: 44px;
   white-space: nowrap;
-  color: var(--navy-700);
+  font-family: var(--font-condensed);
+  color: var(--indigo-900);
   font-weight: 600;
-  font-size: var(--text-body);
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
 }
-.nav-link:hover { color: var(--gold-text); }
+.nav-link:hover { color: var(--vermilion-600); }
 
-/* ── Hero ──────────────────────────────────────────────────────────────── */
+/* ── The torn ledger ───────────────────────────────────────────────────── */
 
 /*
- * The opening of a page that has something to ask for.
- *
- * The title ran at the same size as a listing's and the ask lived in the
- * header bar and the footer - so a visitor who arrived, read the line and
- * agreed with it had nowhere to act. The title takes the display size, the
- * summary follows at reading size, and the gold action sits in the first
- * screen with the one fact that makes it credible beside it.
- *
- * Sized down a step at a time on narrow screens: 56px of Playfair is a
- * headline on a desktop and a wall on a phone.
+ * The approved composition. Paint on the left third, the priced ledger on the
+ * right two-thirds, torn between them. On a phone the painting becomes a band
+ * and the first seva row lands inside the first screen, which is the whole
+ * point of putting the price in the row rather than behind a card.
  */
+.ledger {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  background: var(--surface-page);
+}
+@media (min-width: 64rem) {
+  .ledger { grid-template-columns: minmax(0, 34fr) minmax(0, 66fr); align-items: stretch; }
+}
 
-.hero { background: var(--surface-warm); padding-block: var(--space-9); }
+.ledger-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-7) max(var(--space-5), env(safe-area-inset-left)) var(--space-8);
+}
+@media (min-width: 64rem) {
+  .ledger-body { padding: var(--space-9) var(--space-8) var(--space-9) var(--space-8); }
+  /* Inside the ledger the shell stops centring: the column is the measure. */
+  .ledger-body .shell { max-width: 46rem; margin-inline: 0; padding-inline: 0; }
+}
+
+.hero { background: transparent; padding-block: 0; }
 
 .hero-title {
-  max-width: 18ch;
-  font-family: var(--font-serif);
-  font-weight: var(--weight-heading);
+  max-width: 15ch;
+  font-family: var(--font-display);
+  font-weight: 400;
   font-size: var(--text-hero);
   line-height: var(--lh-tight);
   color: var(--text-heading);
   text-wrap: balance;
 }
-@media (max-width: 48rem) { .hero-title { font-size: var(--text-h1); } }
-@media (max-width: 30rem) { .hero-title { font-size: var(--text-h2); } }
-
 .hero-lead {
   margin-top: var(--space-5);
-  max-width: 52ch;
-  color: var(--ink-600);
-  font-size: var(--text-body-lg);
+  max-width: 46ch;
+  color: var(--text-body);
+  font-size: var(--text-lead);
 }
+.hero-act { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-5); margin-top: var(--space-6); }
+.hero-note { color: var(--text-muted); font-size: var(--text-sm); max-width: 32ch; }
 
-.hero-act {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-4);
-  margin-top: var(--space-6);
+/*
+ * One seva, one row. Vignette, name, what it does, what it costs, and the way
+ * to do it — read left to right the way a printed list is read.
+ */
+.seva-card {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: var(--space-4) var(--space-5);
+  align-items: start;
+  padding-block: var(--space-5);
+  border-top: 8px solid transparent;
+  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='8' viewBox='0 0 240 8' preserveAspectRatio='none'%3E%3Cpath d='M1 4.6C34 2.4 52 6.2 84 4.1c30-2 52 2.9 78 .7 22-1.9 46 3 77-1.4' stroke='%231F1A2E' stroke-width='2.6' fill='none' stroke-linecap='round' opacity='.5'/%3E%3C/svg%3E") 0 0 8 0 repeat;
+  transition: background var(--transition-med);
 }
-.hero-note { color: var(--ink-500); font-size: var(--text-sm); }
+.seva-card:hover { background: rgba(31, 26, 46, .045); }
+@media (min-width: 48rem) { .seva-card { grid-template-columns: 112px minmax(0, 1fr) auto; align-items: center; } }
+
+.seva-band {
+  position: relative;
+  grid-row: span 2;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--surface-warm);
+}
+@media (min-width: 48rem) { .seva-band { grid-row: auto; } }
+.seva-band img { object-fit: cover; transition: transform 600ms cubic-bezier(.16,1,.3,1); }
+.seva-card:hover .seva-band img { transform: scale(1.05); }
+
+.seva-head { display: flex; align-items: baseline; gap: var(--space-3); padding: 0; }
+.seva-figure {
+  font-family: var(--font-condensed);
+  font-weight: 700;
+  font-size: var(--price);
+  line-height: 1;
+  color: var(--text-price);
+  font-variant-numeric: tabular-nums;
+}
+.seva-freq { color: var(--text-muted); font-size: var(--text-sm); font-family: var(--font-condensed); }
+
+.seva-name {
+  padding-inline: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 27px;
+  line-height: 1.15;
+  color: var(--text-heading);
+}
+.seva-summary { padding: var(--space-2) 0 0; color: var(--text-body); font-size: var(--text-sm); max-width: 52ch; }
+.seva-foot { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-3) 0 0; margin-top: 0; }
+@media (min-width: 48rem) { .seva-foot { flex-direction: column; align-items: flex-end; padding: 0; } }
 
 /* ── Article ───────────────────────────────────────────────────────────── */
 
-/*
- * A page that reads like something written, not something rendered.
- *
- * The body runs a step larger at looser leading, because these pages exist to
- * explain where a donation goes and a visitor reads them all the way down. The
- * first paragraph takes the lead size, and each section opens over a gold
- * hairline - the rules do the work a run of same-size headings could not.
- */
-
-.article-grid {
-  display: grid;
-  gap: var(--space-8);
-  grid-template-columns: minmax(0, 1fr);
-}
-@media (min-width: 64rem) {
-  .article-grid { grid-template-columns: minmax(0, 1fr) 16rem; align-items: start; }
-}
-
-/** The reading alone: a page with no sidebar keeps no room for one. */
+.article-grid { display: grid; gap: var(--space-8); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 64rem) { .article-grid { grid-template-columns: minmax(0, 1fr) 17rem; align-items: start; } }
 .article-solo { display: block; }
 
-.article-read .prose {
-  max-width: 66ch;
-  font-size: var(--text-body-lg);
-  line-height: 1.75;
-}
-.article-read .prose > p:first-of-type {
-  font-size: var(--text-lead);
-  line-height: 1.6;
-  color: var(--ink-900);
-}
+.article-read .prose { max-width: var(--measure); font-size: var(--text-body-lg); line-height: 1.75; }
+.article-read .prose > p:first-of-type { font-size: var(--text-lead); line-height: 1.6; color: var(--ink-900); }
 .article-read .prose h2 {
   margin-top: var(--space-8);
   padding-top: var(--space-5);
-  border-top: 1px solid var(--gold-300);
+  border-top: 8px solid transparent;
+  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='8' viewBox='0 0 240 8' preserveAspectRatio='none'%3E%3Cpath d='M1 4.6C34 2.4 52 6.2 84 4.1c30-2 52 2.9 78 .7 22-1.9 46 3 77-1.4' stroke='%231F1A2E' stroke-width='2.6' fill='none' stroke-linecap='round' opacity='.5'/%3E%3C/svg%3E") 0 0 8 0 repeat;
   font-size: var(--text-h2);
 }
-.article-read .prose h2:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.article-read .prose h2:first-child { margin-top: 0; padding-top: 0; border-top: 0; border-image: none; }
 .article-read .prose h3 { font-size: var(--text-h3); }
 
 /* ── Questions ─────────────────────────────────────────────────────────── */
 
-/*
- * Nothing hidden.
- *
- * Twelve questions inside a bordered box, every one collapsed, asked a reader
- * to click twelve times to find out whether the thing they wanted to know was
- * even answered. Laid out plainly in two columns, the whole set is scannable
- * in a screen - and the answers are in the page rather than behind an
- * interaction, which is how a search engine reads them too.
- */
-
 .faqs { display: flex; flex-direction: column; gap: var(--space-8); }
-
-/*
- * The section's own head.
- *
- * The author ends the body with "Frequently Asked Questions" and writes the
- * questions into the CMS, so the words belong to this section rather than to
- * the reading above it. Beside them, the way out for the question that is not
- * on the list - a trust asking strangers for money should be easy to ask.
- */
 .faq-head {
   display: flex;
   flex-wrap: wrap;
@@ -703,781 +613,272 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   gap: var(--space-4);
   margin-bottom: var(--space-6);
   padding-bottom: var(--space-4);
-  border-bottom: 1px solid var(--border-warm);
+  border-bottom: 2px solid var(--rule);
 }
-.faq-heading {
-  font-family: var(--font-serif);
-  font-weight: var(--weight-heading);
-  font-size: var(--text-h2);
-  line-height: var(--lh-heading);
-  color: var(--text-heading);
-}
-.faq-count { margin-top: var(--space-2); color: var(--ink-500); font-size: var(--text-sm); }
-
-.faq-title {
-  margin-bottom: var(--space-5);
-  font-family: var(--font-serif);
-  font-weight: var(--weight-heading);
-  font-size: var(--text-h3);
-  color: var(--text-heading);
-}
-
-.faq-grid {
-  display: grid;
-  gap: var(--space-6) var(--space-8);
-  grid-template-columns: minmax(0, 1fr);
-}
+.faq-heading { font-family: var(--font-display); font-size: var(--text-h2); line-height: var(--lh-heading); color: var(--text-heading); }
+.faq-count { margin-top: var(--space-2); color: var(--text-muted); font-size: var(--text-sm); }
+.faq-title { margin-bottom: var(--space-5); font-family: var(--font-display); font-size: var(--text-h3); color: var(--text-heading); }
+.faq-grid { display: grid; gap: var(--space-6) var(--space-8); grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 48rem) { .faq-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-
 .faq-item { break-inside: avoid; }
-.faq-rule { width: 32px; height: 1px; background: var(--gold-400); margin-bottom: var(--space-3); }
-
-.faq-q {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: var(--text-h4);
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-  color: var(--text-heading);
-}
-.faq-a { margin-top: var(--space-2); color: var(--ink-600); font-size: var(--text-sm); }
+.faq-rule { width: 44px; height: 8px; margin-bottom: var(--space-3); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='8' viewBox='0 0 240 8' preserveAspectRatio='none'%3E%3Cpath d='M1 4.6C34 2.4 52 6.2 84 4.1c30-2 52 2.9 78 .7 22-1.9 46 3 77-1.4' stroke='%23C8452A' stroke-width='3.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat left center / 100% 8px; }
+.faq-q { font-family: var(--font-condensed); font-weight: 600; font-size: 21px; line-height: 1.25; color: var(--text-heading); }
+.faq-a { margin-top: var(--space-2); color: var(--text-body); font-size: var(--text-sm); }
 .faq-a p + p { margin-top: var(--space-2); }
 
 /* ── Contents ──────────────────────────────────────────────────────────── */
 
-/*
- * A rail of what is on the page.
- *
- * Our Work is thirty-five paragraphs under three sections and nine programme
- * headings, and all of that structure was invisible in a single column: a
- * visitor looking for the medical programme had to scroll for it. Every h2 and
- * h3 carries an id now, so this list is built on the server and each entry is
- * a link somebody can send.
- *
- * The rail only appears where there is room for it; below 64rem it sits above
- * the reading, which is where a contents list belongs on a phone.
- */
-
-.toc-grid {
-  display: grid;
-  gap: var(--space-8);
-  grid-template-columns: minmax(0, 1fr);
-  align-items: start;
-}
+.toc-grid { display: grid; gap: var(--space-8); grid-template-columns: minmax(0, 1fr); align-items: start; }
 @media (min-width: 64rem) {
-  .toc-grid { grid-template-columns: 15rem minmax(0, 1fr) 16rem; }
-  .toc { position: sticky; top: 5.5rem; }
+  .toc-grid { grid-template-columns: 15rem minmax(0, 1fr) 17rem; }
+  .toc { position: sticky; top: 6rem; }
 }
-
 .toc-head { margin-bottom: var(--space-3); }
-
-.toc-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  border-left: 1px solid var(--border-warm);
-}
+.toc-list { display: flex; flex-direction: column; gap: 2px; border-left: 2px solid var(--rule); }
 .toc-link {
   display: block;
-  margin-left: -1px;
+  margin-left: -2px;
   padding: 6px var(--space-4);
-  border-left: 1px solid transparent;
-  color: var(--ink-600);
+  border-left: 2px solid transparent;
+  color: var(--text-body);
   font-size: var(--text-sm);
 }
-.toc-link:hover { color: var(--navy-700); border-left-color: var(--gold-400); }
-/** A sub-heading: indented, and quieter than the section it belongs to. */
-.toc-link.is-sub { padding-left: var(--space-6); font-size: 13px; color: var(--ink-500); }
-
-/* ── Seva ──────────────────────────────────────────────────────────────── */
-
-/*
- * The amount leads.
- *
- * A seva card that opens with a photograph makes a visitor work out what they
- * are looking at before it says what it costs, and the cost is the decision.
- * The figure sits first at heading size with its frequency beside it, the name
- * and the promise under it, and the photograph carries the rest.
- */
-
-.seva-card {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--surface-card);
-  border: 1px solid var(--border-warm);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-card);
-  transition: box-shadow var(--transition-med), transform var(--transition-med);
-}
-.seva-card:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); }
-
-.seva-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-5) var(--space-5) var(--space-3);
-}
-.seva-figure {
-  font-family: var(--font-serif);
-  font-weight: var(--weight-heading);
-  font-size: var(--text-h2);
-  line-height: 1;
-  color: var(--navy-700);
-}
-.seva-freq { color: var(--ink-500); font-size: var(--text-sm); }
-
-.seva-name {
-  padding-inline: var(--space-5);
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: var(--text-h4);
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-  color: var(--text-heading);
-}
-.seva-summary {
-  padding: var(--space-3) var(--space-5) var(--space-5);
-  color: var(--ink-600);
-  font-size: var(--text-sm);
-}
-
-/** Wider than a card cover: the photograph is support here, not the headline. */
-.seva-band {
-  position: relative;
-  aspect-ratio: 16 / 7;
-  overflow: hidden;
-  background: var(--surface-warm);
-}
-.seva-band img { object-fit: cover; transition: transform 500ms ease; }
-.seva-card:hover .seva-band img { transform: scale(1.03); }
-
-.seva-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-top: auto;
-  padding: var(--space-4) var(--space-5) var(--space-5);
-}
+.toc-link:hover { color: var(--indigo-900); border-left-color: var(--vermilion-500); }
+.toc-link.is-sub { padding-left: var(--space-6); font-size: 13.5px; color: var(--text-muted); }
 
 /* ── Finding things ────────────────────────────────────────────────────── */
 
-/*
- * Search, subjects, and a way to follow.
- *
- * Sixty-three posts behind a grid with no search, no subject filter and no
- * feed link is an archive nobody reaches the bottom of. The form is a plain
- * GET so it works without JavaScript and leaves a URL worth sharing.
- */
-
 .sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
 }
 
 .finder { margin-bottom: var(--space-7); }
-
 .finder-search {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: 6px 6px 6px var(--space-4);
-  background: var(--surface-card);
-  border: 1px solid var(--border-cool);
-  border-radius: var(--radius-pill);
+  padding: 4px 4px 4px var(--space-4);
+  background: var(--stock-50);
+  border: 2px solid var(--rule);
   max-width: 34rem;
 }
 .finder-search:focus-within { box-shadow: var(--focus-ring); }
-.finder-icon { flex: none; color: var(--ink-500); }
+.finder-icon { flex: none; color: var(--text-muted); }
 .finder-input {
-  flex: 1;
-  min-width: 0;
-  min-height: 44px;
-  border: 0;
-  background: transparent;
-  font: inherit;
-  font-size: var(--text-body);
-  color: var(--ink-900);
+  flex: 1; min-width: 0; min-height: 46px;
+  border: 0; background: transparent; font: inherit;
+  font-size: var(--text-body); color: var(--ink-900);
 }
 .finder-input:focus-visible { outline: none; box-shadow: none; }
-.finder-input::placeholder { color: var(--ink-500); }
-.finder-go { height: 44px; padding-inline: var(--space-4); font-size: var(--text-sm); }
+.finder-input::placeholder { color: var(--text-muted); }
+.finder-go { min-height: 46px; padding-inline: var(--space-5); font-size: 17px; }
 
-.finder-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2) var(--space-5);
-  margin-top: var(--space-4);
-}
-
+.finder-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-5); margin-top: var(--space-4); }
 .finder-rss {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  gap: var(--space-2);
-  color: var(--navy-700);
-  font-size: var(--text-sm);
-  font-weight: 600;
+  display: inline-flex; align-items: center; min-height: 44px; gap: var(--space-2);
+  font-family: var(--font-condensed); color: var(--indigo-900); font-size: 17px; font-weight: 600;
 }
-.finder-rss svg { color: var(--gold-text); }
-.finder-rss:hover { color: var(--gold-text); }
+.finder-rss svg { color: var(--vermilion-500); }
+.finder-rss:hover { color: var(--vermilion-600); }
+.finder-tags { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
 
-.finder-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-top: var(--space-4);
-}
-
-/** The same three affordances, stacked beside a column of stories. */
 .rail { display: flex; flex-direction: column; gap: var(--space-6); }
 .rail .finder-search { max-width: none; padding-right: var(--space-4); }
-.rail-block { border-top: 1px solid var(--border-warm); padding-top: var(--space-4); }
+.rail-block { border-top: 2px solid var(--rule); padding-top: var(--space-4); }
 
 /* ── Post tile ─────────────────────────────────────────────────────────── */
 
 /*
- * A post as a cream tile, with the photograph to the edge.
- *
- * The old card put 24px of white around the picture, then spent a whole row on
- * a "Read on" link to a page the card already linked to. The photograph now
- * reaches the tile's edge, the padding survives only under the words where it
- * does something, and the tile itself is the link.
- *
- * Cream rather than white with a border: on a white page a bordered card is a
- * box, and a warm tile is a piece of paper.
+ * A post is a piece of paper with a painted picture pasted on it. No frame,
+ * no radius: the picture reaches the edges and the words sit on the stock.
  */
-
 .post {
   display: block;
   height: 100%;
-  overflow: hidden;
-  background: var(--surface-section);
-  border-radius: var(--radius-md);
+  background: var(--stock-50);
   transition: background var(--transition-fast), transform var(--transition-med);
 }
-.post:hover { background: var(--surface-warm); transform: translateY(-2px); }
-
+.post:hover { background: var(--surface-warm); transform: translateY(-3px); }
 .post-link { display: flex; flex-direction: column; height: 100%; }
+.post-media { position: relative; aspect-ratio: 3 / 2; overflow: hidden; background: var(--stock-300); }
+.post-media img { object-fit: cover; transition: transform 600ms cubic-bezier(.16,1,.3,1); }
+.post:hover .post-media img { transform: scale(1.05); }
+.post-body { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-5); }
+.post-rule { width: 48px; height: 8px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='8' viewBox='0 0 240 8' preserveAspectRatio='none'%3E%3Cpath d='M1 4.6C34 2.4 52 6.2 84 4.1c30-2 52 2.9 78 .7 22-1.9 46 3 77-1.4' stroke='%23C8452A' stroke-width='3.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat left center / 100% 8px; }
+.post-title { font-family: var(--font-display); font-weight: 400; font-size: var(--text-h3); line-height: 1.15; color: var(--text-heading); text-wrap: balance; }
+.post-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: auto; padding-top: var(--space-2); }
 
-.post-media {
-  position: relative;
-  aspect-ratio: 3 / 2;
-  overflow: hidden;
-  background: var(--cream-300);
-}
-.post-media img { object-fit: cover; transition: transform 500ms ease; }
-.post:hover .post-media img { transform: scale(1.03); }
-
-.post-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-5);
-}
-.post-rule { width: 40px; height: 1px; background: var(--gold-400); }
-.post-title {
-  font-family: var(--font-serif);
-  font-weight: var(--weight-heading);
-  font-size: var(--text-h3);
-  line-height: var(--lh-heading);
-  color: var(--text-heading);
-  text-wrap: balance;
-}
-/** Pushed down so every tile in a row ends on the same line. */
-.post-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2);
-  margin-top: auto;
-  padding-top: var(--space-2);
-}
-
-/** A seva's amount, set as a line of the tile rather than a slip of its own. */
-.post-amount {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  font-family: var(--font-serif);
-  font-weight: var(--weight-heading);
-  line-height: 1;
-  color: var(--navy-700);
-}
-.post-sym { font-size: var(--text-h4); }
-.post-num { font-size: var(--text-h2); font-variant-numeric: tabular-nums; }
-.post-period {
-  margin-left: 4px;
-  font-family: var(--font-sans);
-  font-weight: 400;
-  font-size: var(--text-sm);
-  color: var(--ink-500);
-}
+.post-amount { display: flex; align-items: baseline; gap: 3px; font-family: var(--font-condensed); font-weight: 700; line-height: 1; color: var(--text-price); }
+.post-sym { font-size: 20px; }
+.post-num { font-size: var(--price); font-variant-numeric: tabular-nums; }
+.post-period { margin-left: 5px; font-family: var(--font-condensed); font-weight: 400; font-size: var(--text-sm); color: var(--text-muted); }
 
 /* ── Directory ─────────────────────────────────────────────────────────── */
 
-/*
- * A place, given a row of its own.
- *
- * There are a handful of gaushalas, not sixty, and each one is somewhere real
- * with a herd in it. A grid of small cards throws away both: the photograph
- * runs the full height of the row, and the two numbers that say what the place
- * holds are set as figures rather than as a sentence.
- */
-
-.directory {
-  display: grid;
-  gap: var(--space-5);
-  grid-template-columns: minmax(0, 1fr);
-}
-
+.directory { display: grid; gap: var(--space-6); grid-template-columns: minmax(0, 1fr); }
 .directory-row {
-  display: grid;
-  gap: var(--space-5);
-  grid-template-columns: minmax(0, 1fr);
-  overflow: hidden;
-  background: var(--surface-section);
-  border-radius: var(--radius-md);
+  display: grid; gap: var(--space-5); grid-template-columns: minmax(0, 1fr);
+  overflow: hidden; background: var(--stock-50);
   transition: background var(--transition-fast);
 }
 .directory-row:hover { background: var(--surface-warm); }
-
-.directory-media {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  background: var(--cream-300);
-}
-.directory-media img { object-fit: cover; transition: transform 500ms ease; }
-.directory-row:hover .directory-media img { transform: scale(1.03); }
-
+.directory-media { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--stock-300); }
+.directory-media img { object-fit: cover; transition: transform 600ms cubic-bezier(.16,1,.3,1); }
+.directory-row:hover .directory-media img { transform: scale(1.05); }
 .directory-row.is-plain { grid-template-columns: minmax(0, 1fr); }
-
-.directory-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-6);
-}
-.directory-name {
-  font-family: var(--font-serif);
-  font-weight: var(--weight-heading);
-  font-size: var(--text-h2);
-  line-height: var(--lh-heading);
-  color: var(--text-heading);
-}
-
-.directory-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-7);
-  margin-top: auto;
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--border-warm);
-}
-.directory-figure {
-  font-family: var(--font-serif);
-  font-weight: var(--weight-heading);
-  font-size: var(--text-h2);
-  line-height: 1;
-  color: var(--navy-700);
-  font-variant-numeric: tabular-nums;
-}
+.directory-body { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-6); }
+.directory-name { font-family: var(--font-display); font-weight: 400; font-size: var(--text-h2); line-height: 1.12; color: var(--text-heading); }
+.directory-stats { display: flex; flex-wrap: wrap; gap: var(--space-7); margin-top: auto; padding-top: var(--space-4); border-top: 2px solid var(--rule); }
+.directory-figure { font-family: var(--font-condensed); font-weight: 700; font-size: var(--text-h2); line-height: 1; color: var(--indigo-900); font-variant-numeric: tabular-nums; }
 
 @media (min-width: 48rem) {
-  .directory-row { grid-template-columns: 18rem minmax(0, 1fr); }
+  .directory-row { grid-template-columns: 19rem minmax(0, 1fr); }
   .directory-row.is-plain { grid-template-columns: minmax(0, 1fr); }
   .directory-row.is-plain .directory-body { padding-left: var(--space-6); }
   .directory-media { aspect-ratio: auto; height: 100%; }
-  .directory-row.is-plain { grid-template-columns: minmax(0, 1fr); }
-
-.directory-body { padding-left: 0; }
+  .directory-body { padding-left: 0; }
 }
 
 /* ── Groups ────────────────────────────────────────────────────────────── */
 
-/*
- * A catalogue that is already sorted needs no filter control.
- *
- * Thirty-one seva behind a row of category chips makes a visitor click to see
- * what is in each one. Grouped under their own headings, the whole catalogue
- * is on the page and the categories are the structure rather than a control -
- * the jump links move within the page instead of loading another.
- */
-
-.group-jump {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-bottom: var(--space-8);
-}
-
+.group-jump { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-8); }
 .group { margin-bottom: var(--space-9); }
 .group:last-child { margin-bottom: 0; }
-
 .group-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-5);
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--border-warm);
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
+  gap: var(--space-3); margin-bottom: var(--space-5); padding-bottom: var(--space-3);
+  border-bottom: 3px solid var(--indigo-900);
 }
-.group-name {
-  font-family: var(--font-serif);
-  font-weight: var(--weight-heading);
-  font-size: var(--text-h3);
-  color: var(--text-heading);
-}
+.group-name { font-family: var(--font-display); font-weight: 400; font-size: var(--text-h2); color: var(--text-heading); }
 
 /* ── Listing ───────────────────────────────────────────────────────────── */
 
-/*
- * Two lead stories, then the page gets on with it.
- *
- * Sixty-three posts at one card size asks a reader to choose between sixty-
- * three equal things, which is the same as offering no way in. The two most
- * recent take a wide picture and a serif title; the rest run three across,
- * which is what a page of an archive should look like.
- */
-
-.listing-lead {
-  display: grid;
-  gap: var(--space-6);
-  grid-template-columns: minmax(0, 1fr);
-  margin-bottom: var(--space-8);
-}
+.listing-lead { display: grid; gap: var(--space-6); grid-template-columns: minmax(0, 1fr); margin-bottom: var(--space-8); }
 @media (min-width: 64rem) { .listing-lead { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-
-.listing-rest {
-  display: grid;
-  gap: var(--space-6);
-  grid-template-columns: minmax(0, 1fr);
-}
+.listing-rest { display: grid; gap: var(--space-6); grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 40rem) { .listing-rest { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 64rem) { .listing-rest { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
 /* ── Pager ─────────────────────────────────────────────────────────────── */
 
-/*
- * Real links, not a "load more" button: a crawler walks the archive and a
- * reader can send someone page four.
- */
 .pager {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  margin-top: var(--space-8);
-  padding-top: var(--space-5);
-  border-top: 1px solid var(--border-warm);
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: var(--space-4); margin-top: var(--space-8); padding-top: var(--space-5);
+  border-top: 2px solid var(--rule);
 }
-.pager-step {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--navy-700);
-}
-.pager-step:hover { color: var(--gold-text); }
-.pager-step.is-off { color: var(--ink-500); }
-
+.pager-step { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--font-condensed); font-size: 17px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--indigo-900); }
+.pager-step:hover { color: var(--vermilion-600); }
+.pager-step.is-off { color: var(--text-muted); }
 .pager-numbers { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1); }
 .pager-page {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 44px;
-  height: 44px;
-  padding-inline: 8px;
-  border-radius: var(--radius-pill);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--navy-700);
-  font-variant-numeric: tabular-nums;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 44px; height: 44px; padding-inline: 8px;
+  font-family: var(--font-condensed); font-size: 17px; font-weight: 600;
+  color: var(--indigo-900); font-variant-numeric: tabular-nums;
 }
 .pager-page:hover { background: var(--surface-warm); }
-.pager-page.is-here { background: var(--navy-700); color: var(--white); }
-.pager-gap { color: var(--ink-500); padding-inline: 4px; }
+.pager-page.is-here { background: var(--indigo-900); color: var(--text-on-dark); }
+.pager-gap { color: var(--text-muted); padding-inline: 4px; }
 
 /* ── Lead card ─────────────────────────────────────────────────────────── */
 
-/** A story that leads a listing: full-width picture, title at headline size. */
-.lead-card {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--surface-card);
-  border: 1px solid var(--border-warm);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-card);
-  transition: box-shadow var(--transition-med), transform var(--transition-med);
-}
-.lead-card:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); }
-
-.lead-media {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  background: var(--surface-warm);
-}
-.lead-media img { object-fit: cover; transition: transform 500ms ease; }
-.lead-card:hover .lead-media img { transform: scale(1.03); }
-
-.lead-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-6);
-}
-.lead-title {
-  font-family: var(--font-serif);
-  font-weight: var(--weight-heading);
-  font-size: var(--text-h3);
-  line-height: var(--lh-heading);
-  color: var(--text-heading);
-  text-wrap: balance;
-}
-.lead-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2);
-  margin-top: auto;
-}
+.lead-card { display: flex; flex-direction: column; overflow: hidden; background: var(--stock-50); transition: background var(--transition-fast), transform var(--transition-med); }
+.lead-card:hover { background: var(--surface-warm); transform: translateY(-3px); }
+.lead-media { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--stock-300); }
+.lead-media img { object-fit: cover; transition: transform 600ms cubic-bezier(.16,1,.3,1); }
+.lead-card:hover .lead-media img { transform: scale(1.05); }
+.lead-body { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-6); }
+.lead-title { font-family: var(--font-display); font-weight: 400; font-size: var(--text-h2); line-height: 1.12; color: var(--text-heading); text-wrap: balance; }
+.lead-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: auto; }
 
 /* ── Feed ──────────────────────────────────────────────────────────────── */
 
-/*
- * A lead story, then the rest.
- *
- * Three equal cards give a reader no way in - every post argues for itself at
- * the same volume and the eye picks none of them. The newest takes a half-width
- * picture and a serif title; the others follow as thumbnail rows under a rule,
- * which is what a section of writing looks like when someone has decided what
- * matters most.
- */
-
-.feature {
-  display: grid;
-  gap: var(--space-6);
-  grid-template-columns: minmax(0, 1fr);
-  align-items: center;
-}
+.feature { display: grid; gap: var(--space-6); grid-template-columns: minmax(0, 1fr); align-items: center; }
 @media (min-width: 48rem) { .feature { grid-template-columns: 1.1fr 1fr; } }
+.feature-media { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--stock-300); }
+.feature-media img { object-fit: cover; transition: transform 600ms cubic-bezier(.16,1,.3,1); }
+.feature:hover .feature-media img { transform: scale(1.05); }
+.feature-title { font-family: var(--font-display); font-weight: 400; font-size: var(--text-h2); line-height: 1.12; color: var(--text-heading); }
+.feature-summary { margin-top: var(--space-3); max-width: 52ch; color: var(--text-body); }
+.feed-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-3); }
+.feed-tag { color: var(--vermilion-700); }
 
-.feature-media {
-  position: relative;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  border-radius: var(--radius-md);
-  background: var(--surface-warm);
-}
-.feature-media img { object-fit: cover; transition: transform 500ms ease; }
-.feature:hover .feature-media img { transform: scale(1.03); }
-
-.feature-title {
-  font-family: var(--font-serif);
-  font-weight: var(--weight-heading);
-  font-size: var(--text-h2);
-  line-height: var(--lh-heading);
-  color: var(--text-heading);
-}
-.feature-summary {
-  margin-top: var(--space-3);
-  max-width: 52ch;
-  color: var(--ink-600);
-}
-
-/** A post's label and date. Set under the title, never above it. */
-.feed-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2);
-  margin-top: var(--space-3);
-}
-.feed-tag { color: var(--gold-text); }
-
-/** Everything after the lead: two up on a desktop, stacked on a phone. */
 .feed-rest {
-  display: grid;
-  gap: var(--space-5);
-  grid-template-columns: minmax(0, 1fr);
-  margin-top: var(--space-7);
-  border-top: 1px solid var(--border-warm);
-  padding-top: var(--space-6);
+  display: grid; gap: var(--space-5); grid-template-columns: minmax(0, 1fr);
+  margin-top: var(--space-7); border-top: 2px solid var(--rule); padding-top: var(--space-6);
 }
-@media (min-width: 48rem) {
-  .feed-rest { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6); }
-}
-
+@media (min-width: 48rem) { .feed-rest { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6); } }
 .feed-row { display: flex; align-items: flex-start; gap: var(--space-4); }
-.feed-thumb {
-  position: relative;
-  flex: none;
-  width: 112px;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  border-radius: var(--radius-sm);
-  background: var(--surface-warm);
-}
+.feed-thumb { position: relative; flex: none; width: 120px; aspect-ratio: 16 / 10; overflow: hidden; background: var(--stock-300); }
 .feed-thumb img { object-fit: cover; }
-.feed-row-title {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: var(--text-h4);
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-  color: var(--text-heading);
-}
-.feed-row:hover .feed-row-title { color: var(--gold-text); }
+.feed-row-title { font-family: var(--font-condensed); font-weight: 600; font-size: 21px; line-height: 1.2; color: var(--text-heading); }
+.feed-row:hover .feed-row-title { color: var(--vermilion-600); }
 
 /* ── Footer ────────────────────────────────────────────────────────────── */
 
-/*
- * The mark, the line and the ask lead; the columns follow.
- *
- * A footer that opens with three equal columns makes a visitor read a menu
- * before it says anything. Here the devotional line is set at heading size
- * under a gold rule with the one gold action beside it, and where to go next
- * sits below a hairline - the ask first, the directory after.
- */
-
 .foot {
+  position: relative;
   background: var(--surface-footer);
   color: var(--text-on-dark-soft);
+  padding-top: var(--seam-height);
   padding-bottom: env(safe-area-inset-bottom);
 }
-
-.foot-crown {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-6);
-  padding-bottom: var(--space-6);
+.foot::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: var(--seam-height);
+  background: var(--seam-h) repeat-x;
+  background-size: auto 100%;
 }
+.foot-crown { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-6); padding-bottom: var(--space-6); }
 .foot-ask { max-width: 34ch; }
-.foot-rule {
-  width: 64px;
-  height: 1px;
-  background: var(--gold-400);
-  margin-top: var(--space-5);
-  margin-bottom: var(--space-4);
-}
-.foot-line {
-  margin-top: var(--space-3);
-  font-family: var(--font-devanagari);
-  font-size: var(--text-h3);
-  line-height: 1.4;
-  letter-spacing: 0;
-  color: var(--white);
-}
-
-.foot-cols {
-  display: grid;
-  gap: var(--space-7);
-  grid-template-columns: minmax(0, 1fr);
-  border-top: 1px solid var(--divider-on-dark);
-  padding-top: var(--space-6);
-}
+.foot-rule { width: 72px; height: 8px; margin-top: var(--space-5); margin-bottom: var(--space-4); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='8' viewBox='0 0 240 8' preserveAspectRatio='none'%3E%3Cpath d='M1 4.6C34 2.4 52 6.2 84 4.1c30-2 52 2.9 78 .7 22-1.9 46 3 77-1.4' stroke='%23C8452A' stroke-width='3.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat left center / 100% 8px; }
+.foot-line { margin-top: var(--space-3); font-family: var(--font-display); font-size: var(--text-h3); line-height: 1.3; color: var(--ochre-300); }
+.foot-cols { display: grid; gap: var(--space-7); grid-template-columns: minmax(0, 1fr); border-top: 2px solid var(--divider-on-dark); padding-top: var(--space-6); }
 @media (min-width: 48rem) { .foot-cols { grid-template-columns: 1.4fr 1fr 1fr; } }
-
 .foot-head { margin-bottom: var(--space-3); color: var(--text-on-dark-soft); }
-
-.foot-link {
-  display: flex;
-  align-items: center;
-  min-height: 44px;
-  color: var(--white);
-  font-size: var(--text-sm);
-}
-.foot-link:hover { color: var(--gold-300); }
-
+.foot-link { display: flex; align-items: center; min-height: 44px; color: var(--text-on-dark); font-size: var(--text-sm); }
+.foot-link:hover { color: var(--ochre-300); }
 .foot-social {
-  display: inline-flex;
-  height: 44px;
-  width: 44px;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, .08);
-  color: var(--white);
+  display: inline-flex; height: 44px; width: 44px; align-items: center; justify-content: center;
+  background: rgba(245, 239, 224, .08); color: var(--text-on-dark);
   transition: background var(--transition-fast);
 }
-.foot-social:hover { background: var(--gold-400); }
-
-/** The legal line: fine print, but still something a thumb has to hit. */
-.foot-legal a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  color: var(--text-on-dark-soft);
-}
+.foot-social:hover { background: var(--vermilion-500); }
+.foot-legal a { display: inline-flex; align-items: center; min-height: 44px; color: var(--text-on-dark-soft); }
 
 /* ── Prose ─────────────────────────────────────────────────────────────── */
 
-.prose { max-width: 72ch; }
+.prose { max-width: var(--measure); color: var(--ink-900); }
 .prose.prose-wide { max-width: none; }
 .prose > * + * { margin-top: var(--space-4); }
-
 .prose h2 { font-size: var(--text-h2); margin-top: var(--space-8); }
 .prose h3 { font-size: var(--text-h3); margin-top: var(--space-6); }
 .prose h4 { font-size: var(--text-h4); margin-top: var(--space-5); }
-
-.prose a { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
+.prose a { color: var(--link); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
 .prose ul, .prose ol { padding-left: var(--space-5); }
 .prose ul { list-style: disc; }
 .prose ol { list-style: decimal; }
 .prose li + li { margin-top: var(--space-1); }
-.prose strong { color: var(--text-strong); font-weight: 600; }
-
-.prose img { max-width: 100%; height: auto; border-radius: var(--radius-md); }
-
+.prose strong { color: var(--text-strong); font-weight: 700; }
+.prose img { max-width: 100%; height: auto; }
 .prose blockquote {
-  border-left: 3px solid var(--gold-400);
-  padding-left: var(--space-4);
-  color: var(--ink-600);
-  font-style: italic;
+  border-left: 5px solid var(--vermilion-500);
+  padding-left: var(--space-5);
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  line-height: 1.3;
+  color: var(--indigo-900);
 }
-
-.prose table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--text-sm);
-  display: block;
-  overflow-x: auto;
-}
-.prose th, .prose td {
-  border: 1px solid var(--border-cool);
-  padding: var(--space-2) var(--space-3);
-  text-align: left;
-}
-.prose th { background: var(--surface-warm); color: var(--text-heading); font-weight: 600; }
-.prose hr { border: 0; border-top: 1px solid var(--border-warm); margin-block: var(--space-7); }
+.prose table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); display: block; overflow-x: auto; }
+.prose th, .prose td { border: 2px solid var(--rule); padding: var(--space-2) var(--space-3); text-align: left; }
+.prose th { background: var(--surface-warm); color: var(--text-heading); font-family: var(--font-condensed); font-weight: 600; text-transform: uppercase; letter-spacing: var(--track-caps); }
+.prose hr { border: 0; height: 8px; margin-block: var(--space-7); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='8' viewBox='0 0 240 8' preserveAspectRatio='none'%3E%3Cpath d='M1 4.6C34 2.4 52 6.2 84 4.1c30-2 52 2.9 78 .7 22-1.9 46 3 77-1.4' stroke='%231F1A2E' stroke-width='2.6' fill='none' stroke-linecap='round' opacity='.5'/%3E%3C/svg%3E") repeat-x left center / 240px 8px; }
 
 /* ── Authored blocks ───────────────────────────────────────────────────── */
 
-/*
- * `:::stat`, `:::card` and the rest, written inside a CMS body. A run of them
- * lays out as a twelve-column grid at the width the author asked for, and
- * stacks on a phone.
- */
 .blocks {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -1486,7 +887,6 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   margin-top: var(--space-6);
 }
 .blocks > * { grid-column: span 12; }
-
 @media (min-width: 48rem) {
   .blocks > [data-span="3"] { grid-column: span 3; }
   .blocks > [data-span="4"] { grid-column: span 4; }
@@ -1495,132 +895,117 @@ a.chip:hover { background: var(--cream-300); color: var(--navy-800); }
   .blocks > [data-span="9"] { grid-column: span 9; }
 }
 
-.block { border-radius: var(--radius-md); }
 .block > :first-child { margin-top: 0; }
 .block > * + * { margin-top: var(--space-2); }
-.block p { color: var(--ink-600); font-size: var(--text-sm); }
+.block p { color: var(--text-body); font-size: var(--text-sm); }
 
-.block-card {
-  background: var(--surface-card);
-  border: 1px solid var(--border-warm);
-  box-shadow: var(--shadow-card);
-  padding: var(--space-5);
-  transition: box-shadow var(--transition-med), transform var(--transition-med);
-}
-.block-card:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); }
-.block-card h2, .block-card h3 { font-size: var(--text-h4); margin-top: 0; }
+.block-card { background: var(--stock-50); padding: var(--space-5); transition: background var(--transition-med); }
+.block-card:hover { background: var(--surface-warm); }
+.block-card h2, .block-card h3 { font-family: var(--font-condensed); font-weight: 600; font-size: 21px; margin-top: 0; }
 
 /*
- * The stat band: one deep-navy panel, gold heading, light-blue label. A run of
- * stats reads as a single band rather than as separate cards, so the gap
- * closes and the dividers are hairlines inside it.
+ * The counted numbers, on paint. One band of indigo, torn top and bottom —
+ * the site's one moment of full-width dark, and only ever real CMS counts.
  */
 .blocks:has(> .block-stat) { gap: 0; }
-
 .block-stat {
   background: var(--surface-dark);
-  padding: var(--space-6) var(--space-5);
+  padding: var(--space-7) var(--space-5);
   text-align: center;
-  border-radius: 0;
-  border-left: 1px solid var(--divider-on-dark);
+  border-left: 2px solid var(--divider-on-dark);
 }
-.block-stat:first-child { border-left: 0; border-radius: var(--radius-lg) 0 0 var(--radius-lg); }
-.block-stat:last-child { border-radius: 0 var(--radius-lg) var(--radius-lg) 0; }
-
+.block-stat:first-child { border-left: 0; }
 .block-stat h2, .block-stat h3 {
-  font-family: var(--font-serif);
+  font-family: var(--font-condensed);
+  font-weight: 700;
   font-size: var(--stat-number);
-  color: var(--white);
+  line-height: 1;
+  color: var(--ochre-300);
+  font-variant-numeric: tabular-nums;
   margin-top: 0;
 }
-.block-stat p { color: var(--text-on-dark-soft); font-size: var(--text-sm); }
-
+.block-stat p { color: var(--text-on-dark-soft); font-size: var(--text-sm); font-family: var(--font-condensed); text-transform: uppercase; letter-spacing: var(--track-caps); }
 @media (max-width: 47.99rem) {
-  .block-stat, .block-stat:first-child, .block-stat:last-child {
-    border-radius: 0;
-    border-left: 0;
-    border-top: 1px solid var(--divider-on-dark);
-  }
-  .block-stat:first-child { border-top: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
-  .block-stat:last-child { border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+  .block-stat { border-left: 0; border-top: 2px solid var(--divider-on-dark); }
+  .block-stat:first-child { border-top: 0; }
 }
 
-.block-step {
-  background: var(--surface-card);
-  border: 1px solid var(--border-warm);
-  box-shadow: var(--shadow-card);
-  padding: var(--space-5);
-}
-.block-step h2, .block-step h3 { font-size: var(--text-h4); margin-top: 0; }
+.block-step { background: var(--stock-50); padding: var(--space-5); }
+.block-step h2, .block-step h3 { font-family: var(--font-condensed); font-weight: 600; font-size: 21px; margin-top: 0; }
 
-.block-note {
-  background: var(--surface-warm);
-  border: 1px solid var(--border-warm);
-  padding: var(--space-5);
-}
+.block-note { background: var(--surface-warm); padding: var(--space-5); border-left: 5px solid var(--ochre-400); }
 
 .block-quote {
-  background: var(--surface-card);
-  border: 1px solid var(--border-warm);
-  border-left: 3px solid var(--gold-400);
-  padding: var(--space-5);
-  font-style: italic;
+  background: transparent;
+  border-left: 5px solid var(--vermilion-500);
+  padding: var(--space-2) var(--space-5);
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  line-height: 1.3;
+  color: var(--indigo-900);
 }
+.block-quote p { font: inherit; color: inherit; }
 
-/** The closing ask. Cream rather than navy: an invitation, not a statement. */
+/** The closing ask, on paint: the page ends where it began. */
 .block-cta {
-  background: var(--surface-warm);
-  border: 1px solid var(--border-warm);
-  padding: var(--space-8) var(--space-6);
+  position: relative;
+  background: var(--surface-dark);
+  color: var(--text-on-dark);
+  padding: var(--space-9) var(--space-6);
   text-align: center;
 }
-.block-cta h2, .block-cta h3 { font-size: var(--text-h2); margin-top: 0; }
-.block-cta p { color: var(--ink-600); font-size: var(--text-body-lg); }
+.block-cta h2, .block-cta h3 { font-family: var(--font-display); font-size: var(--text-h1); color: var(--text-on-dark); margin-top: 0; }
+.block-cta p { color: var(--text-on-dark-soft); font-size: var(--text-lead); max-width: 46ch; margin-inline: auto; }
 .block-cta a {
   display: inline-flex;
   align-items: center;
-  height: 44px;
-  padding-inline: var(--space-5);
-  margin-top: var(--space-3);
-  background: var(--btn-gold);
-  color: var(--navy-800);
-  border-radius: var(--radius-pill);
+  min-height: 52px;
+  padding-inline: var(--space-6);
+  margin-top: var(--space-5);
+  background: var(--btn-give);
+  color: var(--btn-give-text);
+  font-family: var(--font-condensed);
   font-weight: 600;
+  font-size: 19px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
   text-decoration: none;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='60' viewBox='0 0 300 60' preserveAspectRatio='none'%3E%3Cpath d='M4 12c40-6 92-4 140-5s96-3 152 2c4 14 2 30-1 45-52 5-104 3-152 4s-100 2-141-3c-3-15-4-29 2-43z' fill='%23000'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='60' viewBox='0 0 300 60' preserveAspectRatio='none'%3E%3Cpath d='M4 12c40-6 92-4 140-5s96-3 152 2c4 14 2 30-1 45-52 5-104 3-152 4s-100 2-141-3c-3-15-4-29 2-43z' fill='%23000'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
 }
-.block-cta a:hover { background: var(--btn-gold-hover); color: var(--navy-800); }
+.block-cta a:hover { background: var(--btn-give-hover); color: var(--btn-give-text); }
 
-/* A kind this file has not styled still reads as a card rather than as text. */
-.block-default {
-  background: var(--surface-card);
-  border: 1px solid var(--border-warm);
-  padding: var(--space-5);
-}
+.block-default { background: var(--stock-50); padding: var(--space-5); }
 
 /* ── Reading ───────────────────────────────────────────────────────────── */
 
-/**
- * Small headings in the sans.
- *
- * A card title, a step name, an FAQ question: all of them land at 18px, where
- * Playfair's hairlines break up and a reader slows down. The sans holds its
- * weight at that size, and the serif is still doing the brand's work anywhere
- * it is large enough to be read as a face rather than as text.
+/*
+ * Rozha One is a poster face: it reads as one above 28px and turns to mush
+ * below it. Anything small enough to be text rather than lettering takes the
+ * condensed face instead.
  */
-h4,
 .card-title {
-  font-family: var(--font-sans);
+  font-family: var(--font-condensed);
   font-weight: 600;
-  letter-spacing: -0.01em;
-  line-height: 1.35;
-}
-
-.card-title {
-  font-size: var(--text-h4);
+  font-size: 21px;
+  line-height: 1.25;
   color: var(--text-heading);
 }
 
-/* Long-form copy takes the darker ink; the grey is for what sits beside it. */
-.prose {
-  color: var(--ink-900);
+/*
+ * One authored moment: paper settling. Sections rise a little as they arrive,
+ * from an already-visible default, so nothing depends on the animation running.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .section, .ledger, .directory-row, .post, .lead-card {
+      animation: settle linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 42%;
+    }
+    @keyframes settle {
+      from { opacity: .55; transform: translateY(18px) rotate(-.35deg); }
+      to { opacity: 1; transform: none; }
+    }
+  }
 }

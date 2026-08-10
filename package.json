@@ -10,7 +10,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@tintorch/web": "git+https://github.com/qanuj/tintorch-web.git#semver:^1.0.0",
+    "@tintorch/web": "github:qanuj/tintorch-web#semver:^1.7.0",
     "jose": "^6.2.8",
     "marked": "^18.0.7",
     "next": "^16.2.12",

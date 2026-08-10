@@ -1,14 +1,24 @@
 :root{
---font-serif:var(--font-serif-loaded),"Playfair Display",Georgia,"Times New Roman",serif;
---font-sans:var(--font-sans-loaded),"Source Sans 3","Segoe UI",system-ui,sans-serif;
---font-devanagari:var(--font-devanagari-loaded),"Tiro Devanagari Hindi","Noto Serif Devanagari",serif;
---text-hero:56px;--text-h1:44px;--text-h2:32px;--text-h3:22px;--text-h4:18px;
---text-lead:21px;--text-body-lg:17px;--text-body:15px;--text-sm:13px;--text-xs:12px;
---stat-number:26px;
---lh-tight:1.15;/* @kind other */--lh-heading:1.25;/* @kind other */--lh-body:1.6;/* @kind other */
---track-caps:.18em;
---weight-heading:700;
+/* Three faces, each carrying Devanagari and Latin, so Hindi needs no second system. */
+--font-display:var(--font-display-loaded),"Rozha One","Noto Serif Devanagari",serif;
+--font-sans:var(--font-sans-loaded),"Mukta","Noto Sans Devanagari",system-ui,sans-serif;
+--font-condensed:var(--font-condensed-loaded),"Khand","Noto Sans Devanagari",system-ui,sans-serif;
+
+/* Display runs big or not at all: Yatra One is a painted face and it reads as one
+   only above 28px. Anything smaller is condensed or sans, never display. */
+--text-hero:clamp(44px,7.4vw,92px);--text-h1:clamp(36px,5vw,64px);--text-h2:clamp(28px,3.4vw,42px);
+--text-h3:24px;--text-h4:19px;
+--text-lead:clamp(18px,1.5vw,21px);--text-body-lg:17.5px;--text-body:16.5px;--text-sm:14px;--text-xs:12.5px;
+--stat-number:clamp(32px,4vw,52px);
+--price:clamp(22px,2.2vw,30px);
+--lh-tight:1.02;/* @kind other */--lh-heading:1.12;/* @kind other */--lh-body:1.65;/* @kind other */
+--track-caps:.13em;
+--weight-heading:400;
+--measure:68ch;
 }
 body{font-family:var(--font-sans);color:var(--text-body);font-size:var(--text-body);line-height:var(--lh-body)}
-h1,h2,h3,h4{font-family:var(--font-serif);color:var(--text-heading);font-weight:var(--weight-heading);line-height:var(--lh-heading);margin:0}
+h1,h2,h3{font-family:var(--font-display);color:var(--text-heading);font-weight:var(--weight-heading);line-height:var(--lh-heading);letter-spacing:-.005em;margin:0}
+h1{font-size:var(--text-h1)}h2{font-size:var(--text-h2)}h3{font-size:var(--text-h3)}
+/* Below h3 the painted face breaks down, so the condensed one takes over. */
+h4,h5,h6{font-family:var(--font-condensed);color:var(--text-heading);font-weight:600;line-height:1.2;font-size:var(--text-h4);margin:0}
 a{color:var(--link);text-decoration:none}a:hover{color:var(--link-hover)}

@@ -178,17 +178,26 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
 
   return (
     <article>
-      {/* Cream hero: the line, then the ask, inside the first screen. */}
-      <header className="hero">
-        <div className="shell">
-          <h1 className="hero-title">{item.title}</h1>
-          {summary && <p className="hero-lead">{summary}</p>}
+      {/*
+       * The torn ledger. The painting stands in the left third and the ask
+       * sits on the paper beside it, torn apart down the middle - and on a
+       * phone the painting becomes a band above, so the line, the price of
+       * giving and the action still land inside the first screen.
+       */}
+      <header className="hero ledger">
+        <div className="panel" role="presentation" />
 
-          <div className="hero-act">
-            <Link href="/donate" className="btn btn-gold">
-              Donate Now
-            </Link>
-            <span className="hero-note">Every seva is recorded in the Punya app.</span>
+        <div className="ledger-body">
+          <div className="shell">
+            <h1 className="hero-title">{item.title}</h1>
+            {summary && <p className="hero-lead">{summary}</p>}
+
+            <div className="hero-act">
+              <Link href="/donate" className="btn btn-give">
+                Choose a seva
+              </Link>
+              <span className="hero-note">Every seva is recorded in the Punya app.</span>
+            </div>
           </div>
         </div>
       </header>

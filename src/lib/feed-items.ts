@@ -1,5 +1,5 @@
 import "server-only";
-import type { FeedItem } from "@tintorch/web";
+import { bylineText, type FeedItem } from "@tintorch/web";
 import { field, itemImage, itemSummary, listAllItems } from "@/lib/cms";
 import type { CmsItem, CmsType } from "@/lib/cms";
 import { itemPath } from "@/lib/routing";
@@ -35,7 +35,9 @@ export async function feedItems(): Promise<FeedItem[]> {
       title: item.title || item.slug,
       description: itemSummary(item),
       published: item.publishedAt || item.createdAt,
-      author: item.authors?.[0]?.name,
+      // Every name, not the first: a feed carries one author line, and a
+      // co-written piece that credits one of its authors is simply wrong.
+      author: bylineText(item.authors ?? []) || undefined,
       tags: tagsOf(item),
       image: itemImage(item) || undefined,
     }))

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, Source_Sans_3, Tiro_Devanagari_Hindi } from "next/font/google";
+import { Rozha_One, Mukta, Khand } from "next/font/google";
 import { Analytics, AnalyticsNoScript, verificationMetadata } from "@tintorch/web";
 import { siteName } from "@/lib/site-name";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
@@ -7,16 +7,29 @@ import { getSite } from "@/lib/cms";
 import "./globals.css";
 
 /*
- * The three families the system names. Loaded through next/font so they are
- * self-hosted and swapped without a layout shift, rather than fetched from a
- * third party on first paint.
+ * Three families, each carrying Devanagari and Latin in one face. That is the
+ * point: the planned Hindi UI needs no second type system, and a hand-lettered
+ * headline in Hindi sits at the same weight as the English beside it.
+ *
+ * Loaded through next/font so they are self-hosted and swapped without a
+ * layout shift, rather than fetched from a third party on first paint.
  */
-const serif = Playfair_Display({ subsets: ["latin"], variable: "--font-serif-loaded", display: "swap" });
-const sans = Source_Sans_3({ subsets: ["latin"], variable: "--font-sans-loaded", display: "swap" });
-const devanagari = Tiro_Devanagari_Hindi({
+const display = Rozha_One({
   subsets: ["devanagari", "latin"],
   weight: "400",
-  variable: "--font-devanagari-loaded",
+  variable: "--font-display-loaded",
+  display: "swap",
+});
+const sans = Mukta({
+  subsets: ["devanagari", "latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans-loaded",
+  display: "swap",
+});
+const condensed = Khand({
+  subsets: ["devanagari", "latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-condensed-loaded",
   display: "swap",
 });
 
@@ -73,8 +86,34 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const site = await getSite();
 
   return (
-    <html lang="en" className={`${serif.variable} ${sans.variable} ${devanagari.variable}`}>
+    <html lang="en" className={`${display.variable} ${sans.variable} ${condensed.variable}`}>
       <body>
+        {/*
+         * The direction contract, emitted as a real HTML comment so it survives
+         * the production build and can be audited in the served markup.
+         */}
+        <div
+          style={{ display: "none" }}
+          dangerouslySetInnerHTML={{
+            __html: `<!--
+THESIS: A gau seva is a painted act, not a line on a donation form. Refuses the NGO
+  template - emotive hero, amount pills, impact band, story cards.
+OWN-WORLD: Painted Hoarding. One gouache panel of a cow at dusk stands torn against bone
+  poster stock; indigo and bone own whole regions; one vermilion is spent only on giving.
+  Deckled tears, dry-brush rules, no radius, no shadow. Rozha One / Mukta / Khand carry
+  Devanagari and Latin in one system.
+STORY: This trust performs named sevas at a real gaushala, each at an exact price, and
+  returns proof. The visitor picks an act and pays for it.
+FIRST VIEWPORT: Painted panel holds the left third full-height, torn against a poster-stock
+  ledger of named sevas - vignette, name, price, action per row. The vermilion brush button
+  sits in the first screen on a phone.
+FORM: The Torn Ledger, comp B of three; world seed key 38080fb2.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review,
+  the verdict, and DESIGN.md
+-->`,
+          }}
+        />
+
         {/*
          * Feed autodiscovery: pasting the site address into a reader finds the
          * feed rather than needing the URL typed out.

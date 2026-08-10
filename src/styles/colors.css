@@ -1,18 +1,27 @@
 :root{
-/* brand base */
---navy-950:#0C1633;--navy-900:#101C3F;--navy-800:#14224E;--navy-700:#1B2C5C;--navy-600:#243870;--navy-100:#E8EDF8;
---gold-text:#8F5C11;--gold-600:#B8791A;--gold-500:#C4841F;--gold-400:#D9952A;--gold-300:#E8B45C;--gold-100:#F8EAD2;--star:#F5B301;
---cream-300:#F3E6CC;--cream-200:#FBF3E3;--cream-100:#FDF9F0;
---white:#FFFFFF;--ink-900:#1F2937;--ink-600:#4B5563;--ink-500:#616B7A;--ink-400:#9CA3AF;
---border-warm:#EAE2D0;--border-cool:#E5E7EB;
---green-badge:#2E9E4F;--blue-badge:#2F55B8;--danger:#C0392B;
+/* Painted Hoarding — gouache on poster stock.
+   Two grounds own whole regions (indigo night, bone stock); one vermilion is
+   spent only on the act of giving. Nothing here is a tint of grey. */
+--indigo-950:#100D20;--indigo-900:#1A1630;--indigo-800:#241E42;--indigo-700:#2F2755;--indigo-600:#3E3470;--indigo-200:#B6AEC9;
+--violet-600:#6B5A8A;--violet-400:#8F7DAE;--violet-200:#C4B7D6;
+--ochre-600:#8A6A22;--ochre-500:#A8822C;--ochre-400:#C79A3E;--ochre-300:#D9B463;--ochre-100:#EFDFB8;
+--vermilion-700:#8E2D1B;--vermilion-600:#A93722;--vermilion-500:#C8452A;--vermilion-400:#DC6047;
+--shelter-700:#33513A;--shelter-500:#4A6B52;
+--stock-300:#D3C4A2;--stock-200:#DFD2B4;--stock-100:#E8DCC0;--stock-50:#F1E9D8;
+--ink-900:#1F1A2E;--ink-700:#3A3348;--ink-600:#4E4661;
+--white:#FFFFFF;
+--danger:#8E2D1B;
+
 /* semantic */
---brand-primary:var(--navy-700);--brand-accent:var(--gold-400);
---text-heading:var(--navy-700);--text-body:var(--ink-600);--text-strong:var(--ink-900);--text-muted:var(--ink-500);
---text-on-dark:#FFFFFF;--text-on-dark-soft:#B9C4E2;--text-gold:var(--gold-text);
---surface-page:var(--white);--surface-section:var(--cream-100);--surface-card:var(--white);--surface-warm:var(--cream-200);--surface-dark:var(--navy-800);--surface-footer:var(--navy-900);--surface-topbar:var(--navy-900);
---link:var(--navy-700);--link-hover:var(--gold-text);
---btn-gold:var(--gold-400);--btn-gold-hover:var(--gold-500);--btn-navy:var(--navy-700);--btn-navy-hover:var(--navy-800);
---focus-ring:0 0 0 2px #FFFFFF,0 0 0 4px var(--gold-400);
---divider-on-dark:rgba(255,255,255,.15);
+--brand-primary:var(--indigo-900);--brand-accent:var(--vermilion-500);
+--text-heading:var(--indigo-900);--text-body:var(--ink-700);--text-strong:var(--ink-900);--text-muted:var(--ink-600);
+--text-on-dark:#F5EFE0;--text-on-dark-soft:var(--violet-200);--text-price:var(--vermilion-700);
+--surface-page:var(--stock-100);--surface-section:var(--stock-50);--surface-card:var(--stock-50);--surface-warm:var(--stock-200);
+--surface-dark:var(--indigo-900);--surface-footer:var(--indigo-950);--surface-topbar:var(--indigo-950);
+--link:var(--indigo-800);--link-hover:var(--vermilion-600);
+--btn-give:var(--vermilion-500);--btn-give-hover:var(--vermilion-600);--btn-give-text:#FFF6EC;
+--btn-quiet-text:var(--indigo-900);
+--rule:rgba(31,26,46,.30);--rule-on-dark:rgba(245,239,224,.24);
+--focus-ring:0 0 0 3px var(--stock-100),0 0 0 6px var(--vermilion-500);
+--divider-on-dark:rgba(245,239,224,.20);
 }
