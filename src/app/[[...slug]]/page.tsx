@@ -16,7 +16,15 @@ import { Body, Faqs } from "@/components/body";
 import { CardFor } from "@/components/cards";
 import { HomeSections } from "@/components/home-sections";
 import { ItemAside, itemTags } from "@/components/item-aside";
-import { facetPath, itemPath, resolveRoute, toSlug, type Facet, type Route } from "@/lib/routing";
+import {
+  clean,
+  facetPath,
+  itemPath,
+  resolveRoute,
+  toSlug,
+  type Facet,
+  type Route,
+} from "@/lib/routing";
 
 /**
  * Every page on the site.
@@ -57,8 +65,26 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug = [] } = await params;
   const { route, item } = await resolve(slug);
 
+  /*
+   * An index says what the CMS says it is.
+   *
+   * This returned the type's plural name and nothing else - no description, no
+   * canonical - so /seva was titled "Seva" in every result and had no sentence
+   * under it. A `page` published at the section's own path is somebody deciding
+   * what that URL should say, and it wins where one exists.
+   */
   if (route.kind === "index") {
-    return { title: route.type.pluralName };
+    const written = await getItem("page", clean(route.type.path));
+    const title = written?.seo?.metaTitle || written?.title || route.type.pluralName;
+    const description =
+      written?.seo?.metaDescription || (written ? itemSummary(written) : "") || undefined;
+
+    return {
+      title,
+      description,
+      alternates: { canonical: written?.canonical || undefined },
+      openGraph: { title, description, type: "website" },
+    };
   }
 
   /*

@@ -29,7 +29,8 @@ export type Facet = "tag" | "author";
 
 const FACETS: Facet[] = ["tag", "author"];
 
-const clean = (path: string) => path.replace(/^\/+|\/+$/g, "");
+/** A type's path without its slashes: "/blog/" and "blog" are the same section. */
+export const clean = (path: string) => path.replace(/^\/+|\/+$/g, "");
 
 /** The type published at the site root, if the workspace has one. */
 export function rootType(site: CmsSite): CmsType | undefined {
