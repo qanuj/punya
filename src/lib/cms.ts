@@ -34,13 +34,21 @@ async function cms<T>(path: string, revalidate = 300): Promise<T | null> {
     });
     if (response.status === 404) return null;
     if (!response.ok) {
-      console.error(`[cms] ${response.status} ${path}`);
-      return null;
+      /*
+       * Loud, not null. Null means the CMS answered "no such thing"; a 500 or
+       * a timeout has to throw instead, because a page cannot tell the
+       * difference - it calls notFound() either way and Next caches the 404.
+       * When the CMS was redeployed, its container swap took the API away for
+       * a few seconds and every mydigitalcrown blog post rendered in that
+       * window became a 404 pinned for a day. An error page is the better
+       * failure: not cached, retried on the next request, and visible.
+       */
+      throw new Error(`[cms] ${response.status} ${path}`);
     }
     return (await response.json()) as T;
   } catch (error) {
-    console.error(`[cms] request failed: ${path}`, error);
-    return null;
+    if (error instanceof Error && error.message.startsWith("[cms]")) throw error;
+    throw new Error(`[cms] request failed: ${path}`, { cause: error });
   }
 }
 
