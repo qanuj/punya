@@ -252,6 +252,8 @@ export type CmsForm = {
   fields: CmsFormField[];
   submitLabel?: string;
   successMessage?: string;
+  /** Present when the workspace has Turnstile switched on. Public by nature. */
+  turnstile?: { siteKey: string };
 };
 
 export async function getForm(key: string): Promise<CmsForm | null> {
@@ -286,6 +288,12 @@ export async function submitForm(
   key: string,
   data: Record<string, unknown>,
   sourceUrl?: string,
+  /*
+   * What only the browser and this server know: the solved Turnstile token,
+   * and the visitor's address. The CMS sees this container rather than the
+   * person, so unless it is told, its rate limiting has nobody to count.
+   */
+  extra?: { turnstileToken?: string; clientIp?: string },
 ): Promise<SubmitResult> {
   if (!configured) return { ok: false, error: "This form is not connected yet." };
 
@@ -293,7 +301,12 @@ export async function submitForm(
     const response = await fetch(`${BASE}/api/v1/content/forms/${encodeURIComponent(key)}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ data, sourceUrl }),
+      body: JSON.stringify({
+        data,
+        sourceUrl,
+        ...(extra?.turnstileToken ? { turnstileToken: extra.turnstileToken } : {}),
+        ...(extra?.clientIp ? { meta: { clientIp: extra.clientIp } } : {}),
+      }),
       cache: "no-store",
     });
 

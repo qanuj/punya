@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { submitFormAction } from "@/app/actions";
+import { Turnstile } from "@/components/turnstile";
 import type { CmsForm } from "@/lib/cms";
 
 const CONTROL: React.CSSProperties = {
@@ -43,6 +44,22 @@ export function CmsForm({ form, source }: { form: CmsForm; source?: string }) {
     <form action={action} className="card space-y-4">
       <input type="hidden" name="__form" value={form.key} />
       {source && <input type="hidden" name="__source" value={source} />}
+
+      {/*
+        The oldest trick there is, and still the cheapest: a field no person can
+        see, which a form-filling script cannot resist. Off the tab order and
+        hidden from screen readers, so nobody who is really here ever meets it.
+      */}
+      <input
+        type="text"
+        name="_hp"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+      />
+
+      {form.turnstile?.siteKey && <Turnstile siteKey={form.turnstile.siteKey} />}
 
       {form.fields.map((field) => {
         const invalid = state.fieldErrors?.[field.key];
