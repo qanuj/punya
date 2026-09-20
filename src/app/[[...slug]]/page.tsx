@@ -14,7 +14,7 @@ import {
 import { excerpt } from "@/lib/markdown";
 import { Body, Faqs } from "@/components/body";
 import { CardFor } from "@/components/cards";
-import { HomeSections } from "@/components/home-sections";
+import { HomePage } from "@/components/home-sections";
 import { ItemAside, itemTags } from "@/components/item-aside";
 import {
   clean,
@@ -157,16 +157,13 @@ export default async function Page({ params, searchParams }: Params) {
   }
 
   /*
-   * The home page carries its own words and then the site: a few seva and a
-   * few posts, each with a way through to the rest. Anywhere else, the page is
-   * the page.
+   * The home page is not an item, whatever the CMS stores it as: it is the
+   * trust asking, and it is composed as that. Anywhere else, the page is the
+   * page.
    */
-  return (
-    <>
-      <ItemPage item={item} type={route.kind === "item" ? route.type : undefined} />
-      {route.kind === "home" && <HomeSections />}
-    </>
-  );
+  if (route.kind === "home") return <HomePage item={item} />;
+
+  return <ItemPage item={item} type={route.kind === "item" ? route.type : undefined} />;
 }
 
 function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
@@ -200,7 +197,13 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
            * sidebar stacked under a long article on a phone is a footer nobody
            * reaches.
            */}
-          <div className="shell grid gap-10 lg:grid-cols-[minmax(0,1fr)_16rem]">
+          <div
+            className={
+              type
+                ? "shell grid gap-10 lg:grid-cols-[minmax(0,1fr)_16rem]"
+                : "shell"
+            }
+          >
             <div className="min-w-0">
               <Body markdown={body} />
             </div>

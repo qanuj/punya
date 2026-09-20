@@ -168,7 +168,7 @@ function BlockView({
  * "Questions, answered", "Pricing questions, answered" - and adding a second
  * put two headings in a row saying the same thing.
  */
-export function Faqs({ faqs }: { faqs: CmsFaq[] }) {
+export function Faqs({ faqs, columns = 1 }: { faqs: CmsFaq[]; columns?: 1 | 2 }) {
   if (!faqs.length) return null;
 
   const groups: { title: string; items: CmsFaq[] }[] = [];
@@ -184,29 +184,54 @@ export function Faqs({ faqs }: { faqs: CmsFaq[] }) {
       {groups.map((group, index) => (
         <div key={index}>
           {group.title && <h3 className="mb-3" style={{ fontSize: "var(--text-h4)" }}>{group.title}</h3>}
-          <div
-            className="overflow-hidden rounded-[var(--radius-lg)]"
-            style={{ border: "1px solid var(--border-warm)", background: "var(--surface-card)" }}
-          >
-            {group.items.map((faq, at) => (
-              <details
-                key={at}
-                style={{ borderTop: at ? "1px solid var(--border-warm)" : undefined }}
-              >
-                <summary
-                  className="cursor-pointer list-none px-5 py-4"
-                  style={{ fontWeight: 600, color: "var(--text-heading)" }}
-                >
-                  {faq.question}
-                </summary>
-                <div
-                  className="prose px-5 pb-4 text-[length:var(--text-sm)]"
-                  dangerouslySetInnerHTML={{ __html: renderMarkdown(faq.answer) }}
-                />
-              </details>
-            ))}
-          </div>
+          <FaqPanels items={group.items} columns={columns} />
         </div>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * One group's questions.
+ *
+ * A dozen collapsed questions in a single column is a column of titles with a
+ * thousand pixels of nothing beside each one, so a caller with a wide section
+ * to fill can ask for two. Split rather than flowed: each half is a panel of
+ * its own, which keeps the hairline dividers inside a border on both sides and
+ * survives a question long enough to wrap. One column on a phone, always.
+ */
+function FaqPanels({ items, columns }: { items: CmsFaq[]; columns: 1 | 2 }) {
+  if (columns === 1 || items.length < 4) return <FaqPanel items={items} />;
+
+  const half = Math.ceil(items.length / 2);
+
+  return (
+    <div className="grid gap-5 lg:grid-cols-2">
+      <FaqPanel items={items.slice(0, half)} />
+      <FaqPanel items={items.slice(half)} />
+    </div>
+  );
+}
+
+function FaqPanel({ items }: { items: CmsFaq[] }) {
+  return (
+    <div
+      className="h-full overflow-hidden rounded-[var(--radius-lg)]"
+      style={{ border: "1px solid var(--border-warm)", background: "var(--surface-card)" }}
+    >
+      {items.map((faq, at) => (
+        <details key={at} style={{ borderTop: at ? "1px solid var(--border-warm)" : undefined }}>
+          <summary
+            className="cursor-pointer list-none px-5 py-4"
+            style={{ fontWeight: 600, color: "var(--text-heading)" }}
+          >
+            {faq.question}
+          </summary>
+          <div
+            className="prose px-5 pb-4 text-[length:var(--text-sm)]"
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(faq.answer) }}
+          />
+        </details>
       ))}
     </div>
   );

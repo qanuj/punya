@@ -130,6 +130,17 @@ function parse(lines: string[], from = 0, until?: string): { nodes: Node[]; next
       return { nodes, next: index + 1 };
     }
 
+    /*
+     * A closing fence with nothing open is a typo, not content. The home
+     * page's body ends with one, and it rendered as a literal ":::" under the
+     * last paragraph - so it is dropped rather than shown to a reader who
+     * cannot do anything about it.
+     */
+    if (CLOSE.test(line)) {
+      index += 1;
+      continue;
+    }
+
     const open = OPEN.exec(line);
     if (open) {
       flushProse();
