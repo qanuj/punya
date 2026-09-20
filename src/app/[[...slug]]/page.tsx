@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import {
+  field,
   getItem,
   getSite,
   itemBody,
@@ -12,8 +14,8 @@ import {
   type CmsType,
 } from "@/lib/cms";
 import { excerpt } from "@/lib/markdown";
-import { Body, Faqs } from "@/components/body";
-import { CardFor } from "@/components/cards";
+import { Body, FaqSection } from "@/components/body";
+import { CardFor, money } from "@/components/cards";
 import { HomePage } from "@/components/home-sections";
 import { ItemAside, itemTags } from "@/components/item-aside";
 import {
@@ -170,22 +172,85 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
   const summary = itemSummary(item);
   const body = itemBody(item);
   const faqs = item.faqs ?? [];
+  const image = itemImage(item);
+  const isSeva = type?.key === "product";
+  const price = isSeva ? field(item, "price") : "";
 
   return (
     <article>
-      {/* Cream hero: warmth before the ask, as the brand leads with. */}
+      {/*
+       * Cream hero: warmth before the ask, as the brand leads with.
+       *
+       * Every post and every seva is published with a picture, and the hero
+       * used none of them - a headline and a sentence in the left half of a
+       * 1200px band, with the other half empty. Where the item has one it runs
+       * beside the words; a page that has none keeps the single column.
+       */}
       <header className="section-warm" style={{ paddingBlock: "var(--space-8)" }}>
-        <div className="shell">
-          <h1 className="max-w-3xl" style={{ fontSize: "var(--text-h1)", lineHeight: "var(--lh-tight)" }}>
-            {item.title}
-          </h1>
-          {summary && (
-            <p
-              className="mt-4 max-w-2xl"
-              style={{ color: "var(--ink-600)", fontSize: "var(--text-body-lg)" }}
+        <div
+          className={
+            image
+              ? "shell grid items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]"
+              : "shell"
+          }
+        >
+          <div className={image ? "min-w-0" : ""}>
+            <h1
+              className={image ? undefined : "max-w-3xl"}
+              style={{ fontSize: "var(--text-h1)", lineHeight: "var(--lh-tight)" }}
             >
-              {summary}
-            </p>
+              {item.title}
+            </h1>
+            {summary && (
+              <p
+                className="mt-4 max-w-2xl"
+                style={{ color: "var(--ink-600)", fontSize: "var(--text-body-lg)" }}
+              >
+                {summary}
+              </p>
+            )}
+
+            {/*
+             * A seva is a decision about an amount, and the amount was three
+             * screens down in the sidebar. It belongs with the title.
+             */}
+            {isSeva && (
+              <div className="mt-6 flex flex-wrap items-center gap-4">
+                <Link href="/donate" className="btn btn-gold">
+                  Offer this seva
+                </Link>
+                {price && (
+                  <p className="leading-none">
+                    <span
+                      className="font-[family-name:var(--font-serif)]"
+                      style={{ fontSize: "var(--text-h2)", color: "var(--navy-700)" }}
+                    >
+                      {money(price, field(item, "currency"))}
+                    </span>
+                    {field(item, "frequency") && (
+                      <span className="ml-1" style={{ color: "var(--ink-400)" }}>
+                        {field(item, "frequency").toLowerCase() === "one-time"
+                          ? "once"
+                          : field(item, "frequency").toLowerCase()}
+                      </span>
+                    )}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {image && (
+            <div className="relative aspect-[16/10] min-w-0 overflow-hidden rounded-[var(--radius-lg)] bg-[color:var(--surface-card)]">
+              <Image
+                src={image}
+                alt={item.title}
+                fill
+                priority
+                sizes="(min-width: 1024px) 520px, 92vw"
+                className="object-cover"
+              />
+            </div>
           )}
         </div>
       </header>
@@ -196,11 +261,17 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
            * Prose and its aside. One column until there is room for two - a
            * sidebar stacked under a long article on a phone is a footer nobody
            * reaches.
+           *
+           * The reading column is the measure itself rather than a fraction of
+           * the shell: as a fraction it came out at 880px holding 72ch of text,
+           * which put two hundred pixels of nothing between the last word and
+           * the sidebar on every post. Sized this way the slack falls outside
+           * the pair, where it reads as margin.
            */}
           <div
             className={
               type
-                ? "shell grid gap-10 lg:grid-cols-[minmax(0,1fr)_16rem]"
+                ? "shell grid gap-10 lg:grid-cols-[minmax(0,72ch)_minmax(16rem,20rem)] lg:justify-center lg:gap-x-16"
                 : "shell"
             }
           >
@@ -212,13 +283,7 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
         </div>
       )}
 
-      {faqs.length > 0 && (
-        <div className="section section-cream">
-          <div className="shell">
-            <Faqs faqs={faqs} />
-          </div>
-        </div>
-      )}
+      <FaqSection faqs={faqs} />
     </article>
   );
 }

@@ -11,7 +11,7 @@ import {
   type CmsType,
 } from "@/lib/cms";
 import { itemPath } from "@/lib/routing";
-import { Body, Faqs } from "@/components/body";
+import { Body, FaqSection } from "@/components/body";
 import { CardFor } from "@/components/cards";
 
 /**
@@ -288,13 +288,6 @@ export async function HomePage({ item }: { item: CmsItem }) {
 
   const body = itemBody(item);
 
-  /*
-   * The questions keep the group heading the CMS gave them - the heading of
-   * the section of body they were written under - and on the home page that
-   * heading is the essay's own, repeated. The section says what they are.
-   */
-  const faqs = (item.faqs ?? []).map((faq) => ({ ...faq, group: undefined }));
-
   return (
     <article>
       <HomeHero item={item} gaushala={gaushala} gaushalaHref={gaushalaHref} />
@@ -341,21 +334,10 @@ export async function HomePage({ item }: { item: CmsItem }) {
         </section>
       )}
 
-      {faqs.length > 0 && (
-        <section className="section section-warm">
-          <div className="shell">
-            <div className="mb-8 max-w-2xl">
-              <h2 style={{ fontSize: "var(--text-h2)" }}>Questions, answered</h2>
-              <p className="mt-2" style={{ color: "var(--ink-600)" }}>
-                What cow donation covers, how it reaches the gaushala, and what happens after you
-                give.
-              </p>
-            </div>
-
-            <Faqs faqs={faqs} columns={2} />
-          </div>
-        </section>
-      )}
+      <FaqSection
+        faqs={item.faqs ?? []}
+        blurb="What cow donation covers, how it reaches the gaushala, and what happens after you give."
+      />
     </article>
   );
 }

@@ -134,6 +134,18 @@ function dedupe<T extends { href: string }>(links: T[]): T[] {
   return [...new Map(links.map((link) => [link.href, link])).values()];
 }
 
+/** A footer column's heading: the same caps label the aside panels use. */
+function FooterLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p
+      className="text-[11px] uppercase"
+      style={{ color: "var(--text-on-dark-soft)", letterSpacing: "var(--track-caps)" }}
+    >
+      {children}
+    </p>
+  );
+}
+
 export async function SiteFooter() {
   const [site, badges, pages, nav] = await Promise.all([
     getSite(),
@@ -159,7 +171,15 @@ export async function SiteFooter() {
   return (
     <footer style={{ background: "var(--surface-footer)", color: "var(--text-on-dark-soft)" }}>
       <div className="shell py-14">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+        {/*
+         * Four zones rather than three.
+         *
+         * The old row was brand, one tall list of seven links, and a Donate
+         * button alone in a third of the footer - so the links ran down past
+         * the brand block while the right-hand third sat empty. The links go
+         * two-up, and the ask gets a column that says what it is.
+         */}
+        <div className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_1.2fr_1fr]">
           <div className="space-y-4">
             <Wordmark onDark />
             <p className="devanagari max-w-sm" style={{ fontSize: "var(--text-body)" }}>
@@ -190,33 +210,34 @@ export async function SiteFooter() {
            * or the policies was to already know the URL.
            */}
           {explore.length > 0 && (
-            <nav className="space-y-2" aria-label="Sections">
-              <p
-                className="text-[11px] uppercase"
-                style={{ color: "var(--text-on-dark-soft)", letterSpacing: "var(--track-caps)" }}
-              >
-                Explore
-              </p>
-              {explore.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="block"
-                  style={{ color: "var(--white)", fontSize: "var(--text-sm)" }}
-                >
-                  {link.label}
-                </Link>
-              ))}
+            <nav aria-label="Sections">
+              <FooterLabel>Explore</FooterLabel>
+              <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2">
+                {explore.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    style={{ color: "var(--white)", fontSize: "var(--text-sm)" }}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
             </nav>
           )}
 
-          <div className="space-y-4">
-            <Link href="/donate" className="btn btn-gold">
+          <div>
+            <FooterLabel>Give</FooterLabel>
+            <p className="mt-3 max-w-xs" style={{ fontSize: "var(--text-sm)" }}>
+              Every seva is recorded in the Punya app, with daily photos from the gaushala.
+            </p>
+
+            <Link href="/donate" className="btn btn-gold mt-4">
               Donate Now
             </Link>
 
             {socialLinks.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="mt-6 flex flex-wrap items-center gap-2">
                 {socialLinks.map((link) => (
                   <a
                     key={link.url}

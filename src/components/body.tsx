@@ -169,15 +169,8 @@ function BlockView({
  * put two headings in a row saying the same thing.
  */
 export function Faqs({ faqs, columns = 1 }: { faqs: CmsFaq[]; columns?: 1 | 2 }) {
-  if (!faqs.length) return null;
-
-  const groups: { title: string; items: CmsFaq[] }[] = [];
-  for (const faq of faqs) {
-    const title = faq.group?.trim() ?? "";
-    const last = groups[groups.length - 1];
-    if (last && last.title === title) last.items.push(faq);
-    else groups.push({ title, items: [faq] });
-  }
+  const groups = groupFaqs(faqs);
+  if (!groups.length) return null;
 
   return (
     <div className="space-y-8">
@@ -189,6 +182,58 @@ export function Faqs({ faqs, columns = 1 }: { faqs: CmsFaq[]; columns?: 1 | 2 })
       ))}
     </div>
   );
+}
+
+/**
+ * The questions as a page shows them, wherever the page is.
+ *
+ * Every page's questions used to be laid out by whoever rendered them: the
+ * home page in one band with a heading, an article in another band with none,
+ * one in a single column and one in two. They are the same thing on every
+ * page, so they are one component - a warm band closing the page, a heading
+ * the section owns, and two panels on a wide screen.
+ *
+ * The group title is the body heading the questions were written under, which
+ * on a page with one group is either the section's own heading repeated or the
+ * last thing the author happened to be writing about. It earns a sub-heading
+ * only where there is more than one group to tell apart.
+ */
+export function FaqSection({ faqs, blurb }: { faqs: CmsFaq[]; blurb?: string }) {
+  const groups = groupFaqs(faqs);
+  if (!groups.length) return null;
+
+  const shown = groups.length > 1 ? faqs : faqs.map((faq) => ({ ...faq, group: undefined }));
+
+  return (
+    <section className="section section-warm">
+      <div className="shell">
+        <div className="mb-8 max-w-2xl">
+          <h2 style={{ fontSize: "var(--text-h2)" }}>Questions, answered</h2>
+          {blurb && (
+            <p className="mt-2" style={{ color: "var(--ink-600)" }}>
+              {blurb}
+            </p>
+          )}
+        </div>
+
+        <Faqs faqs={shown} columns={2} />
+      </div>
+    </section>
+  );
+}
+
+/** The questions in the runs they were written in. */
+function groupFaqs(faqs: CmsFaq[]): { title: string; items: CmsFaq[] }[] {
+  const groups: { title: string; items: CmsFaq[] }[] = [];
+
+  for (const faq of faqs) {
+    const title = faq.group?.trim() ?? "";
+    const last = groups[groups.length - 1];
+    if (last && last.title === title) last.items.push(faq);
+    else groups.push({ title, items: [faq] });
+  }
+
+  return groups;
 }
 
 /**

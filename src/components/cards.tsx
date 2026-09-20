@@ -14,7 +14,7 @@ import { itemPath } from "@/lib/routing";
  */
 
 /** Rupees as a person writes them: ₹2,100, not ₹2100.00. */
-function money(amount: string, currency: string): string {
+export function money(amount: string, currency: string): string {
   const value = Number(amount);
   if (!Number.isFinite(value)) return amount;
 
