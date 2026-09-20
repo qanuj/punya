@@ -68,21 +68,30 @@ export default async function DonatePage({ searchParams }: Params) {
   const amount = Number.isFinite(price) && price > 0 ? Math.round(price) : undefined;
   const sevaName = seva ? field(seva, "name") || seva.title : "";
   const body = page ? itemBody(page) : "";
+  const intro = seva ? itemSummary(seva) : page ? itemSummary(page) : "";
 
   return (
     <article>
+      {/*
+       * The words are the trust's, not this file's.
+       *
+       * The heading and the line under it come from the `donate` page in the
+       * CMS, or from the seva when a link named one - so the page can be
+       * rewritten in the workspace without a deploy. Nothing is invented here
+       * as a fallback: a heading this file made up would be one nobody could
+       * edit and nobody would know was there.
+       */}
       <header className="section-warm" style={{ paddingBlock: "var(--space-8)" }}>
         <div className="shell">
           <h1 className="max-w-3xl" style={{ fontSize: "var(--text-h1)", lineHeight: "var(--lh-tight)" }}>
-            {seva ? sevaName : page?.title || "Offer your seva"}
+            {seva ? sevaName : page?.title}
           </h1>
-          <p className="mt-4 max-w-2xl" style={{ color: "var(--ink-600)", fontSize: "var(--text-body-lg)" }}>
-            {seva
-              ? itemSummary(seva) ||
-                "Every contribution is recorded in the Punya app, with daily photos and updates from the gaushala."
-              : (page && itemSummary(page)) ||
-                "Every contribution is recorded in the Punya app, with daily photos and updates from the gaushala."}
-          </p>
+
+          {intro && (
+            <p className="mt-4 max-w-2xl" style={{ color: "var(--ink-600)", fontSize: "var(--text-body-lg)" }}>
+              {intro}
+            </p>
+          )}
 
           {seva && (
             <p className="mt-4">
