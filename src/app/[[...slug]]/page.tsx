@@ -176,6 +176,18 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
   const isSeva = type?.key === "product";
   const price = isSeva ? field(item, "price") : "";
 
+  /*
+   * A page is not an article.
+   *
+   * The aside exists to lead a reader to more of the type they are reading -
+   * the next seva, the next post. A `page` has no more of itself worth
+   * offering: Contact carried a rail of its own labels ("contact", "support",
+   * "Core") and a list of the other pages, which is what the footer is for,
+   * and paid for it by squeezing its three contact cards into a 72ch column
+   * until the address wrapped over three lines. So a page takes the shell.
+   */
+  const aside = type && type.key !== "page";
+
   return (
     <article>
       {/*
@@ -216,7 +228,9 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
              */}
             {isSeva && (
               <div className="mt-6 flex flex-wrap items-center gap-4">
-                <Link href="/donate" className="btn btn-gold">
+                {/* The seva travels with the link, so the donate page opens on
+                    this one at this amount rather than on a blank box. */}
+                <Link href={`/donate?seva=${item.slug}`} className="btn btn-gold">
                   Offer this seva
                 </Link>
                 {price && (
@@ -270,15 +284,15 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
            */}
           <div
             className={
-              type
+              aside
                 ? "shell grid gap-10 lg:grid-cols-[minmax(0,72ch)_minmax(16rem,20rem)] lg:justify-center lg:gap-x-16"
                 : "shell"
             }
           >
             <div className="min-w-0">
-              <Body markdown={body} />
+              <Body markdown={body} wide={!aside} />
             </div>
-            {type && <ItemAside item={item} type={type} />}
+            {aside && type && <ItemAside item={item} type={type} />}
           </div>
         </div>
       )}

@@ -6,6 +6,13 @@ import { renderBody, renderMarkdown, type Block } from "@/lib/markdown";
 /**
  * A CMS body: prose at reading width, each run of authored blocks as the grid
  * it was written as, and forms mounted where their fence sits.
+ *
+ * `wide` is for a body that owns the whole shell rather than a column beside a
+ * sidebar - a contact page, a page of cards. Prose still holds its measure,
+ * because 1200px of running text is not readable at any width, but it is
+ * centred and the authored blocks take the full width they were written for: a
+ * row of `:::card 4` in a 72ch column is three cards of 180px, which is how
+ * the contact page ended up wrapping its own address over three lines.
  */
 export async function Body({ markdown, wide = false }: { markdown: string; wide?: boolean }) {
   const segments = renderBody(markdown);
@@ -41,7 +48,7 @@ export async function Body({ markdown, wide = false }: { markdown: string; wide?
           return (
             <div
               key={index}
-              className={wide ? "prose prose-wide" : "prose"}
+              className={wide ? "prose mx-auto" : "prose"}
               dangerouslySetInnerHTML={{ __html: segment.html }}
             />
           );
