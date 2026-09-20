@@ -213,6 +213,29 @@ export function FaqSection({ faqs, blurb }: { faqs: CmsFaq[]; blurb?: string }) 
 
   return (
     <section className="section section-warm">
+      {/*
+       * The same questions, in the form a search engine reads.
+       *
+       * A rich result for a page like this is a dozen answers shown before
+       * anyone clicks, and an answer engine quoting the trust rather than
+       * guessing on its behalf. The markup is generated from the same FAQs the
+       * page renders, so the two cannot drift apart.
+       */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faqs.map((faq) => ({
+              "@type": "Question",
+              name: faq.question,
+              acceptedAnswer: { "@type": "Answer", text: plain(faq.answer) },
+            })),
+          }),
+        }}
+      />
+
       <div className="shell">
         <div className="mb-8 max-w-2xl">
           <h2 style={{ fontSize: "var(--text-h2)" }}>Questions, answered</h2>
@@ -227,6 +250,20 @@ export function FaqSection({ faqs, blurb }: { faqs: CmsFaq[]; blurb?: string }) 
       </div>
     </section>
   );
+}
+
+/**
+ * An answer as text.
+ *
+ * Schema.org takes the answer as a string, and what is stored is markdown -
+ * so the links and the bold come out as words rather than as syntax.
+ */
+function plain(markdown: string): string {
+  return markdown
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[*_`#>]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 /** The questions in the runs they were written in. */

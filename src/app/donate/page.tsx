@@ -10,7 +10,7 @@ import {
   listItems,
   type CmsItem,
 } from "@/lib/cms";
-import { Body } from "@/components/body";
+import { Body, FaqSection } from "@/components/body";
 import { DonateForm } from "@/components/donate-form";
 import { razorpayConfigured, rupees } from "@/lib/razorpay";
 
@@ -140,6 +140,9 @@ export default async function DonatePage({ searchParams }: Params) {
           </div>
         </div>
       )}
+
+      {/* The page's own questions, in the one shape every page uses. */}
+      <FaqSection faqs={page?.faqs ?? []} />
     </article>
   );
 }
