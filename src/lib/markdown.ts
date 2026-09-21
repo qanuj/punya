@@ -1,4 +1,6 @@
 import { marked } from "marked";
+import sanitizeHtml from "sanitize-html";
+import { SANITIZE_ALLOWLIST, escapeRawHtml, externalLinkAttributes } from "@tintorch/web/markdown";
 
 /**
  * A CMS body, as prose and blocks.
@@ -95,7 +97,32 @@ export function unwrapMigratedImages(md: string): string {
   );
 }
 
-const toHtml = (md: string) => marked.parse(unwrapMigratedImages(md.trim()), { async: false }) as string;
+/**
+ * Markdown to HTML, with the author's own HTML taken out of it.
+ *
+ * Two layers, both from @tintorch/web so the four sites on this CMS share one
+ * answer. `escapeRawHtml` runs first and decides what an author may write:
+ * Markdown permits raw HTML by specification and `marked` does not strip it,
+ * so without this a `<script>` typed into a CMS body executes on this origin -
+ * the origin that holds the session cookie and hands donors to Razorpay.
+ * `sanitizeHtml` runs second and decides what the renderer may emit, which
+ * catches anything the first layer was not built to see.
+ */
+const SANITIZE: sanitizeHtml.IOptions = {
+  ...SANITIZE_ALLOWLIST,
+  transformTags: {
+    a: (tagName, attribs) => ({
+      tagName,
+      attribs: { ...attribs, ...(externalLinkAttributes(attribs.href ?? "") ?? {}) },
+    }),
+  },
+};
+
+const toHtml = (md: string) =>
+  sanitizeHtml(
+    marked.parse(escapeRawHtml(unwrapMigratedImages(md.trim())), { async: false }) as string,
+    SANITIZE,
+  );
 
 /** A node in the body, before it is grouped into segments. */
 type Node =

@@ -1,7 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
-import { submitForm, type SubmitResult } from "@/lib/cms";
+import { clientIpFrom, getForm, submitForm, turnstileRequired, type SubmitResult } from "@/lib/cms";
 
 /**
  * A form submission, from the browser to the CMS.
@@ -23,6 +23,29 @@ export async function submitFormAction(
    */
   const turnstileToken = String(formData.get("cf-turnstile-response") ?? "").trim();
 
+  /*
+   * A server action is an HTTP endpoint, so a bot posts this body directly and
+   * simply leaves the token out. Forwarding that absence made it look to the
+   * CMS exactly like a workspace with Turnstile switched off, which is how the
+   * widget came to be rendered on every form while enforcing nothing. The form
+   * definition is the only thing that knows whether one was expected, so it is
+   * asked before the submission is relayed.
+   *
+   * This is stricter than the CMS's own rule, which scores a missing token
+   * rather than refusing on it, and the cost is real: a visitor whose browser
+   * blocks the Cloudflare script now cannot send this form at all. It is the
+   * right side to err on here and the wrong one there - the CMS answers for
+   * six sites and cannot tell which of them put a widget on the page, while
+   * this site knows, because it just read the key that did.
+   */
+  const form = await getForm(key);
+  if (turnstileRequired(form) && !turnstileToken) {
+    return {
+      ok: false,
+      error: "We could not confirm you are a person. Reload the page and try again.",
+    };
+  }
+
   const data: Record<string, unknown> = {};
   for (const [name, value] of formData.entries()) {
     if (name.startsWith("__") || name === "cf-turnstile-response") continue;
@@ -36,11 +59,7 @@ export async function submitFormAction(
     if (value.trim() || name === "_hp") data[name] = value.trim();
   }
 
-  const requestHeaders = await headers();
-  const clientIp =
-    requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    requestHeaders.get("x-real-ip") ||
-    undefined;
+  const clientIp = clientIpFrom(await headers());
 
   return submitForm(key, data, String(formData.get("__source") ?? "") || undefined, {
     ...(turnstileToken ? { turnstileToken } : {}),
