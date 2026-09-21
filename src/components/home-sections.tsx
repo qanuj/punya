@@ -8,7 +8,9 @@ import {
   itemSummary,
   listItems,
   type CmsItem,
+  type CmsSite,
   type CmsType,
+  type HomeSection,
 } from "@/lib/cms";
 import { itemPath } from "@/lib/routing";
 import { Body, FaqSection } from "@/components/body";
@@ -40,36 +42,129 @@ const GAUSHALA_FIELDS = "title,name,summary,description,image,featuredImage,city
 
 /** A heading, its line, and the way to everything else. */
 function SectionHead({
+  eyebrow,
   title,
   blurb,
   href,
   more,
 }: {
+  eyebrow?: string;
   title: string;
-  blurb: string;
-  href: string;
-  more: string;
+  blurb?: string;
+  href?: string;
+  more?: string;
 }) {
   return (
     <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
       <div>
+        {eyebrow && (
+          <p
+            className="mb-2"
+            style={{
+              color: "var(--ink-400)",
+              fontSize: "var(--text-sm)",
+              letterSpacing: ".08em",
+              textTransform: "uppercase",
+            }}
+          >
+            {eyebrow}
+          </p>
+        )}
         <h2 style={{ fontSize: "var(--text-h2)" }}>{title}</h2>
-        <p className="mt-2 max-w-xl" style={{ color: "var(--ink-600)" }}>
-          {blurb}
-        </p>
+        {blurb && (
+          <p className="mt-2 max-w-xl" style={{ color: "var(--ink-600)" }}>
+            {blurb}
+          </p>
+        )}
       </div>
 
-      <Link href={href} className="btn btn-outline shrink-0">
-        {more}
-      </Link>
+      {/* No link when the workspace cleared the label: a strip is allowed to
+          be the whole of what it shows. */}
+      {href && more && (
+        <Link href={href} className="btn btn-outline shrink-0">
+          {more}
+        </Link>
+      )}
     </div>
   );
 }
 
+/**
+ * What a strip says when the workspace has not said it.
+ *
+ * Settings › Site › Home page leaves the wording blank until somebody writes
+ * it, and a blank heading is worse than an opinionated one. These are the
+ * lines this site used to hard-code; a title typed in the CMS replaces them.
+ */
+const SECTION_COPY: Record<string, { title: string; blurb: string; more: string }> = {
+  product: {
+    title: "Ways to serve",
+    blurb:
+      "Every contribution is recorded in the Punya app, with daily photos and updates from the gaushala.",
+    more: "All seva",
+  },
+  blog: {
+    title: "From the gaushala",
+    blurb: "Writing on gau seva, festivals and the everyday work of caring for cows.",
+    more: "All writing",
+  },
+  location: {
+    title: "The gaushalas",
+    blurb: "The shelters your seva reaches, and the cows in their care.",
+    more: "All gaushalas",
+  },
+  gaumata: {
+    title: "Gaumata",
+    blurb: "The cows in our care, each one named, sponsored and accounted for.",
+    more: "All gaumata",
+  },
+};
+
+/**
+ * The home page's strips, in the order the workspace dragged them into.
+ *
+ * `count` is the switch as well as the size - the CMS keeps an entry for every
+ * type and sets it to zero for the ones not shown - and `sequence` is global,
+ * so the hidden entries leave gaps in it. Sorting rather than indexing is what
+ * makes those gaps harmless.
+ *
+ * A section naming a type this site does not publish is dropped rather than
+ * rendered empty: the two lists come from the same workspace, but a type can
+ * be removed while its home-page entry is still sitting there.
+ */
+export function homeStrips(site: CmsSite): { type: CmsType; section: HomeSection }[] {
+  const configured = site.config.home ?? {};
+
+  return Object.entries(configured)
+    .filter(([, section]) => (section?.count ?? 0) > 0)
+    .sort((a, b) => (a[1].sequence ?? 0) - (b[1].sequence ?? 0))
+    .flatMap(([key, section]) => {
+      const type = site.types.find((candidate) => candidate.key === key);
+      return type ? [{ type, section }] : [];
+    });
+}
+
 async function pick(type: CmsType | undefined, take: number, fields = CARD_FIELDS): Promise<CmsItem[]> {
-  if (!type) return [];
-  const { items } = await listItems(type.key, { limit: 24, fields });
-  return items.slice(0, take);
+  if (!type || take < 1) return [];
+
+  /*
+   * Seva is chosen from a wider window than it shows. The trust marks some of
+   * them popular and those lead, and a strip of three that only ever looked at
+   * the first three would never find the popular one sitting twentieth.
+   * Everything else is already in the order the CMS returns it.
+   */
+  const window = type.key === "product" ? Math.max(take, 24) : take;
+  const { items } = await listItems(type.key, { limit: window, fields });
+
+  const ordered =
+    type.key === "product"
+      ? [
+          ...items.filter((entry) => entry.fields?.popular === true),
+          ...items.filter((entry) => entry.fields?.popular !== true),
+        ]
+      : items;
+
+  return ordered.slice(0, take);
 }
 
 /**
@@ -254,37 +349,41 @@ function HomeStory({
 }
 
 /**
- * Everything the home page shows, in the order it asks in.
+ * Everything the home page shows, in the order the workspace asks in.
  *
- * Sections come from the CMS types, so a workspace without a Seva type simply
- * has no seva strip rather than an empty heading.
+ * The order, the counts and the wording are Settings › Site › Home page in the
+ * CMS. They used to be written here: three types, hard-coded, in a hard-coded
+ * order, with three items each and headings nobody could change without a
+ * deploy. Dragging Gaumata above Blog in the CMS did nothing, a count of nine
+ * showed three, and two of the four sections the workspace had turned on -
+ * Gaumata and Gaushalas - never appeared at all.
+ *
+ * What is still the page's own: the opening, the essay the home item carries,
+ * and the questions. Those are this item's content rather than strips of other
+ * items, so they keep their places around the strips - the ask first, and the
+ * questions last, where a question belongs once the answer has been offered.
  */
 export async function HomePage({ item }: { item: CmsItem }) {
   const site = await getSite();
+  const strips = homeStrips(site);
 
-  const seva = site.types.find((type) => type.key === "product");
-  const blog = site.types.find((type) => type.key === "blog");
+  /*
+   * The hero and the essay both borrow a gaushala for their photograph. That
+   * is a separate read from the Gaushalas strip, which may not be shown at
+   * all - and when it is, the fetches dedupe rather than doubling up.
+   */
   const location = site.types.find((type) => type.key === "location");
 
-  const [sevaItems, posts, gaushalas] = await Promise.all([
-    pick(seva, 24),
-    pick(blog, 3),
+  const [gaushalas, ...lists] = await Promise.all([
     pick(location, 1, GAUSHALA_FIELDS),
+    ...strips.map(({ type, section }) =>
+      pick(type, section.count, type.key === "location" ? GAUSHALA_FIELDS : CARD_FIELDS),
+    ),
   ]);
 
   const gaushala = gaushalas[0] ?? null;
   const gaushalaHref =
     gaushala && location ? itemPath(location, gaushala.slug) : (location?.path ?? "/");
-
-  /*
-   * The ones the trust has marked popular lead, and the rest follow in the
-   * order the CMS returns them - a visitor deciding what to give should see
-   * what most people choose first.
-   */
-  const featured = [
-    ...sevaItems.filter((entry) => entry.fields?.popular === true),
-    ...sevaItems.filter((entry) => entry.fields?.popular !== true),
-  ].slice(0, 3);
 
   const body = itemBody(item);
 
@@ -292,47 +391,46 @@ export async function HomePage({ item }: { item: CmsItem }) {
     <article>
       <HomeHero item={item} gaushala={gaushala} gaushalaHref={gaushalaHref} />
 
-      {seva && featured.length > 0 && (
-        <section className="section">
-          <div className="shell">
-            <SectionHead
-              title="Ways to serve"
-              blurb="Every contribution is recorded in the Punya app, with daily photos and updates from the gaushala."
-              href={seva.path}
-              more="All seva"
-            />
+      {strips.map(({ type, section }, at) => {
+        const items = lists[at] ?? [];
+        if (items.length === 0) return null;
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {featured.map((entry) => (
-                <CardFor key={entry.id} item={entry} type={seva} />
-              ))}
+        const copy = SECTION_COPY[type.key];
+        const href = section.moreHref || type.path;
+        /*
+         * A cleared label is an instruction, not an omission: the workspace can
+         * take the link off a strip. It only falls back where nothing has been
+         * written for this type at all.
+         */
+        const more = section.moreLabel || copy?.more || `All ${type.pluralName.toLowerCase()}`;
+
+        return (
+          <section key={type.key} className="section">
+            <div className="shell">
+              <SectionHead
+                eyebrow={section.eyebrow || undefined}
+                title={section.title || copy?.title || type.pluralName}
+                blurb={section.subtitle || copy?.blurb || undefined}
+                href={href}
+                more={more}
+              />
+
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {items.map((entry) => (
+                  <CardFor
+                    key={entry.id}
+                    item={entry}
+                    type={type}
+                    showImage={section.showImage !== false}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        );
+      })}
 
-      {body && (
-        <HomeStory markdown={body} gaushala={gaushala} gaushalaHref={gaushalaHref} />
-      )}
-
-      {blog && posts.length > 0 && (
-        <section className="section">
-          <div className="shell">
-            <SectionHead
-              title="From the gaushala"
-              blurb="Writing on gau seva, festivals and the everyday work of caring for cows."
-              href={blog.path}
-              more="All writing"
-            />
-
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {posts.map((entry) => (
-                <CardFor key={entry.id} item={entry} type={blog} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      {body && <HomeStory markdown={body} gaushala={gaushala} gaushalaHref={gaushalaHref} />}
 
       <FaqSection
         faqs={item.faqs ?? []}

@@ -14,6 +14,13 @@ import { itemPath } from "@/lib/routing";
  */
 
 /** Rupees as a person writes them: ₹2,100, not ₹2100.00. */
+/**
+ * `showImage` is the home page's "Show image" switch, which a strip can turn
+ * off for a type whose pictures are not worth the space. Everywhere else it is
+ * simply on.
+ */
+export type CardProps = { item: CmsItem; type: CmsType; showImage?: boolean };
+
 export function money(amount: string, currency: string): string {
   const value = Number(amount);
   if (!Number.isFinite(value)) return amount;
@@ -69,7 +76,7 @@ function Cover({ src, alt, priority = false }: { src: string; alt: string; prior
  * card after the name. "Popular" is the trust's own steer and earns the one
  * gold mark on the card.
  */
-export function SevaCard({ item, type }: { item: CmsItem; type: CmsType }) {
+export function SevaCard({ item, type, showImage = true }: CardProps) {
   const href = itemPath(type, item.slug);
   const price = field(item, "price");
   const frequency = field(item, "frequency");
@@ -79,7 +86,7 @@ export function SevaCard({ item, type }: { item: CmsItem; type: CmsType }) {
   return (
     <article className="card flex flex-col gap-3">
       <Link href={href} className="block">
-        <Cover src={itemImage(item)} alt={item.title} />
+        {showImage && <Cover src={itemImage(item)} alt={item.title} />}
       </Link>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -146,7 +153,7 @@ export function SevaCard({ item, type }: { item: CmsItem; type: CmsType }) {
 }
 
 /** One post. The picture is most of the reason anyone opens it. */
-export function PostCard({ item, type }: { item: CmsItem; type: CmsType }) {
+export function PostCard({ item, type, showImage = true }: CardProps) {
   const href = itemPath(type, item.slug);
   const tags = Array.isArray(item.fields?.tags) ? (item.fields.tags as string[]) : [];
   const date = when(item.publishedAt ?? item.createdAt);
@@ -154,7 +161,7 @@ export function PostCard({ item, type }: { item: CmsItem; type: CmsType }) {
   return (
     <article className="card flex flex-col gap-3">
       <Link href={href} className="block">
-        <Cover src={itemImage(item)} alt={item.title} />
+        {showImage && <Cover src={itemImage(item)} alt={item.title} />}
       </Link>
 
       {(tags[0] || date) && (
@@ -190,7 +197,7 @@ export function PostCard({ item, type }: { item: CmsItem; type: CmsType }) {
 }
 
 /** One gaushala. Where it is, and how many cows are in it. */
-export function GaushalaCard({ item, type }: { item: CmsItem; type: CmsType }) {
+export function GaushalaCard({ item, type, showImage = true }: CardProps) {
   const href = itemPath(type, item.slug);
   const place = [field(item, "city"), field(item, "region")].filter(Boolean).join(", ");
   const cows = field(item, "cowsInCare");
@@ -199,7 +206,7 @@ export function GaushalaCard({ item, type }: { item: CmsItem; type: CmsType }) {
   return (
     <article className="card flex flex-col gap-3">
       <Link href={href} className="block">
-        <Cover src={itemImage(item)} alt={item.title} />
+        {showImage && <Cover src={itemImage(item)} alt={item.title} />}
       </Link>
 
       <h3 className="card-title">
@@ -229,9 +236,9 @@ export function GaushalaCard({ item, type }: { item: CmsItem; type: CmsType }) {
 }
 
 /** Anything else the workspace publishes. */
-export function ItemCard({ item, type }: { item: CmsItem; type: CmsType }) {
+export function ItemCard({ item, type, showImage = true }: CardProps) {
   const href = itemPath(type, item.slug);
-  const image = itemImage(item);
+  const image = showImage ? itemImage(item) : "";
 
   return (
     <article className="card flex flex-col gap-3">
@@ -255,9 +262,9 @@ export function ItemCard({ item, type }: { item: CmsItem; type: CmsType }) {
 }
 
 /** The card a type deserves, by what its items actually carry. */
-export function CardFor({ item, type }: { item: CmsItem; type: CmsType }) {
-  if (type.key === "product") return <SevaCard item={item} type={type} />;
-  if (type.key === "blog") return <PostCard item={item} type={type} />;
-  if (type.key === "location") return <GaushalaCard item={item} type={type} />;
-  return <ItemCard item={item} type={type} />;
+export function CardFor({ item, type, showImage = true }: CardProps) {
+  if (type.key === "product") return <SevaCard item={item} type={type} showImage={showImage} />;
+  if (type.key === "blog") return <PostCard item={item} type={type} showImage={showImage} />;
+  if (type.key === "location") return <GaushalaCard item={item} type={type} showImage={showImage} />;
+  return <ItemCard item={item} type={type} showImage={showImage} />;
 }
