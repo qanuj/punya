@@ -7,10 +7,9 @@ import {
   itemImage,
   itemSummary,
   listItems,
+  homeSectionsFor,
   type CmsItem,
-  type CmsSite,
   type CmsType,
-  type HomeSection,
 } from "@/lib/cms";
 import { itemPath } from "@/lib/routing";
 import { Body, FaqSection } from "@/components/body";
@@ -119,30 +118,6 @@ const SECTION_COPY: Record<string, { title: string; blurb: string; more: string 
     more: "All gaumata",
   },
 };
-
-/**
- * The home page's strips, in the order the workspace dragged them into.
- *
- * `count` is the switch as well as the size - the CMS keeps an entry for every
- * type and sets it to zero for the ones not shown - and `sequence` is global,
- * so the hidden entries leave gaps in it. Sorting rather than indexing is what
- * makes those gaps harmless.
- *
- * A section naming a type this site does not publish is dropped rather than
- * rendered empty: the two lists come from the same workspace, but a type can
- * be removed while its home-page entry is still sitting there.
- */
-export function homeStrips(site: CmsSite): { type: CmsType; section: HomeSection }[] {
-  const configured = site.config.home ?? {};
-
-  return Object.entries(configured)
-    .filter(([, section]) => (section?.count ?? 0) > 0)
-    .sort((a, b) => (a[1].sequence ?? 0) - (b[1].sequence ?? 0))
-    .flatMap(([key, section]) => {
-      const type = site.types.find((candidate) => candidate.key === key);
-      return type ? [{ type, section }] : [];
-    });
-}
 
 async function pick(type: CmsType | undefined, take: number, fields = CARD_FIELDS): Promise<CmsItem[]> {
   if (!type || take < 1) return [];
@@ -365,7 +340,17 @@ function HomeStory({
  */
 export async function HomePage({ item }: { item: CmsItem }) {
   const site = await getSite();
-  const strips = homeStrips(site);
+  /*
+   * The workspace's own list, narrowed to the types this site publishes: a
+   * section naming a type that has since been removed would otherwise render
+   * as an empty heading linking to a 404.
+   */
+  const sections = homeSectionsFor(
+    site.config.home,
+    site.types.map((type) => type.key),
+    site.types,
+  );
+  const typeOf = new Map(site.types.map((type) => [type.key, type]));
 
   /*
    * The hero and the essay both borrow a gaushala for their photograph. That
@@ -376,8 +361,12 @@ export async function HomePage({ item }: { item: CmsItem }) {
 
   const [gaushalas, ...lists] = await Promise.all([
     pick(location, 1, GAUSHALA_FIELDS),
-    ...strips.map(({ type, section }) =>
-      pick(type, section.count, type.key === "location" ? GAUSHALA_FIELDS : CARD_FIELDS),
+    ...sections.map((section) =>
+      pick(
+        typeOf.get(section.type),
+        section.count,
+        section.type === "location" ? GAUSHALA_FIELDS : CARD_FIELDS,
+      ),
     ),
   ]);
 
@@ -391,7 +380,8 @@ export async function HomePage({ item }: { item: CmsItem }) {
     <article>
       <HomeHero item={item} gaushala={gaushala} gaushalaHref={gaushalaHref} />
 
-      {strips.map(({ type, section }, at) => {
+      {sections.map((section, at) => {
+        const type = typeOf.get(section.type)!;
         const items = lists[at] ?? [];
         if (items.length === 0) return null;
 
@@ -402,14 +392,14 @@ export async function HomePage({ item }: { item: CmsItem }) {
          * take the link off a strip. It only falls back where nothing has been
          * written for this type at all.
          */
-        const more = section.moreLabel || copy?.more || `All ${type.pluralName.toLowerCase()}`;
+        const more = section.moreLabel || copy?.more || `All ${section.label.toLowerCase()}`;
 
         return (
-          <section key={type.key} className="section">
+          <section key={section.type} className="section">
             <div className="shell">
               <SectionHead
                 eyebrow={section.eyebrow || undefined}
-                title={section.title || copy?.title || type.pluralName}
+                title={section.title || copy?.title || section.label}
                 blurb={section.subtitle || copy?.blurb || undefined}
                 href={href}
                 more={more}

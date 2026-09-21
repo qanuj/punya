@@ -48,6 +48,19 @@ export {
   type SubmitResult,
 } from "@tintorch/web/cms";
 
+/*
+ * What the home page shows, and in what order. The reading of that setting is
+ * shared - four sites each had their own half of it - and only the laying out
+ * is this site's.
+ */
+export {
+  homeCount,
+  homeSectionFor,
+  homeSections,
+  homeSectionsFor,
+  type HomeSection,
+} from "@tintorch/web/cms";
+
 export const configured = cms.configured;
 
 /*
@@ -70,28 +83,6 @@ export type CmsType = {
 
 export type SiteSocialLink = { key: string; label: string; url: string; icon?: string };
 
-/**
- * One strip on the home page, as Settings › Site › Home page defines it.
- *
- * The CMS keeps an entry for every type in the workspace and uses `count` as
- * the switch: zero means the section is not shown, and the wording is kept so
- * that putting it back restores what was written for it. `sequence` is the
- * order the list was dragged into, and it is global rather than per shown
- * section, so the hidden ones leave gaps in it.
- */
-export type HomeSection = {
-  /** How many items to show. Zero means the section is hidden. */
-  count: number;
-  eyebrow: string;
-  /** Overrides the site's own wording for this strip when set. */
-  title: string;
-  subtitle: string;
-  moreLabel: string;
-  moreHref: string;
-  showImage: boolean;
-  sequence: number;
-};
-
 export type CmsSite = {
   siteUrl: string;
   types: CmsType[];
@@ -99,7 +90,7 @@ export type CmsSite = {
   home: { id: string; type: string; slug: string; title: string } | null;
   config: {
     /** Keyed by CMS type key: what the home page shows, and in what order. */
-    home?: Record<string, HomeSection>;
+    home?: Record<string, unknown>;
     contact?: Record<string, string>;
     branding?: Record<string, string>;
     socialLinks?: SiteSocialLink[];
