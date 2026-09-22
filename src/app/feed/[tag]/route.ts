@@ -11,11 +11,21 @@ import { siteOrigin } from "@/lib/sitemap-sources";
  * a 404 rather than an empty channel, which readers show as a broken feed.
  */
 export const revalidate = 3600;
-export const dynamicParams = true;
 
-export async function generateStaticParams() {
-  return feedTags(await feedItems()).map((tag) => ({ tag: `${tag.slug}.xml` }));
-}
+/*
+ * Rendered on demand rather than at build.
+ *
+ * Enumerating the tags here meant prerendering seventy feeds on every deploy -
+ * seventy of the eighty-three pages the build produced - each one asking the
+ * CMS for the site config and the whole post list. That is a lot of consecutive
+ * requests over the public internet for files almost nobody fetches, and it is
+ * what a deploy failed on: one connection that never opened, in the middle of
+ * the seventieth feed.
+ *
+ * A feed is cached for an hour after the first reader asks for it, which for
+ * something a reader polls is the same thing from their side.
+ */
+export const dynamicParams = true;
 
 export async function GET(_request: Request, { params }: { params: Promise<{ tag: string }> }) {
   const { tag: segment } = await params;
