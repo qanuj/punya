@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { field, itemImage, itemSummary, type CmsItem, type CmsType } from "@/lib/cms";
+import { VideoEmbed } from "@/components/video-embed";
+import { youtubeVideo } from "@/lib/youtube";
 import { itemPath } from "@/lib/routing";
 
 /**
@@ -261,10 +263,46 @@ export function ItemCard({ item, type, showImage = true }: CardProps) {
   );
 }
 
+/**
+ * A video, playing where it sits.
+ *
+ * These were cards with a title and a link out, so watching one meant leaving
+ * the page. The item carries a YouTube URL and nothing else - no picture, no
+ * summary - which made the card mostly empty as well as mostly useless.
+ *
+ * An item whose link cannot be read falls through to the ordinary card rather
+ * than rendering a dead frame, which is also what stops an unrecognised URL
+ * reaching an iframe src.
+ */
+export function VideoCard({ item, type, showImage = true }: CardProps) {
+  const video = youtubeVideo(field(item, "embedUrl") || field(item, "url") || field(item, "video"));
+  if (!video || !showImage) return <ItemCard item={item} type={type} showImage={showImage} />;
+
+  const href = itemPath(type, item.slug);
+  const summary = itemSummary(item);
+
+  return (
+    <article className="flex flex-col gap-3">
+      <VideoEmbed video={video} title={item.title} />
+
+      <h3 className="card-title">
+        <Link href={href}>{item.title}</Link>
+      </h3>
+
+      {summary && (
+        <p className="line-clamp-2" style={{ color: "var(--ink-600)", fontSize: "var(--text-sm)" }}>
+          {summary}
+        </p>
+      )}
+    </article>
+  );
+}
+
 /** The card a type deserves, by what its items actually carry. */
 export function CardFor({ item, type, showImage = true }: CardProps) {
   if (type.key === "product") return <SevaCard item={item} type={type} showImage={showImage} />;
   if (type.key === "blog") return <PostCard item={item} type={type} showImage={showImage} />;
   if (type.key === "location") return <GaushalaCard item={item} type={type} showImage={showImage} />;
+  if (type.key === "video") return <VideoCard item={item} type={type} showImage={showImage} />;
   return <ItemCard item={item} type={type} showImage={showImage} />;
 }

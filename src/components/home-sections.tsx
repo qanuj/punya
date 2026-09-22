@@ -35,7 +35,9 @@ import { CardFor } from "@/components/cards";
 
 const CARD_FIELDS =
   "title,name,summary,excerpt,tagline,description,featuredImage,image,images,seo,publishedAt," +
-  "price,currency,frequency,category,popular,tags";
+  // embedUrl is the whole of a video item: without it the card has a title and
+  // a link out where the player should be, which is what it had before.
+  "price,currency,frequency,category,popular,tags,embedUrl";
 
 const GAUSHALA_FIELDS = "title,name,summary,description,image,featuredImage,city,region,seo";
 

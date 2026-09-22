@@ -14,6 +14,8 @@ import {
   type CmsType,
 } from "@/lib/cms";
 import { excerpt } from "@/lib/markdown";
+import { VideoEmbed } from "@/components/video-embed";
+import { youtubeVideo } from "@/lib/youtube";
 import { Body, FaqSection } from "@/components/body";
 import { CardFor, money } from "@/components/cards";
 import { HomePage } from "@/components/home-sections";
@@ -177,6 +179,15 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
   const price = isSeva ? field(item, "price") : "";
 
   /*
+   * A video item carries a YouTube link and nothing else - no picture, no
+   * body - so its page was a headline over an empty column with the video
+   * itself nowhere on it. The player takes the place the picture would have.
+   */
+  const video = youtubeVideo(
+    field(item, "embedUrl") || field(item, "url") || field(item, "video"),
+  );
+
+  /*
    * A page is not an article.
    *
    * The aside exists to lead a reader to more of the type they are reading -
@@ -201,14 +212,14 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
       <header className="section-warm" style={{ paddingBlock: "var(--space-8)" }}>
         <div
           className={
-            image
+            image || video
               ? "shell grid items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]"
               : "shell"
           }
         >
-          <div className={image ? "min-w-0" : ""}>
+          <div className={image || video ? "min-w-0" : ""}>
             <h1
-              className={image ? undefined : "max-w-3xl"}
+              className={image || video ? undefined : "max-w-3xl"}
               style={{ fontSize: "var(--text-h1)", lineHeight: "var(--lh-tight)" }}
             >
               {item.title}
@@ -254,17 +265,23 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
             )}
           </div>
 
-          {image && (
-            <div className="relative aspect-[16/10] min-w-0 overflow-hidden rounded-[var(--radius-lg)] bg-[color:var(--surface-card)]">
-              <Image
-                src={image}
-                alt={item.title}
-                fill
-                priority
-                sizes="(min-width: 1024px) 520px, 92vw"
-                className="object-cover"
-              />
+          {video ? (
+            <div className="min-w-0">
+              <VideoEmbed video={video} title={item.title} />
             </div>
+          ) : (
+            image && (
+              <div className="relative aspect-[16/10] min-w-0 overflow-hidden rounded-[var(--radius-lg)] bg-[color:var(--surface-card)]">
+                <Image
+                  src={image}
+                  alt={item.title}
+                  fill
+                  priority
+                  sizes="(min-width: 1024px) 520px, 92vw"
+                  className="object-cover"
+                />
+              </div>
+            )
           )}
         </div>
       </header>
