@@ -14,6 +14,7 @@ import {
 import { itemPath } from "@/lib/routing";
 import { Body, FaqSection } from "@/components/body";
 import { CardFor } from "@/components/cards";
+import { VideoGrid } from "@/components/video-grid";
 
 /**
  * The home page.
@@ -407,16 +408,22 @@ export async function HomePage({ item }: { item: CmsItem }) {
                 more={more}
               />
 
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {items.map((entry) => (
-                  <CardFor
-                    key={entry.id}
-                    item={entry}
-                    type={type}
-                    showImage={section.showImage !== false}
-                  />
-                ))}
-              </div>
+              {/* Videos open over the page rather than playing in a card:
+                  a 16:9 player in a third of a row is a postage stamp. */}
+              {type.key === "video" ? (
+                <VideoGrid items={items} type={type} />
+              ) : (
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {items.map((entry) => (
+                    <CardFor
+                      key={entry.id}
+                      item={entry}
+                      type={type}
+                      showImage={section.showImage !== false}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </section>
         );

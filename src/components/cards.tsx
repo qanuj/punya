@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { field, itemImage, itemSummary, type CmsItem, type CmsType } from "@/lib/cms";
-import { VideoEmbed } from "@/components/video-embed";
+import { VideoThumb } from "@/components/video-lightbox";
 import { youtubeVideo } from "@/lib/youtube";
 import { itemPath } from "@/lib/routing";
 
@@ -281,9 +281,14 @@ export function VideoCard({ item, type, showImage = true }: CardProps) {
   const href = itemPath(type, item.slug);
   const summary = itemSummary(item);
 
+  /*
+   * A single card outside a row - the related rail, say. A row of videos is
+   * VideoGrid, which gives them one lightbox between them so the arrows can
+   * step through the section.
+   */
   return (
     <article className="flex flex-col gap-3">
-      <VideoEmbed video={video} title={item.title} />
+      <VideoThumb entry={{ video, title: item.title }} index={0} />
 
       <h3 className="card-title">
         <Link href={href}>{item.title}</Link>
