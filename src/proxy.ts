@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { isKnownSlug, ROOT_SECTION } from "@/lib/slug-guard";
+import { isKnownSlug, sectionNames, ROOT_SECTION } from "@/lib/slug-guard";
 
 /**
  * Refusing URLs this site does not publish, before anything renders.
@@ -57,8 +57,16 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   const [first, second, ...deeper] = parts;
   if (FIRST_PARTY.has(first!)) return NextResponse.next();
 
-  // A single segment is an item of the type that owns the root.
+  /*
+   * A single segment is two different things and they cannot be told apart by
+   * shape: /cow-donation-in-india is an item of the type that owns the root,
+   * and /blog is a section's index. Checking only the first refused every
+   * index this site publishes - /blog, /seva, /gaumata, /gaushalas - which is
+   * exactly what happened when this guard first shipped.
+   */
   if (parts.length === 1) {
+    const sections = await sectionNames();
+    if (sections.includes(first!)) return NextResponse.next();
     return (await isKnownSlug(ROOT_SECTION, first!)) ? NextResponse.next() : notFound();
   }
 

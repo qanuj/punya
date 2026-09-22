@@ -38,7 +38,28 @@ async function build(): Promise<SlugGuard<string> | null> {
   const sections: Record<string, string> = {};
   for (const type of types) sections[clean(type.path)] = type.key;
 
-  return createSlugGuard({ sections, source: cmsSlugSource(cms) });
+  const ready = createSlugGuard({ sections, source: cmsSlugSource(cms) });
+
+  /*
+   * Primed before it is handed back, because `snapshot()` is empty until the
+   * first question loads the lists and the proxy reads `snapshot()` to tell a
+   * section index from an item of the root type. Without this the first
+   * request after a cold start saw no sections, asked whether the root type
+   * publishes something called "blog", and answered 404 to the blog index -
+   * once per container, on whichever index was asked for first.
+   */
+  await ready.isKnownSlug(Object.keys(sections)[0] ?? "", "");
+
+  return ready;
+}
+
+/** Build the guard once, and let a burst of questions share the one build. */
+async function ensure(): Promise<void> {
+  if (guard) return;
+  building ??= build().finally(() => {
+    building = null;
+  });
+  guard = (await building) ?? null;
 }
 
 /**
@@ -51,12 +72,7 @@ async function build(): Promise<SlugGuard<string> | null> {
 export async function isKnownSlug(section: string, slug: string): Promise<boolean> {
   if (!cms.configured) return true;
 
-  if (!guard) {
-    building ??= build().finally(() => {
-      building = null;
-    });
-    guard = (await building) ?? null;
-  }
+  await ensure();
   if (!guard) return true;
 
   const sections = guard.snapshot();
@@ -64,6 +80,21 @@ export async function isKnownSlug(section: string, slug: string): Promise<boolea
   if (Object.keys(sections).length && !(section in sections)) return true;
 
   return guard.isKnownSlug(section, slug);
+}
+
+/**
+ * The path prefixes this site publishes a section at: blog, seva, gaumata and
+ * the rest, as the CMS spells them.
+ *
+ * The proxy needs these because a section index is a single segment, exactly
+ * like an item of the type that owns the root, and the two cannot be told
+ * apart by shape. Empty until the guard has loaded, which is the fail-open
+ * case: an unknown list admits everything.
+ */
+export async function sectionNames(): Promise<string[]> {
+  if (!cms.configured) return [];
+  await ensure();
+  return guard ? Object.keys(guard.snapshot()) : [];
 }
 
 /** Reload on the next question. Called by the publish webhook. */
