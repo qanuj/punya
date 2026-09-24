@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { field, type CmsItem } from "@/lib/cms";
 
 /**
@@ -34,22 +33,25 @@ export function SponsorRow({ items }: { items: CmsItem[] }) {
           <li key={item.id} className="flex items-center justify-center">
             {logo ? (
               /*
-               * Contained rather than cropped, and given a height rather than
-               * a width: these arrive at whatever size and shape the sponsor
-               * supplied, and a row only reads as a row if they share a
-               * baseline. Large enough to be a mark rather than a favicon -
-               * at 48px they were smaller than the body text beside them,
-               * which is not how you thank the people paying for the feed.
+               * Sized by its own shape: a height, and whatever width that
+               * makes. A fixed box does not work here because a sponsor
+               * supplies whatever they have - both of these are square, and
+               * fitting a square into a 240x96 box drew it at 96px with 144px
+               * of nothing beside it, which read as a cropped logo.
+               *
+               * A plain img rather than next/image: with no intrinsic size to
+               * declare, `fill` needs exactly the fixed box this is avoiding.
+               * These are small marks on our own media host, so there is
+               * nothing for the optimizer to save.
                */
-              <span className="relative block h-20 w-[12rem] sm:h-24 sm:w-[15rem]">
-                <Image
-                  src={logo}
-                  alt={name}
-                  fill
-                  sizes="(min-width: 640px) 15rem, 12rem"
-                  className="object-contain object-left"
-                />
-              </span>
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={logo}
+                alt={name}
+                loading="lazy"
+                decoding="async"
+                className="h-24 w-auto max-w-[14rem] object-contain sm:h-28 sm:max-w-[16rem]"
+              />
             ) : (
               <span
                 className="font-[family-name:var(--font-serif)]"
