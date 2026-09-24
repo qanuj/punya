@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Body, FaqSection } from "@/components/body";
-import { CardFor } from "@/components/cards";
+import { CardGrid } from "@/components/cards";
 import { VideoGrid } from "@/components/video-grid";
+import { SponsorRow } from "@/components/sponsor-row";
 import { itemTags } from "@/components/item-aside";
 import {
   getItem,
@@ -38,6 +39,7 @@ const BLURB: Record<string, string> = {
     "Choose a seva. Every contribution is recorded in the Punya app, with daily photos and updates from the gaushala.",
   blog: "Writing on gau seva, festivals and the everyday work of running a gaushala.",
   location: "The gaushalas in our care, and the cows living in each.",
+  business: "Organisations funding the work at the gaushala.",
   gaumata: "The cows in our care, each one named and accounted for.",
   video: "From the gaushala, in our own words.",
 };
@@ -49,7 +51,7 @@ const BLURB: Record<string, string> = {
  */
 const CARD_FIELDS =
   "title,name,summary,excerpt,tagline,description,featuredImage,image,images,seo,publishedAt," +
-  "price,currency,frequency,category,popular,tags,city,region,cowsInCare,capacity,embedUrl";
+  "price,currency,frequency,category,popular,tags,city,region,cowsInCare,capacity,embedUrl,picture,logo";
 
 /** The type this site publishes at a path, or nothing if it publishes none. */
 export async function sectionType(path: string): Promise<CmsType | undefined> {
@@ -170,14 +172,9 @@ export async function SectionIndex({
 /** Videos open over the page; everything else is a card. */
 function Grid({ items, type }: { items: CmsItem[]; type: CmsType }) {
   if (type.key === "video") return <VideoGrid items={items} type={type} />;
+  if (type.key === "business") return <SponsorRow items={items} />;
 
-  return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {items.map((entry) => (
-        <CardFor key={entry.id} item={entry} type={type} />
-      ))}
-    </div>
-  );
+  return <CardGrid items={items} type={type} />;
 }
 
 /**

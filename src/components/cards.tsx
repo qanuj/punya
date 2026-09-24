@@ -311,3 +311,100 @@ export function CardFor({ item, type, showImage = true }: CardProps) {
   if (type.key === "video") return <VideoCard item={item} type={type} showImage={showImage} />;
   return <ItemCard item={item} type={type} showImage={showImage} />;
 }
+
+/**
+ * One item, given the whole row.
+ *
+ * A three-column grid holding a single card leaves two thirds of the row
+ * empty, with the section's "see all" button stranded across the gap. It reads
+ * as something that failed to load rather than as a section with one thing in
+ * it - and two of this site's sections have exactly one thing in them.
+ *
+ * So a lone item is laid out sideways instead: the picture at the size the
+ * picture deserves, the words beside it. Same content, same link, no gap.
+ */
+export function FeatureCard({ item, type, showImage = true }: CardProps) {
+  const href = itemPath(type, item.slug);
+  const title = field(item, "name") || item.title;
+  const summary = itemSummary(item);
+  const image = showImage ? itemImage(item) : "";
+
+  /* The one fact each type leads with, as its own card would show it. */
+  const meta =
+    type.key === "location"
+      ? [field(item, "city"), field(item, "region")].filter(Boolean).join(", ")
+      : type.key === "product"
+        ? money(field(item, "price"), field(item, "currency"))
+        : when(item.publishedAt);
+
+  return (
+    <article
+      className={
+        image
+          ? "card grid items-center gap-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-8"
+          : "card"
+      }
+    >
+      {image && (
+        <Link href={href} className="block">
+          <Cover src={image} alt={title} />
+        </Link>
+      )}
+
+      <div className="flex min-w-0 flex-col gap-3">
+        <h3 className="card-title" style={{ fontSize: "var(--text-h3)" }}>
+          <Link href={href}>{title}</Link>
+        </h3>
+
+        {meta && (
+          <p style={{ color: "var(--ink-400)", fontSize: "var(--text-sm)" }}>{meta}</p>
+        )}
+
+        {summary && (
+          <p className="line-clamp-4" style={{ color: "var(--ink-600)" }}>
+            {summary}
+          </p>
+        )}
+
+        <p className="mt-1">
+          <Link href={href} className="font-semibold" style={{ color: "var(--navy-700)" }}>
+            Read more →
+          </Link>
+        </p>
+      </div>
+    </article>
+  );
+}
+
+/**
+ * A run of cards, in as many columns as there are things to put in them.
+ *
+ * Fixed at three columns, a section with one or two items rendered a row with
+ * holes in it. The count decides the layout now, and a single item gets the
+ * sideways treatment above.
+ */
+export function CardGrid({
+  items,
+  type,
+  showImage = true,
+}: {
+  items: CmsItem[];
+  type: CmsType;
+  showImage?: boolean;
+}) {
+  if (items.length === 0) return null;
+
+  if (items.length === 1) {
+    return <FeatureCard item={items[0]!} type={type} showImage={showImage} />;
+  }
+
+  return (
+    <div
+      className={`grid gap-6 sm:grid-cols-2 ${items.length >= 3 ? "lg:grid-cols-3" : ""}`}
+    >
+      {items.map((entry) => (
+        <CardFor key={entry.id} item={entry} type={type} showImage={showImage} />
+      ))}
+    </div>
+  );
+}

@@ -13,8 +13,9 @@ import {
 } from "@/lib/cms";
 import { itemPath } from "@/lib/routing";
 import { Body, FaqSection } from "@/components/body";
-import { CardFor } from "@/components/cards";
+import { CardGrid } from "@/components/cards";
 import { VideoGrid } from "@/components/video-grid";
+import { SponsorRow } from "@/components/sponsor-row";
 
 /**
  * The home page.
@@ -38,7 +39,7 @@ const CARD_FIELDS =
   "title,name,summary,excerpt,tagline,description,featuredImage,image,images,seo,publishedAt," +
   // embedUrl is the whole of a video item: without it the card has a title and
   // a link out where the player should be, which is what it had before.
-  "price,currency,frequency,category,popular,tags,embedUrl";
+  "price,currency,frequency,category,popular,tags,embedUrl,picture,logo";
 
 const GAUSHALA_FIELDS = "title,name,summary,description,image,featuredImage,city,region,seo";
 
@@ -114,6 +115,11 @@ const SECTION_COPY: Record<string, { title: string; blurb: string; more: string 
     title: "The gaushalas",
     blurb: "The shelters your seva reaches, and the cows in their care.",
     more: "All gaushalas",
+  },
+  business: {
+    title: "Major sponsors",
+    blurb: "Organisations funding the work at the gaushala.",
+    more: "",
   },
   gaumata: {
     title: "Gaumata",
@@ -395,7 +401,14 @@ export async function HomePage({ item }: { item: CmsItem }) {
          * take the link off a strip. It only falls back where nothing has been
          * written for this type at all.
          */
-        const more = section.moreLabel || copy?.more || `All ${section.label.toLowerCase()}`;
+        /*
+         * A cleared label is an instruction, not an omission - from the
+         * workspace, and from this file's own defaults. Sponsors have no "see
+         * all" worth offering: the row is every one of them, and the page
+         * behind it is a list of the same two logos with nothing added.
+         */
+        const more =
+          section.moreLabel || (copy ? copy.more : `All ${section.label.toLowerCase()}`);
 
         return (
           <section key={section.type} className="section">
@@ -409,20 +422,14 @@ export async function HomePage({ item }: { item: CmsItem }) {
               />
 
               {/* Videos open over the page rather than playing in a card:
-                  a 16:9 player in a third of a row is a postage stamp. */}
+                  a 16:9 player in a third of a row is a postage stamp. And a
+                  sponsor is a mark in a row, not a card with a title in it. */}
               {type.key === "video" ? (
                 <VideoGrid items={items} type={type} />
+              ) : type.key === "business" ? (
+                <SponsorRow items={items} />
               ) : (
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {items.map((entry) => (
-                    <CardFor
-                      key={entry.id}
-                      item={entry}
-                      type={type}
-                      showImage={section.showImage !== false}
-                    />
-                  ))}
-                </div>
+                <CardGrid items={items} type={type} showImage={section.showImage !== false} />
               )}
             </div>
           </section>
