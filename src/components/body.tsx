@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { CmsForm } from "@/components/cms-form";
+import { EmbedBlock } from "@/components/embed-block";
+import { embedFromHtml } from "@/lib/embeds";
+import { splitFaqBlocks } from "@tintorch/web/markdown";
 import { getForm, type CmsFaq, type CmsForm as CmsFormDefinition } from "@/lib/cms";
 import { renderBody, renderMarkdown, type Block } from "@/lib/markdown";
 
@@ -15,7 +18,20 @@ import { renderBody, renderMarkdown, type Block } from "@/lib/markdown";
  * the contact page ended up wrapping its own address over three lines.
  */
 export async function Body({ markdown, wide = false }: { markdown: string; wide?: boolean }) {
-  const segments = renderBody(markdown);
+  /*
+   * The FAQ heading goes with the questions it introduced.
+   *
+   * The CMS parses `:::faq` fences into the item's own `faqs` and leaves them
+   * in the body as well, and this parser lifts them out - so the heading an
+   * author wrote above them, "Frequently asked questions", was left behind
+   * introducing nothing, directly above the FAQ section's own heading. Two
+   * headings in a row saying the same thing, on every item that has questions.
+   *
+   * `splitFaqBlocks` takes the fences and that heading together. The questions
+   * are not lost: they arrive separately as `item.faqs` and are rendered by
+   * FaqSection.
+   */
+  const segments = renderBody(splitFaqBlocks(markdown).body);
   if (!segments.length) return null;
 
   /*
@@ -131,6 +147,21 @@ function BlockView({
    * its own prose first, then the nested run as a grid of its own. A column
    * carries no card chrome; it exists to divide the row.
    */
+  /*
+   * An `:::embed` fence: a map, a video, or a link with words on it. Never a
+   * frame around a URL this site has not recognised.
+   */
+  if (block.kind === "embed") {
+    const embed = embedFromHtml(block.html);
+    if (embed) {
+      return (
+        <div data-span={block.span} className="block block-embed">
+          <EmbedBlock embed={embed} />
+        </div>
+      );
+    }
+  }
+
   /* A form written inside a column, mounted where it sits. */
   if (block.formKey) {
     const form = forms.get(block.formKey);

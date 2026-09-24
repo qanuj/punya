@@ -16,6 +16,7 @@ import {
 import { excerpt } from "@/lib/markdown";
 import { VideoEmbed } from "@/components/video-embed";
 import { youtubeVideo } from "@/lib/youtube";
+import { placeSchema } from "@/lib/place-schema";
 import { Body, FaqSection } from "@/components/body";
 import { CardFor, money } from "@/components/cards";
 import { HomePage } from "@/components/home-sections";
@@ -183,6 +184,14 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
    * body - so its page was a headline over an empty column with the video
    * itself nowhere on it. The player takes the place the picture would have.
    */
+  /*
+   * A gaushala is a place, and a search engine can only know that if the page
+   * says so. The site's only structured data was the FAQ list, so the address,
+   * the phone number and the coordinates - all of them in the CMS - described
+   * nothing a crawler could use for a map result.
+   */
+  const place = type?.key === "location" ? placeSchema(item) : null;
+
   const video = youtubeVideo(
     field(item, "embedUrl") || field(item, "url") || field(item, "video"),
   );
@@ -201,6 +210,13 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
 
   return (
     <article>
+      {place && (
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(place).replace(/</g, "\\u003c") }}
+        />
+      )}
       {/*
        * Cream hero: warmth before the ask, as the brand leads with.
        *

@@ -98,15 +98,47 @@ function Row({ item, type }: { item: CmsItem; type: CmsType }) {
   );
 }
 
+/** The address as one line, from the parts the CMS keeps separate. */
+export function visitDetails(item: CmsItem) {
+  const address = [
+    field(item, "addressLine"),
+    field(item, "city"),
+    field(item, "region"),
+    field(item, "postalCode"),
+  ]
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .join(", ");
+
+  return {
+    address,
+    phone: field(item, "phone").trim(),
+    email: field(item, "email").trim(),
+    mapUrl: field(item, "mapUrl").trim(),
+  };
+}
+
+export function hasVisitDetails(item: CmsItem): boolean {
+  const visit = visitDetails(item);
+  return Boolean(visit.address || visit.phone || visit.email || visit.mapUrl);
+}
+
 export async function ItemAside({ item, type }: { item: CmsItem; type: CmsType }) {
   const tags = itemTags(item);
   const authors = item.authors ?? [];
   const others = await related(item, type, 4);
 
+  /*
+   * A gaushala always has something to say here - where it is and how to reach
+   * it - so the empty check runs after that is worked out rather than before.
+   */
+  const visitable = type.key === "location" && hasVisitDetails(item);
+
   // Nothing to say: a page with no labels and a type with nothing else in it.
-  if (!tags.length && !authors.length && !others.length) return null;
+  if (!tags.length && !authors.length && !others.length && !visitable) return null;
 
   const isSeva = type.key === "product";
+  const visit = type.key === "location" ? visitDetails(item) : null;
 
   return (
     <aside className="space-y-8 lg:sticky lg:top-8 lg:self-start">
@@ -119,6 +151,47 @@ export async function ItemAside({ item, type }: { item: CmsItem; type: CmsType }
             Offer this seva
           </Link>
         </div>
+      )}
+
+      {visit && (
+        /*
+         * Where it is and how to reach it, as facts rather than a sentence.
+         * These fields are filled in for every gaushala and were rendered
+         * nowhere: a visitor had to read them out of the middle of a
+         * paragraph, and somebody standing outside on a phone could not dial
+         * or navigate from the page at all.
+         */
+        <Panel title="Visit">
+          <div className="space-y-3" style={{ fontSize: "var(--text-sm)" }}>
+            {visit.address && (
+              <p style={{ color: "var(--ink-600)" }}>{visit.address}</p>
+            )}
+            {visit.phone && (
+              <p>
+                <a href={`tel:${visit.phone.replace(/[^\d+]/g, "")}`} className="font-semibold">
+                  {visit.phone}
+                </a>
+              </p>
+            )}
+            {visit.email && (
+              <p>
+                <a href={`mailto:${visit.email}`}>{visit.email}</a>
+              </p>
+            )}
+            {visit.mapUrl && (
+              <p>
+                <a
+                  href={visit.mapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-outline w-full"
+                >
+                  Get directions
+                </a>
+              </p>
+            )}
+          </div>
+        </Panel>
       )}
 
       {authors.length > 0 && (
