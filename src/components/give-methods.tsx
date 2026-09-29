@@ -36,7 +36,7 @@ async function qrSvg(value: string): Promise<string | null> {
   }
 }
 
-export async function GiveMethods() {
+export async function GiveMethods({ lead = false }: { lead?: boolean } = {}) {
   const methods = giveMethods();
   if (methods.length === 0) return null;
 
@@ -45,10 +45,12 @@ export async function GiveMethods() {
   );
 
   return (
-    <div className="section section-cream">
+    <div className={lead ? "section" : "section section-cream"}>
       <div className="shell">
         <div className="mb-8 max-w-2xl">
-          <h2 style={{ fontSize: "var(--text-h2)" }}>Other ways to give</h2>
+          {/* "Other ways" only reads as other when something leads it. When
+              these are the way to give, the heading says so. */}
+          <h2 style={{ fontSize: "var(--text-h2)" }}>{lead ? "How to give" : "Other ways to give"}</h2>
           <p className="mt-3" style={{ color: "var(--ink-600)" }}>
             {/*
               * Names only the rails that are actually switched on. The line

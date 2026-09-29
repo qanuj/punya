@@ -60,8 +60,8 @@ export function DonateForm({
       {seva && <input type="hidden" name="seva" value={seva} />}
       {sevaName && <input type="hidden" name="sevaName" value={sevaName} />}
 
-      <fieldset className="space-y-3">
-        <legend className="mb-3" style={{ fontWeight: 600, color: "var(--text-heading)" }}>
+      <fieldset className="space-y-2.5">
+        <legend className="mb-2.5" style={{ fontWeight: 600, color: "var(--text-heading)" }}>
           How much would you like to give?
         </legend>
 
@@ -74,7 +74,7 @@ export function DonateForm({
                 type="button"
                 onClick={() => setAmount(String(preset))}
                 aria-pressed={chosen}
-                className="rounded-[var(--radius-pill)] px-4 py-2 font-semibold transition-colors"
+                className="rounded-[var(--radius-pill)] px-3.5 py-1.5 font-semibold transition-colors"
                 style={{
                   border: `1.5px solid ${chosen ? "var(--gold-400)" : "var(--border-warm)"}`,
                   background: chosen ? "var(--gold-100)" : "var(--surface-card)",
@@ -88,13 +88,19 @@ export function DonateForm({
           })}
         </div>
 
-        <label htmlFor="amount" className="block text-sm" style={{ color: "var(--ink-600)" }}>
-          Or enter an amount
-        </label>
-        <div className="flex items-center gap-2">
+        {/*
+          * The rupee sits inside the field rather than beside it.
+          *
+          * It was a 28px serif glyph in its own flex column with a label above
+          * saying "Or enter an amount", which is three elements and two lines
+          * of vertical space to say what a prefix inside the box says on its
+          * own. The label is gone with it: the legend above already asked the
+          * question, and the presets and the box are two ways to answer it.
+          */}
+        <div className="relative">
           <span
-            className="font-[family-name:var(--font-serif)]"
-            style={{ fontSize: "var(--text-h3)", color: "var(--navy-700)" }}
+            className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+            style={{ color: "var(--ink-400)", fontSize: "var(--text-body)" }}
             aria-hidden
           >
             ₹
@@ -105,11 +111,13 @@ export function DonateForm({
             inputMode="numeric"
             autoComplete="off"
             required
+            aria-label="Amount in rupees"
             value={amount}
             onChange={(event) => setAmount(event.target.value)}
-            placeholder="1100"
+            placeholder="Other amount"
             style={{
               ...CONTROL,
+              paddingLeft: "1.85rem",
               ...(state.fieldErrors?.amount ? { borderColor: "var(--danger)" } : {}),
             }}
           />
@@ -121,7 +129,9 @@ export function DonateForm({
         )}
       </fieldset>
 
-      <div className="space-y-4">
+      {/* Two-up above 32rem: name and email are short, and stacking every
+          field turned a four-question form into a full screen of scrolling. */}
+      <div className="grid gap-3 sm:grid-cols-2">
         <Field
           id="name"
           label="Your name"
@@ -164,7 +174,7 @@ export function DonateForm({
         </p>
       )}
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         <button type="submit" className="btn btn-gold w-full" disabled={pending}>
           {pending ? "Taking you to payment…" : "Continue to payment"}
         </button>
@@ -189,7 +199,7 @@ function Field({
   error?: string;
 } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1">
       <label htmlFor={id} className="block" style={{ fontWeight: 600, color: "var(--text-heading)" }}>
         {label}
         {rest.required && <span style={{ color: "var(--danger)" }}> *</span>}

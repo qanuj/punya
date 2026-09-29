@@ -104,30 +104,54 @@ export default async function DonatePage({ searchParams }: Params) {
         </div>
       </header>
 
+      {/*
+       * What leads depends on what actually works.
+       *
+       * With card payment switched off, this page put a complete, enabled
+       * four-field form at the top and told the donor it would fail - after
+       * they filled it in and pressed the gold button. On a phone the bank
+       * details that do work began 2,176px down a 7,879px page. The page was
+       * inviting people into a dead end and hiding the way through.
+       *
+       * So when online giving is off, the methods that work lead and the form
+       * does not render at all. When it is on, the form leads as before and
+       * the other ways sit below it.
+       */}
+      {!razorpayConfigured && <GiveMethods lead />}
+
       <div className="section">
         {/*
-         * The form leads and what is being given to sits beside it. A donor who
+         * The form and what is being given to, side by side. A donor who
          * arrived from a seva already knows what they are giving to; a donor
          * who arrived from the menu is choosing, and the panel is what tells
          * them what a gift does.
          */}
         <div className="shell grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)] lg:items-start">
           <div className="min-w-0 max-w-xl">
-            {!razorpayConfigured && (
-              <p
-                className="mb-6 rounded-[var(--radius-md)] p-4"
+            {razorpayConfigured ? (
+              <DonateForm
+                seva={seva ? seva.slug : undefined}
+                sevaName={sevaName || undefined}
+                defaultAmount={amount}
+              />
+            ) : (
+              <div
+                className="rounded-[var(--radius-md)] p-5"
                 style={{ background: "var(--surface-warm)", border: "1px solid var(--border-warm)" }}
               >
-                Online giving is not switched on for this deployment yet. The form below will say so
-                rather than take a payment it cannot complete.
-              </p>
+                <p style={{ fontWeight: 600, color: "var(--text-heading)" }}>
+                  Card and UPI payment on this page is being set up.
+                </p>
+                <p className="mt-2" style={{ color: "var(--ink-600)" }}>
+                  Until it is live, give by the methods above - they reach the same account and the
+                  same cows. Write to{" "}
+                  <a href="mailto:hello@punya.ngo" style={{ fontWeight: 600 }}>
+                    hello@punya.ngo
+                  </a>{" "}
+                  with the reference and we will send a receipt.
+                </p>
+              </div>
             )}
-
-            <DonateForm
-              seva={seva ? seva.slug : undefined}
-              sevaName={sevaName || undefined}
-              defaultAmount={amount}
-            />
           </div>
 
           <aside className="lg:sticky lg:top-8">{seva ? <SevaPanel item={seva} /> : <SevaPicker />}</aside>
@@ -135,11 +159,11 @@ export default async function DonatePage({ searchParams }: Params) {
       </div>
 
       {/*
-       * Bank, UPI and crypto, under the form and above the page's own words.
-       * A donor who does not want to hand over a card should not have to read
-       * to the bottom to find that out.
+       * Bank, UPI and crypto below the form when the form works. A donor who
+       * does not want to hand over a card should not have to read to the
+       * bottom to find that out.
        */}
-      <GiveMethods />
+      {razorpayConfigured && <GiveMethods />}
 
       {body && (
         <div className="section section-cream">

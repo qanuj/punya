@@ -118,6 +118,13 @@ const SANITIZE: sanitizeHtml.IOptions = {
   },
 };
 
+/** h2 becomes h3, h3 becomes h4, and so on down to h6. */
+function demoteHeadings(html: string): string {
+  return html.replace(/<(\/?)h([1-5])\b/g, (_all, slash: string, level: string) =>
+    `<${slash}h${Number(level) + 1}`,
+  );
+}
+
 const toHtml = (md: string) =>
   sanitizeHtml(
     marked.parse(escapeRawHtml(unwrapMigratedImages(md.trim())), { async: false }) as string,
@@ -212,7 +219,18 @@ function toBlock(node: Extract<Node, { type: "block" }>): Block {
   return {
     kind: node.kind,
     span,
-    html: prose.trim() ? toHtml(prose) : "",
+    /*
+     * A card's title is not a section heading.
+     *
+     * An author writes `## Food and fodder` inside a `:::card` because that is
+     * how you write a title in Markdown, and it came out as an <h2> sitting at
+     * the same level as the section that contains it. The donate page had nine
+     * h2s and one h3, which flattens the outline for a screen reader and tells
+     * a search engine that "Medical care" is a peer of "Where your donation
+     * goes". Everything inside a block drops one level; the stylesheet already
+     * targets both, so nothing looks different.
+     */
+    html: prose.trim() ? demoteHeadings(toHtml(prose)) : "",
     children: node.children.flatMap((child) => {
       if (child.type === "link") {
         return [{ kind: "link", span: 4, html: "", children: [], href: child.href, label: child.label }];
