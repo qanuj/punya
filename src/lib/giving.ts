@@ -106,6 +106,31 @@ function upi(): GiveMethod | null {
  * one loses the money permanently, and the label is the only thing on the page
  * that tells a donor which chain to send on.
  */
+/**
+ * Shapes a real wallet address takes.
+ *
+ * Checked because this is configured as a template with the addresses left
+ * to fill in, and a half-filled template is the dangerous state: a donor
+ * cannot tell `PASTE_TRON_ADDRESS_HERE` from a real address at a glance, and
+ * a wallet will happily let them try. An entry that does not look like an
+ * address for some chain is dropped rather than shown.
+ *
+ * Deliberately shape-only. Nothing here can tell whether an address is yours,
+ * or whether it is on the network its label claims - that is a test transfer,
+ * not a regular expression.
+ */
+const ADDRESS_SHAPES = [
+  /^T[1-9A-HJ-NP-Za-km-z]{33}$/, // TRON
+  /^0x[0-9a-fA-F]{40}$/, // Ethereum, BNB Smart Chain, Polygon and the rest
+  /^bc1[023456789acdefghjklmnpqrstuvwxyz]{11,71}$/, // Bitcoin, bech32
+  /^[13][1-9A-HJ-NP-Za-km-z]{25,34}$/, // Bitcoin, legacy
+  /^[1-9A-HJ-NP-Za-km-z]{32,44}$/, // Solana, and base58 chains generally
+];
+
+function looksLikeAddress(value: string): boolean {
+  return ADDRESS_SHAPES.some((shape) => shape.test(value));
+}
+
 function crypto(): GiveMethod | null {
   const rows = text("GIVE_CRYPTO")
     .split(/[\n;]+/)
@@ -116,7 +141,14 @@ function crypto(): GiveMethod | null {
       const value = rest.join("|").trim();
       return { label: (label ?? "").trim(), value };
     })
-    .filter((row) => row.label && row.value);
+    .filter((row) => row.label && row.value)
+    /*
+     * A placeholder never reaches the page. `PASTE_TRON_ADDRESS_HERE` has
+     * underscores, `0x...` is too short, and neither matches any shape above,
+     * so the template can sit in the environment half-finished without ever
+     * showing a donor somewhere to send money that is not yours.
+     */
+    .filter((row) => looksLikeAddress(row.value));
 
   if (rows.length === 0) return null;
 
