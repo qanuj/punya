@@ -50,17 +50,32 @@ export async function GiveMethods() {
         <div className="mb-8 max-w-2xl">
           <h2 style={{ fontSize: "var(--text-h2)" }}>Other ways to give</h2>
           <p className="mt-3" style={{ color: "var(--ink-600)" }}>
-            Give straight from your bank, a UPI app or a wallet. Send us the details afterwards and
-            we will send a receipt and add you to the updates from the gaushala.
+            {/*
+              * Names only the rails that are actually switched on. The line
+              * used to promise a UPI app whether or not there was a UPI id,
+              * which on a page about money is a small lie with a real cost:
+              * a donor scrolls looking for the thing they were told is there.
+              */}
+            Give straight from {sentence(methods.map((method) => method.lede))}. Send us the
+            details afterwards and we will send a receipt and add you to the updates from the
+            gaushala.
           </p>
         </div>
 
         {/*
-         * One column per method, all visible. Below the medium breakpoint they
-         * stack in the same order, so the first thing a phone shows is the
-         * rail most donors here actually use.
+         * One column per method, all visible, and no more columns than there
+         * are methods. Punya has no UPI id yet and will run on two of these
+         * for a while; a fixed three-column grid would hold the pair in the
+         * left two thirds with a hole beside them.
+         *
+         * Below the medium breakpoint they stack in the same order, so the
+         * first thing a phone shows is the rail most donors here use.
          */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          className={`grid gap-6 md:grid-cols-2 ${methods.length >= 3 ? "lg:grid-cols-3" : ""} ${
+            methods.length === 1 ? "max-w-md" : ""
+          }`}
+        >
           {methods.map((method, at) => (
             <MethodCard key={method.id} method={method} qr={codes[at] ?? null} />
           ))}
@@ -77,6 +92,12 @@ export async function GiveMethods() {
       </div>
     </div>
   );
+}
+
+/** "your bank or a wallet", "your bank, a UPI app or a wallet". */
+function sentence(parts: string[]): string {
+  if (parts.length <= 1) return parts[0] ?? "";
+  return `${parts.slice(0, -1).join(", ")} or ${parts[parts.length - 1]}`;
 }
 
 function MethodCard({ method, qr }: { method: GiveMethod; qr: string | null }) {

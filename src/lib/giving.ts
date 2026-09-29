@@ -25,6 +25,8 @@ export type GiveMethod = {
   id: "bank" | "upi" | "crypto";
   title: string;
   blurb: string;
+  /** How the intro line names this rail: "a UPI app", "your bank". */
+  lede: string;
   details: GiveDetail[];
   /** What a QR should encode, when a QR helps. */
   qr?: string;
@@ -58,6 +60,7 @@ function bank(): GiveMethod | null {
     id: "bank",
     title: "Bank transfer",
     blurb: "NEFT, IMPS or RTGS from any Indian bank.",
+    lede: "your bank",
     details,
   };
 }
@@ -81,6 +84,7 @@ function upi(): GiveMethod | null {
     id: "upi",
     title: "UPI",
     blurb: "Scan with any UPI app, or copy the id.",
+    lede: "a UPI app",
     details: [
       { label: "UPI id", value: id },
       ...(payee ? [{ label: "Name", value: payee }] : []),
@@ -120,6 +124,7 @@ function crypto(): GiveMethod | null {
     id: "crypto",
     title: "Crypto",
     blurb: "Send to the address for that network.",
+    lede: "a wallet",
     details: rows,
     // A QR only where there is one address to encode; several would need one
     // QR each, which is the wallet card below rather than a single code.
