@@ -12,6 +12,7 @@ import {
 } from "@/lib/cms";
 import { Body, FaqSection } from "@/components/body";
 import { DonateForm } from "@/components/donate-form";
+import { GiveMethods } from "@/components/give-methods";
 import { razorpayConfigured, rupees } from "@/lib/razorpay";
 
 /**
@@ -132,6 +133,13 @@ export default async function DonatePage({ searchParams }: Params) {
           <aside className="lg:sticky lg:top-8">{seva ? <SevaPanel item={seva} /> : <SevaPicker />}</aside>
         </div>
       </div>
+
+      {/*
+       * Bank, UPI and crypto, under the form and above the page's own words.
+       * A donor who does not want to hand over a card should not have to read
+       * to the bottom to find that out.
+       */}
+      <GiveMethods />
 
       {body && (
         <div className="section section-cream">
