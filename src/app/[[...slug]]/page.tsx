@@ -168,6 +168,34 @@ export default async function Page({ params, searchParams }: Params) {
    */
   if (route.kind === "home") return <HomePage item={item} />;
 
+  if (route.kind === "item") {
+    const site = await getSite();
+
+    /*
+     * The item chosen as the home page answers at "/" and nowhere else.
+     *
+     * It was answering 200 at its own slug and at every slug it has ever had -
+     * /cow-donation-in-india, /home, /rooted-in-compassion-built-on-trust and
+     * one more - so the trust's home page was published at five URLs, four of
+     * them duplicates of the fifth. A crawler picks one of those to rank and
+     * it is not necessarily the one in the sitemap.
+     *
+     * This file's own comment in lib/cms.ts has claimed for months that the
+     * home item's slug redirects to "/". Nothing did it.
+     */
+    if (site.home && item.id === site.home.id) permanentRedirect("/");
+
+    /*
+     * Reached by a slug the item used to have.
+     *
+     * The CMS answers an old slug with a 301 to the current one and `fetch`
+     * follows it, so what comes back is the item at its new slug - which is
+     * how this is detectable at all, and why the page rendered happily under
+     * the old URL instead of moving anyone to the new one.
+     */
+    if (item.slug !== route.slug) permanentRedirect(itemPath(route.type, item.slug));
+  }
+
   return <ItemPage item={item} type={route.kind === "item" ? route.type : undefined} />;
 }
 
