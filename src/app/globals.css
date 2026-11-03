@@ -218,6 +218,10 @@ a:hover { color: var(--link-hover); }
 .block > * + * { margin-top: var(--space-2); }
 .block p { color: var(--ink-600); font-size: var(--text-sm); }
 
+/* A UPI id, an account number or a wallet address has no spaces to wrap at,
+   and a card that will not break one pushes it out past its own edge. */
+.block p, .block li { overflow-wrap: anywhere; }
+
 .block-card {
   background: var(--surface-card);
   border: 1px solid var(--border-warm);
