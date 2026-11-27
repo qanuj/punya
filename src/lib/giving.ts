@@ -36,5 +36,11 @@ export const BANK = {
 
 export const GIVING_EMAIL = "hello@punya.ngo";
 
+/**
+ * Where a payer goes after giving. The CMS slug, not the spelling in prose:
+ * `/gaushalas/patkholi` only resolves through an old-slug redirect.
+ */
+export const GAUSHALA_PATH = "/gaushalas/pathkoli";
+
 /** The page the give panel belongs on. Code decides this, not the CMS. */
 export const GIVE_PAGE_SLUG = "donate";

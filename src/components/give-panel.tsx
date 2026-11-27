@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { PayOnline } from "@/components/pay-online";
+import { useCallback, useState } from "react";
+import { CopyButton } from "@/components/copy-button";
+import { PayOnline, type View } from "@/components/pay-online";
 import { BANK, GIVING_EMAIL, UPI, upiLink } from "@/lib/giving";
 
 /**
@@ -27,57 +28,70 @@ const METHODS: { key: Method; label: string }[] = [
 
 export function GivePanel() {
   const [open, setOpen] = useState<Method | null>(null);
+  /*
+   * Once a gift lands, the card is a thank-you and nothing else. A heading
+   * asking for money above it, and three more ways to pay below it, would
+   * both be asking a person who has just given.
+   */
+  const [settled, setSettled] = useState(false);
+  const onView = useCallback((at: View["at"]) => setSettled(at !== "form"), []);
 
   return (
     <div className="give">
-      <h2 className="give-title">Give to the gaushala</h2>
-      <p className="give-lede">
-        Every rupee goes to the daily care of the cows at Patkholi Gaushala.
-      </p>
+      {!settled && (
+        <>
+          <h2 className="give-title">Give to the gaushala</h2>
+          <p className="give-lede">
+            Every rupee goes to the daily care of the cows at Patkholi Gaushala.
+          </p>
+        </>
+      )}
 
-      <PayOnline framed={false} />
+      <PayOnline framed={false} onView={onView} />
 
-      <div className="give-direct">
-        <div className="give-tabs" role="tablist" aria-label="Pay directly instead">
-          {METHODS.map((method) => (
-            <button
-              key={method.key}
-              type="button"
-              role="tab"
-              id={`give-tab-${method.key}`}
-              aria-controls={`give-panel-${method.key}`}
-              aria-selected={open === method.key}
-              className="give-tab"
-              onClick={() => setOpen(open === method.key ? null : method.key)}
-            >
-              {method.label}
-            </button>
-          ))}
-        </div>
-
-        {METHODS.map((method) => (
-          <div
-            key={method.key}
-            className="give-reveal"
-            data-open={open === method.key}
-            // Kept in the tree so the open transition has a height to grow to,
-            // and hidden from assistive tech while it is closed.
-            aria-hidden={open !== method.key}
-          >
-            <div>
-              <div
-                role="tabpanel"
-                id={`give-panel-${method.key}`}
-                aria-labelledby={`give-tab-${method.key}`}
+      {!settled && (
+        <div className="give-direct">
+          <div className="give-tabs" role="tablist" aria-label="Pay directly instead">
+            {METHODS.map((method) => (
+              <button
+                key={method.key}
+                type="button"
+                role="tab"
+                id={`give-tab-${method.key}`}
+                aria-controls={`give-panel-${method.key}`}
+                aria-selected={open === method.key}
+                className="give-tab"
+                onClick={() => setOpen(open === method.key ? null : method.key)}
               >
-                {method.key === "qr" && <QrMethod />}
-                {method.key === "upi" && <UpiMethod />}
-                {method.key === "bank" && <BankMethod />}
+                {method.label}
+              </button>
+            ))}
+          </div>
+
+          {METHODS.map((method) => (
+            <div
+              key={method.key}
+              className="give-reveal"
+              data-open={open === method.key}
+              // Kept in the tree so the open transition has a height to grow to,
+              // and hidden from assistive tech while it is closed.
+              aria-hidden={open !== method.key}
+            >
+              <div>
+                <div
+                  role="tabpanel"
+                  id={`give-panel-${method.key}`}
+                  aria-labelledby={`give-tab-${method.key}`}
+                >
+                  {method.key === "qr" && <QrMethod />}
+                  {method.key === "upi" && <UpiMethod />}
+                  {method.key === "bank" && <BankMethod />}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -145,57 +159,5 @@ function Row({ label, value, copy = true }: { label: string; value: string; copy
         {copy && <CopyButton value={value} label={label} />}
       </dd>
     </div>
-  );
-}
-
-function CopyButton({ value, label }: { value: string; label: string }) {
-  const [done, setDone] = useState(false);
-
-  return (
-    <button
-      type="button"
-      className="give-copy"
-      onClick={async () => {
-        try {
-          await navigator.clipboard.writeText(value);
-          setDone(true);
-          window.setTimeout(() => setDone(false), 2000);
-        } catch {
-          // A browser that refuses the clipboard still shows the value above.
-        }
-      }}
-      aria-label={done ? `${label} copied` : `Copy ${label}`}
-    >
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        {done ? (
-          <path
-            d="m5 13 4 4L19 7"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        ) : (
-          <>
-            <rect
-              x="9"
-              y="9"
-              width="11"
-              height="11"
-              rx="2"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-            <path
-              d="M5 15V6a2 2 0 0 1 2-2h8"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            />
-          </>
-        )}
-      </svg>
-      {done ? "Copied" : "Copy"}
-    </button>
   );
 }
