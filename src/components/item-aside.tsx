@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { PayOnline } from "@/components/pay-online";
 import { field, itemImage, listItems, type CmsItem, type CmsType } from "@/lib/cms";
 import { facetPath, itemPath, toSlug } from "@/lib/routing";
 
@@ -138,18 +139,28 @@ export async function ItemAside({ item, type }: { item: CmsItem; type: CmsType }
   if (!tags.length && !authors.length && !others.length && !visitable) return null;
 
   const isSeva = type.key === "product";
+  const sevaPrice = isSeva ? Number(field(item, "price")) : NaN;
   const visit = type.key === "location" ? visitDetails(item) : null;
 
   return (
     <aside className="space-y-8 lg:sticky lg:top-8 lg:self-start">
       {isSeva && (
-        <div className="card space-y-3">
+        <div className="space-y-3">
+          {/*
+            Paid here rather than one page further on. The slug is what
+            travels; the price is read from the CMS on the server, so a seva
+            cannot be offered for an amount somebody typed into the page.
+          */}
+          <PayOnline
+            seva={item.slug}
+            title={item.title}
+            amount={sevaPrice > 0 ? sevaPrice : undefined}
+          />
           <p style={{ color: "var(--ink-600)", fontSize: "var(--text-sm)" }}>
             Every contribution is recorded in the Punya app, with daily photos from the gaushala.
+            To give by UPI or bank transfer instead, see{" "}
+            <Link href={`/donate?seva=${item.slug}`}>the other ways to give</Link>.
           </p>
-          <Link href={`/donate?seva=${item.slug}`} className="btn btn-gold w-full">
-            Offer this seva
-          </Link>
         </div>
       )}
 
