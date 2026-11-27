@@ -2,13 +2,14 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "punya-dev",
+      "name": "dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
         "dev"
       ],
-      "port": 4002
+      "port": 4002,
+      "autoPort": false
     }
   ]
 }
