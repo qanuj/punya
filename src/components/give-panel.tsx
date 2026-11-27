@@ -42,7 +42,7 @@ export function GivePanel() {
         <>
           <h2 className="give-title">Give to the gaushala</h2>
           <p className="give-lede">
-            Every rupee goes to the daily care of the cows at Patkholi Gaushala.
+            Every rupee goes to the daily care of the cows at Patkhauli Gaushala.
           </p>
         </>
       )}
