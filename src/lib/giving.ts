@@ -37,10 +37,13 @@ export const BANK = {
 export const GIVING_EMAIL = "hello@punya.ngo";
 
 /**
- * Where a payer goes after giving. The CMS slug, not the spelling in prose:
- * `/gaushalas/patkholi` only resolves through an old-slug redirect.
+ * Where a payer goes after giving: the gaushala's current CMS slug.
+ *
+ * The gaushala is Patkhauli. It was published as "Patkoli", "Patkholi" and
+ * "Pathkoli" before that was settled; the CMS keeps each of those as an old
+ * slug, so links to them still arrive here, but by a redirect.
  */
-export const GAUSHALA_PATH = "/gaushalas/pathkoli";
+export const GAUSHALA_PATH = "/gaushalas/patkhauli";
 
 /** The page the give panel belongs on. Code decides this, not the CMS. */
 export const GIVE_PAGE_SLUG = "donate";

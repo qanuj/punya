@@ -8,7 +8,7 @@ You can donate a cow in India for ₹21. You can also do it for ₹1,08,000.
 
 Both are real prices, from the same list. The gap tells you something most guides on **cow donation in India** skip: Gau Daan is no longer one act. It is a menu of specific things a cow needs, and knowing what each one buys is the difference between giving and guessing.
 
-We run Punya Charitable Trust, a cow-welfare trust working from Patkholi Gaushala in Ghazipur, Uttar Pradesh. Here is how we think about giving a cow, and what we think most pages on the subject leave out.
+We run Punya Charitable Trust, a cow-welfare trust working from Patkhauli Gaushala in Ghazipur, Uttar Pradesh. Here is how we think about giving a cow, and what we think most pages on the subject leave out.
 
 ## What is cow donation (Gau Daan)?
 
@@ -103,7 +103,7 @@ Seen in the search, not read as a separate page: https://doonanimalwelfarefounda
 ## Open items
 
 - **Transparency page shows all zeros.** The page displays "0 / No data" for meals, treatments, donations and so on. The article admits the dashboard is still filling in. Fill the dashboard, or soften the "every rupee accounted for" line, before publishing.
-- **Spelling of the gaushala varies.** The home page reads "Pathkoli", the other pages "Patkholi". The article uses "Patkholi". Confirm the correct spelling.
+- **Spelling of the gaushala.** Confirmed as "Patkhauli" (पटखौली); the article uses it.
 - **No cow count or impact numbers on the site.** The site says "thousands of cows across India" while also naming only one gaushala. The article avoids both. Add a real count if you have one.
 - **80G status of Punya is unknown.** Nothing on the site states it, so the article does not claim it. Add it if you have it.
 - **"Real Gau Daan ₹51,000"** is described on the site as non-symbolic; check how you want to explain what the donor actually receives.

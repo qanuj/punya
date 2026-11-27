@@ -4,7 +4,7 @@ import { youtubeVideo, type YouTubeVideo } from "@/lib/youtube";
  * Reading a `:::embed` fence.
  *
  * The fence holds a URL on one line and a caption under it, and nothing in
- * this repo read either. An unstyled fence renders as a card, so the Patkholi
+ * this repo read either. An unstyled fence renders as a card, so the Patkhauli
  * gaushala's map arrived as a card containing four hundred characters of
  * Google Maps URL as its own link text - the longest thing on the page, and
  * not a map.
