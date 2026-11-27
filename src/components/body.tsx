@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { CmsForm } from "@/components/cms-form";
 import { EmbedBlock } from "@/components/embed-block";
-import { PayOnline } from "@/components/pay-online";
 import { embedFromHtml } from "@/lib/embeds";
 import { splitFaqBlocks } from "@tintorch/web/markdown";
 import { getForm, type CmsFaq, type CmsForm as CmsFormDefinition } from "@/lib/cms";
@@ -148,21 +147,6 @@ function BlockView({
    * its own prose first, then the nested run as a grid of its own. A column
    * carries no card chrome; it exists to divide the row.
    */
-  /*
-   * A `:::pay` fence: the online giving widget, wherever the body puts it.
-   *
-   * The fence carries no amounts and no keys. An editor decides where giving
-   * sits on the page and what the words around it say; what it charges and
-   * which gateway takes it are not editable from the CMS.
-   */
-  if (block.kind === "pay") {
-    return (
-      <div data-span={block.span} className="block block-pay">
-        <PayOnline />
-      </div>
-    );
-  }
-
   /*
    * An `:::embed` fence: a map, a video, or a link with words on it. Never a
    * frame around a URL this site has not recognised.

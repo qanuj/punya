@@ -346,3 +346,151 @@ h4,
 .prose {
   color: var(--ink-900);
 }
+
+/* ── Giving ────────────────────────────────────────────────────────────────
+ *
+ * One card, four ways to pay, and no nesting: the online form and the direct
+ * methods share a frame because they are one decision, not two. Amounts are
+ * tabular so a column of chips does not shift as the digits change, and the
+ * account number does not wobble while it is being read aloud to a banker.
+ */
+
+.give {
+  background: var(--surface-card);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
+}
+
+.give-title { font-size: var(--text-h3); margin: 0; }
+.give-lede { color: var(--ink-600); font-size: var(--text-sm); margin-top: var(--space-1); }
+
+.give-amounts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  border: 0;
+  padding: 0;
+}
+
+/* Navy marks the choice, gold stays reserved for the action itself. */
+.give-chip {
+  height: 38px;
+  padding-inline: var(--space-4);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-pill);
+  background: var(--white);
+  color: var(--navy-700);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+.give-chip:hover { border-color: var(--gold-300); }
+.give-chip[aria-pressed="true"] {
+  background: var(--navy-700);
+  border-color: var(--navy-700);
+  color: var(--white);
+}
+
+.give-fields {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+@media (min-width: 40rem) {
+  .give-fields { grid-template-columns: 1fr 1fr; }
+  .give-fields > :last-child { grid-column: 1 / -1; }
+}
+
+.give-input {
+  height: 44px;
+  width: 100%;
+  padding-inline: var(--space-3);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--ink-900);
+  font: inherit;
+  font-size: var(--text-sm);
+}
+.give-input::placeholder { color: var(--ink-600); }
+.give-input:hover { border-color: var(--gold-300); }
+
+.give-submit { width: 100%; margin-top: var(--space-4); font-variant-numeric: tabular-nums; }
+.give-submit[disabled] { opacity: .55; cursor: not-allowed; }
+
+.give-status { margin-top: var(--space-3); font-size: var(--text-sm); color: var(--ink-600); }
+.give-status[data-tone="paid"] { color: var(--navy-700); font-weight: 600; }
+.give-status[data-tone="error"] { color: #9B1C1C; }
+
+.give-fineprint { margin-top: var(--space-3); font-size: 13px; color: var(--ink-600); }
+
+/* ── The direct methods, under a hairline in the same card ─────────────── */
+
+.give-direct { margin-top: var(--space-5); border-top: 1px solid var(--border-warm); padding-top: var(--space-4); }
+
+.give-tabs { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+.give-tab {
+  padding: 6px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink-600);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.give-tab:hover { color: var(--navy-700); }
+.give-tab[aria-selected="true"] { background: var(--cream-200); color: var(--navy-700); }
+
+/* The one authored moment: a method opens rather than appearing. */
+.give-reveal { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 220ms cubic-bezier(.16,1,.3,1); }
+.give-reveal[data-open="true"] { grid-template-rows: 1fr; }
+.give-reveal > div { overflow: hidden; }
+@media (prefers-reduced-motion: reduce) { .give-reveal { transition: none; } }
+
+.give-rows { margin-top: var(--space-3); display: grid; gap: var(--space-2); }
+
+.give-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+.give-row dt { color: var(--ink-600); flex: none; }
+.give-row dd {
+  margin: 0;
+  color: var(--ink-900);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.give-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: var(--space-2);
+  padding: 4px 10px;
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-pill);
+  color: var(--ink-600);
+  font-size: 12px;
+  font-weight: 600;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+.give-copy:hover { border-color: var(--gold-300); color: var(--navy-700); }
+
+.give-qr {
+  display: block;
+  width: 180px;
+  height: 180px;
+  margin: var(--space-3) auto 0;
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+}
