@@ -21,6 +21,8 @@ import { Body, FaqSection } from "@/components/body";
 import { CardFor, money } from "@/components/cards";
 import { HomePage } from "@/components/home-sections";
 import { ItemAside, itemTags } from "@/components/item-aside";
+import { GivePanel } from "@/components/give-panel";
+import { GIVE_PAGE_SLUG } from "@/lib/giving";
 import {
   clean,
   facetPath,
@@ -329,6 +331,20 @@ function ItemPage({ item, type }: { item: CmsItem; type?: CmsType }) {
           )}
         </div>
       </header>
+
+      {/*
+        Giving is the page's job, so the page owns it. It used to arrive as a
+        fence in the CMS body, which put the account number one careless edit
+        away from an editor; now the CMS holds the reasons to give and the
+        code holds where the money goes.
+      */}
+      {type?.key === "page" && item.slug === GIVE_PAGE_SLUG && (
+        <div className="section" style={{ paddingBlock: "var(--space-7)" }}>
+          <div className="shell" style={{ maxWidth: "34rem" }}>
+            <GivePanel />
+          </div>
+        </div>
+      )}
 
       {body && (
         <div className="section">
